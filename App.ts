@@ -24,12 +24,13 @@ class App {
       // placeholder route handler
 
       
-      router.get('/api', (req, res, next) => {
+      router.get('/', (req, res, next) => {
+        console.log('in get ');
         res.json({
           message: 'Hello Worlds champion !'
         });
       });
-  //    this.express.use('/', router);
+      this.express.use('/', router);
     }
   }
   export default new App().express;
