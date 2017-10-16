@@ -31,7 +31,7 @@ app.use((req, res, next) => {
     next();
 });
 app.set("port", appPort);
-this.app.get('/api', (req, res) => {
+app.get('/api', (req, res) => {
     res.json({ message: 'hooray! welcome to our api!' });
 });
 // ===============
