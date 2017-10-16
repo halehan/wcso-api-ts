@@ -3,6 +3,7 @@ import * as express from "express";
 import * as bodyParser from "body-parser";  
 import * as Quote from "./entities/quote";  
 import * as Comment from "./entities/comment";
+import * as Message from "./entities/message";
 import * as mongoose from "mongoose";
 import * as morgan from "morgan";
 
@@ -21,9 +22,7 @@ let connectionString: string = 'mongodb://wcso:wcso@ds161164.mlab.com:61164/wcso
 // ===============
 var app = express();  
 app.use(bodyParser.json());  
-app.use(bodyParser.urlencoded({  
-    extended: true
-}));
+app.use(bodyParser.urlencoded({ extended: true}));
 
 app.use((req, res, next) => {
     // Set permissive CORS header - this allows this server to be used only as
@@ -53,6 +52,10 @@ var quoteApi = restful.model("quote", Quote.schema)
 var commentApi = restful.model("comment", Comment.schema)  
 .methods(["get", "post", "put", "delete"])
 .register(app, "/api/comment");
+
+var messageApi = restful.model("message", Message.schema)  
+.methods(["get", "post", "put", "delete"])
+.register(app, "/api/message");
 
 // ===============
 // DB 

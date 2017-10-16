@@ -5,6 +5,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const Quote = require("./entities/quote");
 const Comment = require("./entities/comment");
+const Message = require("./entities/message");
 const mongoose = require("mongoose");
 // node-restul doesn't have typings, so we'll have to use plain js require to get it :-(
 var restful = require('node-restful'); // ===============
@@ -18,9 +19,7 @@ let connectionString = 'mongodb://wcso:wcso@ds161164.mlab.com:61164/wcso';
 // ===============
 var app = express();
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use((req, res, next) => {
     // Set permissive CORS header - this allows this server to be used only as
     // an API server in conjunction with something like webpack-dev-server. 
@@ -44,6 +43,9 @@ var quoteApi = restful.model("quote", Quote.schema)
 var commentApi = restful.model("comment", Comment.schema)
     .methods(["get", "post", "put", "delete"])
     .register(app, "/api/comment");
+var messageApi = restful.model("message", Message.schema)
+    .methods(["get", "post", "put", "delete"])
+    .register(app, "/api/message");
 // ===============
 // DB 
 // ===============
