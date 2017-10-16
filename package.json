@@ -2,10 +2,10 @@
   "name": "wcso-api-ts",
   "version": "1.0.0",
   "description": "WCSO api using TypeScript",
-  "main": "App.js",
+  "main": "main.js",
   "scripts": {
     "test": "gulp",
-    "start": "node App.js"
+    "start": "node main.js"
   },
   "repository": {
     "type": "git",
