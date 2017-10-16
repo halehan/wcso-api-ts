@@ -36,16 +36,11 @@ var quoteApi = restful.model("quote", Quote.schema)
 // ===============
 // DB 
 // ===============
-// mongoose.connect(connectionString); 
-
 var dbOpt : any = { 
     useMongoClient: true
 } 
 
 mongoose.connect(connectionString, dbOpt);
-
-// var db = mongoose.connection;
-//  db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 
 // ===============
