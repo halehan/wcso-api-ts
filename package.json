@@ -1,0 +1,32 @@
+{
+  "name": "wcso-api-ts",
+  "version": "1.0.0",
+  "description": "WCSO api using TypeScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp",
+    "start": "node index.js",
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/halehan/wcso-api-ts.git"
+  },
+  "author": "Thomas D. Williams",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.2.2",
+    "mongodb": "^2.2.9",
+    "mongoose": "^4.6.0",
+    "node-restful": "^0.2.5",
+    "typescript": "^2.5.3",
+    "typings": "^2.1.1"
+  },
+  "bugs": {
+    "url": "https://github.com/halehan/wcso-api-ts/issues"
+  },
+  "homepage": "https://github.com/halehan/wcso-api-ts#readme"
+}
