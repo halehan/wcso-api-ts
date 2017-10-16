@@ -21,6 +21,7 @@
     "mongodb": "^2.2.9",
     "mongoose": "^4.6.0",
     "node-restful": "^0.2.5",
+    "nodemon": "^1.12.1",
     "typescript": "^2.5.3",
     "typings": "^2.1.1"
   },
