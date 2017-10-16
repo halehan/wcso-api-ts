@@ -30,7 +30,10 @@ var quoteApi = restful.model("quote", Quote.schema)
 // ===============
 // DB 
 // ===============
-mongoose.connect(connectionString);
+// mongoose.connect(connectionString); 
+mongoose.connect(connectionString, { useMongoClient: true });
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 // ===============
 // SERVER
 // ===============

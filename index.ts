@@ -3,6 +3,7 @@ import * as express from "express";
 import * as bodyParser from "body-parser";  
 import * as Quote from "./entities/quote";  
 import * as mongoose from "mongoose";
+import * as morgan from "morgan";
 
 // node-restul doesn't have typings, so we'll have to use plain js require to get it :-(
 var restful = require('node-restful');  // ===============
@@ -35,7 +36,16 @@ var quoteApi = restful.model("quote", Quote.schema)
 // ===============
 // DB 
 // ===============
-mongoose.connect(connectionString);  
+// mongoose.connect(connectionString); 
+
+var dbOpt : any = { 
+    useMongoClient: true
+} 
+
+mongoose.connect(connectionString, dbOpt);
+
+// var db = mongoose.connection;
+//  db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 
 // ===============
