@@ -20,12 +20,12 @@ class App {
         console.log(`Firing up routes()`);
         let router = express.Router();
         // placeholder route handler
-        router.get('/', (req, res, next) => {
+        router.get('/api', (req, res, next) => {
             res.json({
                 message: 'Hello Worlds champion !'
             });
         });
-        this.express.use('/', router);
+        //    this.express.use('/', router);
     }
 }
 exports.default = new App().express;
