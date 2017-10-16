@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const http = require("http");
 const App_1 = require("./App");
-const port = 3000;
+const port = 8080;
 App_1.default.set('port', port);
 //create a server and pass our Express app to it.
 const server = http.createServer(App_1.default);
