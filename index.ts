@@ -2,6 +2,7 @@
 import * as express from "express";  
 import * as bodyParser from "body-parser";  
 import * as Quote from "./entities/quote";  
+import * as Comment from "./entities/comment";
 import * as mongoose from "mongoose";
 import * as morgan from "morgan";
 
@@ -48,6 +49,10 @@ app.get('/api', (req, res) => {
 var quoteApi = restful.model("quote", Quote.schema)  
 .methods(["get", "post", "put", "delete"])
 .register(app, "/api/quote");
+
+var commentApi = restful.model("comment", Comment.schema)  
+.methods(["get", "post", "put", "delete"])
+.register(app, "/api/comment");
 
 // ===============
 // DB 

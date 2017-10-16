@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const bodyParser = require("body-parser");
 const Quote = require("./entities/quote");
+const Comment = require("./entities/comment");
 const mongoose = require("mongoose");
 // node-restul doesn't have typings, so we'll have to use plain js require to get it :-(
 var restful = require('node-restful'); // ===============
@@ -40,6 +41,9 @@ app.get('/api', (req, res) => {
 var quoteApi = restful.model("quote", Quote.schema)
     .methods(["get", "post", "put", "delete"])
     .register(app, "/api/quote");
+var commentApi = restful.model("comment", Comment.schema)
+    .methods(["get", "post", "put", "delete"])
+    .register(app, "/api/comment");
 // ===============
 // DB 
 // ===============
