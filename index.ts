@@ -4,6 +4,7 @@ import * as bodyParser from "body-parser";
 import * as Quote from "./entities/quote";  
 import * as Comment from "./entities/comment";
 import * as Message from "./entities/message";
+import * as User from "./entities/user";
 import * as mongoose from "mongoose";
 import * as morgan from "morgan";
 
@@ -56,6 +57,10 @@ var commentApi = restful.model("comment", Comment.schema)
 var messageApi = restful.model("message", Message.schema)  
 .methods(["get", "post", "put", "delete"])
 .register(app, "/api/message");
+
+var userApi = restful.model("user", User.schema)  
+.methods(["get", "post", "put", "delete"])
+.register(app, "/api/user");
 
 // ===============
 // DB 

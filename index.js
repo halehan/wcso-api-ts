@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const Quote = require("./entities/quote");
 const Comment = require("./entities/comment");
 const Message = require("./entities/message");
+const User = require("./entities/user");
 const mongoose = require("mongoose");
 // node-restul doesn't have typings, so we'll have to use plain js require to get it :-(
 var restful = require('node-restful'); // ===============
@@ -46,6 +47,9 @@ var commentApi = restful.model("comment", Comment.schema)
 var messageApi = restful.model("message", Message.schema)
     .methods(["get", "post", "put", "delete"])
     .register(app, "/api/message");
+var userApi = restful.model("user", User.schema)
+    .methods(["get", "post", "put", "delete"])
+    .register(app, "/api/user");
 // ===============
 // DB 
 // ===============
