@@ -32,6 +32,9 @@ app.use((req, res, next) => {
     next();
 });
 app.set("port", appPort);
+app.get('/', (req, res) => {
+    res.json({ message: 'welcome to the root of our api!' });
+});
 app.get('/api', (req, res) => {
     res.json({ message: 'hooray! welcome to our api!' });
 });
