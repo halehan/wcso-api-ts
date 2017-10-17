@@ -12,7 +12,7 @@ const mongoose = require("mongoose");
 var restful = require('node-restful'); // ===============
 // COMMON VARIABLES
 // ===============
-let appPort = (process.env.PORT || 8080);
+let appPort = (process.env.PORT || 3000);
 // let connectionString: string = process.env.MONGODB_URI;  
 let connectionString = 'mongodb://wcso:wcso@ds161164.mlab.com:61164/wcso';
 // ===============

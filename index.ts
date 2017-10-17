@@ -14,9 +14,10 @@ var restful = require('node-restful');  // ===============
 
 // COMMON VARIABLES
 // ===============
-let appPort: number =  (process.env.PORT || 8080);  
+let appPort: number =  (process.env.PORT || 3000);  
 // let connectionString: string = process.env.MONGODB_URI;  
 let connectionString: string = 'mongodb://wcso:wcso@ds161164.mlab.com:61164/wcso';
+
 
 // ===============
 // Express App
@@ -38,6 +39,10 @@ app.use((req, res, next) => {
 });
 
 app.set("port", appPort);  
+
+app.get('/', (req, res) => {
+    res.json({ message: 'welcome to the root of our api!' });	
+})
 
 app.get('/api', (req, res) => {
     res.json({ message: 'hooray! welcome to our api!' });	
@@ -85,4 +90,4 @@ var server = app.listen(port, function(){
 });
 
 
-
+}
