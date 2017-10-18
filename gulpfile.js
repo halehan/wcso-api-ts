@@ -11,7 +11,7 @@ gulp.task('scripts', () => {
 });
 //set up a watcher to watch over changes
 gulp.task('watch', ['scripts'], () => {
-  gulp.watch('**/*.ts', ['scripts']);
+  gulp.watch('src/**/*.ts', ['scripts']);
 });
 
 gulp.task('default', ['watch']);

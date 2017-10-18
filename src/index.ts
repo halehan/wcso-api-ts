@@ -1,4 +1,4 @@
-/// <reference path="typings/index.d.ts" />
+/// <reference path="../typings/index.d.ts" />
 import * as express from "express";  
 import * as bodyParser from "body-parser";  
 import * as Quote from "./entities/quote";  
@@ -41,11 +41,11 @@ app.use((req, res, next) => {
 app.set("port", appPort);  
 
 app.get('/', (req, res) => {
-    res.json({ message: 'welcome to the root of our api!' });	
+    res.json({ message: 'welcome to the root of our apis!' });	
 })
 
 app.get('/api', (req, res) => {
-    res.json({ message: 'hooray! welcome to our api!' });	
+    res.json({ message: 'hooray! welcome to our api!uuu' });	
 });
 
 // ===============
