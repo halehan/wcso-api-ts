@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "gulp",
-    "start": "nodemon dist/index.js"
+    "start": "node dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -14,10 +14,15 @@
   "author": "Thomas D. Williams",
   "license": "ISC",
   "dependencies": {
+    "@types/moment": "^2.13.0",
+    "bcrypt": "^1.0.3",
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
+    "facebook-chat-api": "^1.4.0",
     "gulp": "^3.9.1",
     "gulp-typescript": "^3.2.2",
+    "jsonwebtoken": "^8.1.0",
+    "moment": "^2.19.1",
     "mongodb": "^2.2.9",
     "mongoose": "^4.11.14",
     "morgan": "^1.9.0",

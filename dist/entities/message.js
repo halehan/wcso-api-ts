@@ -7,6 +7,7 @@ var messageSchema = new mongoose.Schema({
     message: String,
     threadId: String,
     messageId: String,
+    userId: String
 });
 var Message = mongoose.model("Message", messageSchema);
 module.exports = Message;
