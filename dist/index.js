@@ -17,7 +17,7 @@ var SALT_WORK_FACTOR = 10;
 // node-restul doesn't have typings, so we'll have to use plain js require to get it :-(
 var restful = require('node-restful'); // ===============
 var credentials = {
-    email: '',
+    email: 'dwilliams@halehan.com',
     password: 'fucktard',
     superSecret: "dog"
 };
@@ -82,42 +82,6 @@ app.set("port", appPort);
 app.use(morgan('dev')); // log requests to the console  
 app.get("/api", apiController.getApi);
 app.post("/api/user", apiController.postUser);
-/*
-app.post('/user', (req, res) => {
-  
-  var user = new User();		// create a new instance of the Bear model
-  var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
-  user.firstName = req.body.firstName;  // set the bears name (comes from the request)
-  user.lastName = req.body.lastName;
-  user.loginId = req.body.loginId;
-  user.role = req.body.role;
-  user.phoneMobile = req.body.phoneMobile;
-  user.supervisor = req.body.supervisor;
-  user.createDate = nowDate;
-  user.updateDate = nowDate;
-  user.updateBy = req.body.updateBy;
-
-
-  bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt){
-    
-      bcrypt.hash(req.body.password, salt, function(err, hash){
-          user.password = hash;
-          console.log(hash);
-          console.log(bcrypt.compareSync("halehanp2$", hash)); // true
-          console.log(bcrypt.compareSync("catBoy", hash)); // false
-
-          user.save(function(err) {
-            if (err)
-              res.send(err);
-      
-            res.json({ message: 'User created! ' + user.firstName +'  ' + user.lastName });
-          });
-       
-      });
-  });
-
-});
-*/
 app.post('/messages/sendmessage', (req, res) => {
     var message = new Message();
     var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
