@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "gulp",
-    "start": "build-ts && node dist/index.js",
+    "start": "tsc && node dist/index.js",
     "build-ts": "tsc"
   },
   "repository": {
