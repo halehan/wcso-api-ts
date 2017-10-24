@@ -129,7 +129,6 @@ login({email: credentials.email, password: credentials.password}, (err, api) => 
    
 });
    
-
 });
 
 
