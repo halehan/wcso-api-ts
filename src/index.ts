@@ -41,32 +41,23 @@ const login = require("facebook-chat-api");
 
 app.set('superSecret', credentials.superSecret); // secret variable
 
-app.use((req, res, next) => {
-    // Set permissive CORS header - this allows this server to be used only as
-    // an API server in conjunction with something like webpack-dev-server. 
-
-    var token = req.body.token || req.query.token || req.headers['x-access-token'];
-
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, PUT, DELETE, GET');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
-
-    // Disable caching so we'll always get the latest comments.
-    res.setHeader('Cache-Control', 'no-cache');
-    next();
- 
-
- // decode token
- /*
- if (token) {
+/* app.use((req, res, next) => {
   
-      // verifies secret and checks exp
+  
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  if (token) {
+  
+      console.log(app.get('superSecret'));
       jwt.verify(token, app.get('superSecret'), (err, decoded) => {      
         if (err) {
           return res.json({ success: false, message: 'Failed to authenticate token.' });    
         } else {
-          // if everything is good, save to request for use in other routes
-     //     req.decoded = decoded;    
+
+         res.setHeader('Access-Control-Allow-Origin', '*');
+          res.setHeader('Access-Control-Allow-Methods', 'POST, PUT, DELETE, GET');
+          res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
+      
+          res.setHeader('Cache-Control', 'no-cache'); 
           next();
         }
       });
@@ -80,9 +71,9 @@ app.use((req, res, next) => {
           message: 'No token provided.' 
       });
   
-    }
-    */
-});
+    } 
+    
+}); */
 
 bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt){
   
