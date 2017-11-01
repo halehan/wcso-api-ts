@@ -11,8 +11,8 @@ import * as moment from "moment";
 var SALT_WORK_FACTOR = 10;
 
 var credentials = {
-  email: 'dwilliams@halehan.com',
-  password: 'halehanp2$',
+  email: '',
+  password: '',
   superSecret: "dog"
 }
 const login = require("facebook-chat-api");
