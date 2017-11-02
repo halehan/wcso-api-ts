@@ -3,9 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference path="../typings/index.d.ts" />
 const express = require("express");
 const bodyParser = require("body-parser");
-const Quote = require("./entities/quote");
-const Comment = require("./entities/comment");
-const Message = require("./entities/message");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const apiController = require("./controllers/api");
@@ -32,20 +29,25 @@ app.get("/api/user", apiController.getUsers);
 //Message
 app.post("/messages/sendmessage", apiController.sendMessage);
 app.get("/messages", apiController.getMessages);
+app.get("/message/:message_id", apiController.getMessage);
 app.get("/api", apiController.getApi);
 app.post("/authenticate", apiController.authenticate);
 // ===============
 // REST API LOGIC
 // ===============
+/*
 var quoteApi = restful.model("quote", Quote.schema)
-    .methods(["get", "post", "put", "delete"])
-    .register(app, "/api/quote");
+.methods(["get", "post", "put", "delete"])
+.register(app, "/api/quote");
+
 var commentApi = restful.model("comment", Comment.schema)
-    .methods(["get", "post", "put", "delete"])
-    .register(app, "/api/comment");
+.methods(["get", "post", "put", "delete"])
+.register(app, "/api/comment");
+
 var messageApi = restful.model("message", Message.schema)
-    .methods(["get", "post", "put", "delete"])
-    .register(app, "/api/message");
+.methods(["get", "post", "put", "delete"])
+.register(app, "/api/message");
+*/
 // ===============
 // DB 
 // ===============

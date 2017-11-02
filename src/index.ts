@@ -42,6 +42,7 @@ app.get("/api/user", apiController.getUsers);
 //Message
 app.post("/messages/sendmessage", apiController.sendMessage);
 app.get("/messages", apiController.getMessages);
+app.get("/message/:message_id", apiController.getMessage); 
 
 app.get("/api", apiController.getApi);
 app.post("/authenticate", apiController.authenticate);

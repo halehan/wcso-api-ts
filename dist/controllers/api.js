@@ -27,6 +27,19 @@ let authCheck = function (req) {
     console.log(rtn);
     return rtn;
 };
+exports.getMessage = (req, res) => {
+    var validToken = authCheck(req);
+    if (validToken == 'success') {
+        Message.find({ 'messageId': req.params.message_id }, 'messageId message threadId', function (err, message) {
+            if (err)
+                res.send(err);
+            res.json(message);
+        });
+    }
+    else {
+        res.json({ message: 'Invalid Token' });
+    }
+};
 exports.getMessages = (req, res) => {
     var validToken = authCheck(req);
     if (validToken == 'success') {

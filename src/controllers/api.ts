@@ -11,8 +11,8 @@ import * as moment from "moment";
 var SALT_WORK_FACTOR = 10;
 
 var credentials = {
-  email: '',
-  password: '',
+  email: 'dwilliams@halehan.com',
+  password: 'halehanp2$',
   superSecret: "dog"
 }
 const login = require("facebook-chat-api");
@@ -33,6 +33,23 @@ let authCheck = function(req){
   console.log(rtn);
   return rtn;
 }
+
+export let getMessage = (req: Request, res: Response) => {
+  
+    var validToken = authCheck(req);
+    if( validToken == 'success') {
+
+    Message.find({'messageId': req.params.message_id}, 'messageId message threadId', function(err, message) {
+        if (err)
+          res.send(err);
+        res.json(message);
+      });  
+    } else {
+      res.json({ message: 'Invalid Token' });	
+    }
+  
+  }
+
 
 export let getMessages = (req: Request, res: Response) => {
 
