@@ -30,7 +30,7 @@ let authCheck = function (req) {
 exports.getMessage = (req, res) => {
     var validToken = authCheck(req);
     if (validToken == 'success') {
-        Message.find({ 'messageId': req.params.message_id }, 'messageId message threadId', function (err, message) {
+        Message.find({ 'messageId': req.params.message_id }, 'messageId message threadId createdTime', function (err, message) {
             if (err)
                 res.send(err);
             res.json(message);
