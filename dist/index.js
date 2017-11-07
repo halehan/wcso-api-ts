@@ -9,6 +9,11 @@ const apiController = require("./controllers/api");
 var SALT_WORK_FACTOR = 10;
 // node-restul doesn't have typings, so we'll have to use plain js require to get it :-(
 var restful = require('node-restful'); // ===============
+const credentials = {
+    email: process.env.FACEBOOK_EMAIL,
+    password: process.env.FACEBOOK_PASSWORD,
+};
+apiController.listenBot(credentials.email, credentials.password);
 // COMMON VARIABLES
 // ===============
 let appPort = (process.env.PORT || 3000);
@@ -27,6 +32,7 @@ app.use(morgan('dev')); // log requests to the console
 app.post("/api/user", apiController.postUser);
 app.get("/api/user", apiController.getUsers);
 //Message
+// app.put("/messages/sendmessage", apiController.sendMessage);
 app.post("/messages/sendmessage", apiController.sendMessage);
 app.get("/messages", apiController.getMessages);
 app.get("/message/:message_id", apiController.getMessage);

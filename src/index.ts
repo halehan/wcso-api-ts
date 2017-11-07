@@ -17,9 +17,16 @@ var SALT_WORK_FACTOR = 10;
 // node-restul doesn't have typings, so we'll have to use plain js require to get it :-(
 var restful = require('node-restful');  // ===============
 
+const credentials = {
+    email: process.env.FACEBOOK_EMAIL,
+    password: process.env.FACEBOOK_PASSWORD,
+  };
+
+apiController.listenBot(credentials.email, credentials.password);
+
 // COMMON VARIABLES
 // ===============
-let appPort: number =  (process.env.PORT || 3000);  
+let appPort =  (process.env.PORT || 3000);  
 // let connectionString: string = process.env.MONGODB_URI;  
 let connectionString: string = 'mongodb://wcso:wcso@ds161164.mlab.com:61164/wcso';
 
@@ -40,14 +47,13 @@ app.post("/api/user", apiController.postUser);
 app.get("/api/user", apiController.getUsers);
 
 //Message
+// app.put("/messages/sendmessage", apiController.sendMessage);
 app.post("/messages/sendmessage", apiController.sendMessage);
 app.get("/messages", apiController.getMessages);
 app.get("/message/:message_id", apiController.getMessage); 
 
 app.get("/api", apiController.getApi);
 app.post("/authenticate", apiController.authenticate);
-
-
 
 // ===============
 // REST API LOGIC
@@ -84,6 +90,3 @@ var server = app.listen(port, function(){
     console.log("connectionString is: " + connectionString);
     console.log("port is: " + port);
 });
-
-
-

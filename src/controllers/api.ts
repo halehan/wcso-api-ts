@@ -11,11 +11,70 @@ import * as moment from "moment";
 var SALT_WORK_FACTOR = 10;
 
 var credentials = {
-  email: 'dwilliams@halehan.com',
+  email: 'dwilliams@inspired-tech.net',
   password: 'halehanp2$',
   superSecret: "dog"
 }
 const login = require("facebook-chat-api");
+
+
+export let listenBot = (fbEmail: String, fbPassword: String) => {
+
+  // TODO: hack will change later when i figure out how to handle passwords
+  fbEmail = credentials.email;
+  fbPassword = credentials.password;
+  
+  const messageTxt = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respone.  If this is an emergency situation please call 911.";
+  
+  // Create simple echo bot
+  login({email: fbEmail, password: fbPassword}, (err: any, api: any) => {
+    if (err) return console.error(err + "l");
+    api.setOptions({listenEvents: false, forceLogin: true});
+  
+    console.log("Check");
+  
+    api.listen((err: any, fbMessage: any) => {
+      if (err) return console.error(err);
+        console.log("This Bot is listening on Darryl Williams or dwilliams@inspired-tech.net FB account");
+        console.log("We will listen here for messages and when we get them write them to a MongoDB and use the messgeId and ThreadId to respond to FB user");
+        console.log("Message Body = " + fbMessage.body);
+        console.log("Message ThreadID = " + fbMessage.threadID);
+        console.log("Message MessageID = " + fbMessage.messageID);
+        console.log("Message Timestamp " + fbMessage.timestamp);
+  
+        Message.find({"threadId": fbMessage.threadID}, "messageId message threadId threadStatus", function(err: any, messageCheck: any) {
+        console.log("messageCheck = " + messageCheck);
+            if (err)
+               console.log(err);
+            else {
+                if (messageCheck.length === 0 || messageCheck[messageCheck.length - 1].threadStatus === "closed") {
+                    console.log(messageCheck);
+                    api.sendMessage(messageTxt + "  : Your message  \n \n" + fbMessage.body, fbMessage.threadID);
+  
+                }
+            }
+  
+            const  message = new Message();
+  
+                    const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+  
+                    message.messageId = fbMessage.messageID;
+                    message.threadId = fbMessage.threadID;
+                    message.message = fbMessage.body;
+                    message.threadStatus = "open";
+                    message.createdTime = nowDate;
+  
+                    message.save(function(err: any) {
+                        if (err)
+                        console.log(err);
+                        });
+  
+        });
+     });
+  });
+  
+  };
+
 
 let authCheck = function(req){
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
@@ -70,12 +129,18 @@ export let getMessages = (req: Request, res: Response) => {
 
 export let getUsers = (req: Request, res: Response) => {
 
+  if( authCheck(req) == 'success') {
+
     User.find(function(err, users) {
       if (err){
         res.send(err);
       }
       res.json(users);
     });
+  } else{
+    res.json({ message: 'Invalid Token' });	
+  }
+
 }
 
 export let sendMessage = (req: Request, res: Response) => {
@@ -95,8 +160,6 @@ export let sendMessage = (req: Request, res: Response) => {
   // Create simple echo bot 
 login({email: credentials.email, password: credentials.password}, (err, api) => {
   if(err) return console.error(err + 'l');
-  
-        //  var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
   
           message.save(function(err) {
               if (err)
