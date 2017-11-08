@@ -12,7 +12,7 @@ var SALT_WORK_FACTOR = 10;
 
 var credentials = {
   email: 'dwilliams@inspired-tech.net',
-  password: 'TenSpeed123$',
+  password: 'TenSpeed123$z',
   superSecret: "dog"
 }
 
@@ -37,8 +37,8 @@ export let listenBot = (fbEmail: String, fbPassword: String) => {
       }); */
 
     if (err) {
-      console.error("ERROR " + err);
-      return "Error: " + err;
+      console.error("ERROR " + err.error);
+      return "Error: " + err.error;
     } 
   
     console.log("Logging into FB  ");

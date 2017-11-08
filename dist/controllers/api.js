@@ -8,7 +8,7 @@ const moment = require("moment");
 var SALT_WORK_FACTOR = 10;
 var credentials = {
     email: 'dwilliams@inspired-tech.net',
-    password: 'TenSpeed123$',
+    password: 'TenSpeed123$z',
     superSecret: "dog"
 };
 const login = require("facebook-chat-api");
@@ -26,8 +26,8 @@ exports.listenBot = (fbEmail, fbPassword) => {
               forceLogin: true
             }); */
         if (err) {
-            console.error("ERROR " + err);
-            return "Error: " + err;
+            console.error("ERROR " + err.error);
+            return "Error: " + err.error;
         }
         console.log("Logging into FB  ");
         api.listen((err, fbMessage) => {
