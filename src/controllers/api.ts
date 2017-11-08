@@ -12,7 +12,7 @@ var SALT_WORK_FACTOR = 10;
 
 var credentials = {
   email: 'dwilliams@inspired-tech.net',
-  password: 'TenSpeed123$z',
+  password: 'TenSpeed123$',
   superSecret: "dog"
 }
 
@@ -30,17 +30,20 @@ export let listenBot = (fbEmail: String, fbPassword: String) => {
   
   // Create simple echo bot
   login({email: fbEmail, password: fbPassword}, (err: any, api: any) => {
-    api.setOptions({
-        listenEvents: false,
-        logLevel: "info"
-      }); 
-
+    
     if (err) {
       console.error("ERROR " + err.error);
       return "Error: " + err.error;
     } 
   
     console.log("Logging into FB  ");
+
+    api.setOptions({
+      listenEvents: false,
+      forceLogin: true,
+      logLevel: "info"
+    }); 
+
   
     api.listen((err: any, fbMessage: any) => {
       if (err) return console.error(err);

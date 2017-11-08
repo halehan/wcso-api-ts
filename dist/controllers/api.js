@@ -8,7 +8,7 @@ const moment = require("moment");
 var SALT_WORK_FACTOR = 10;
 var credentials = {
     email: 'dwilliams@inspired-tech.net',
-    password: 'TenSpeed123$z',
+    password: 'TenSpeed123$',
     superSecret: "dog"
 };
 const login = require("facebook-chat-api");
@@ -20,15 +20,16 @@ exports.listenBot = (fbEmail, fbPassword) => {
     const messageTxt = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respone.  If this is an emergency situation please call 911.";
     // Create simple echo bot
     login({ email: fbEmail, password: fbPassword }, (err, api) => {
-        api.setOptions({
-            listenEvents: false,
-            logLevel: "verbose"
-        });
         if (err) {
             console.error("ERROR " + err.error);
             return "Error: " + err.error;
         }
         console.log("Logging into FB  ");
+        api.setOptions({
+            listenEvents: false,
+            forceLogin: true,
+            logLevel: "info"
+        });
         api.listen((err, fbMessage) => {
             if (err)
                 return console.error(err);
