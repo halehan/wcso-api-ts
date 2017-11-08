@@ -30,8 +30,12 @@ export let listenBot = (fbEmail: String, fbPassword: String) => {
   
   // Create simple echo bot
   login({email: fbEmail, password: fbPassword}, (err: any, api: any) => {
-    
-    api.setOptions({listenEvents: false, forceLogin: true});
+    api.setOptions({
+        listenEvents: false,
+        logLevel: "verbose",
+        forceLogin: true
+      });
+
     if (err) return console.error(err + "l");
   
     console.log("Logging into FB  ");
