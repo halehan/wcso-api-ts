@@ -88,5 +88,5 @@ var server = app.listen(port, function(){
 
     // note: Only for debugging purposes to see that your variables are set correctly...
     console.log("connectionString is: " + connectionString);
-    console.log("port is: " + port);
+    console.log("port is:  " + port);
 });
