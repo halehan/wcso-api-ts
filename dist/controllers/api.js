@@ -8,7 +8,7 @@ const moment = require("moment");
 var SALT_WORK_FACTOR = 10;
 var credentials = {
     email: 'dwilliams@inspired-tech.net',
-    password: 'halehanp2$',
+    password: 'TenSpeed123$',
     superSecret: "dog"
 };
 const login = require("facebook-chat-api");
@@ -39,7 +39,7 @@ exports.listenBot = (fbEmail, fbPassword) => {
                 else {
                     if (messageCheck.length === 0 || messageCheck[messageCheck.length - 1].threadStatus === "closed") {
                         console.log(messageCheck);
-                        api.sendMessage(messageTxt + "  :    Your message  \n" + fbMessage.body, fbMessage.threadID);
+                        api.sendMessage(messageTxt + "  : Your message  \n \n" + fbMessage.body, fbMessage.threadID);
                     }
                 }
                 const message = new Message();
@@ -71,6 +71,18 @@ let authCheck = function (req) {
     });
     console.log(rtn);
     return rtn;
+};
+exports.closeThread = (req, res, next) => {
+    var validToken = authCheck(req);
+    if (validToken == 'success') {
+        Message.update({ threadId: req.params.thread_id }, { threadStatus: "closed" }, { multi: true }, function (err, message) {
+            console.log("updated MessageThread " + req.params.thread_id);
+            res.json({ message: "closed thread " + req.params.thread_id });
+        });
+    }
+    else {
+        res.json({ message: 'Invalid Token' });
+    }
 };
 exports.getMessage = (req, res) => {
     var validToken = authCheck(req);
