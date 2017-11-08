@@ -46,7 +46,7 @@ exports.listenBot = (fbEmail, fbPassword) => {
                 else {
                     if (messageCheck.length === 0 || messageCheck[messageCheck.length - 1].threadStatus === "closed") {
                         console.log(messageCheck);
-                        api.sendMessage(messageTxt + "\n  : Your message  \n \n " + fbMessage.body, fbMessage.threadID);
+                        api.sendMessage(messageTxt + "\n\n Your message:  \n\n " + fbMessage.body, fbMessage.threadID);
                     }
                 }
                 const message = new Message();
