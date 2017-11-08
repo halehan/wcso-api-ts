@@ -60,6 +60,4 @@ typings/
 # dotenv environment variables file
 .env
 
-dist/*
-dist/controllers/*
-dist/entities/*
+dist
