@@ -31,7 +31,7 @@ export let listenBot = (fbEmail: String, fbPassword: String) => {
     if (err) return console.error(err + "l");
     api.setOptions({listenEvents: false, forceLogin: true});
   
-    console.log("Logging into FB ");
+    console.log("Logging into FB  ");
   
     api.listen((err: any, fbMessage: any) => {
       if (err) return console.error(err);
