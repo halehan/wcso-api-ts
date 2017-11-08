@@ -32,7 +32,7 @@ export let listenBot = (fbEmail: String, fbPassword: String) => {
   login({email: fbEmail, password: fbPassword}, (err: any, api: any) => {
     api.setOptions({
         listenEvents: false,
-        logLevel: "verbose",
+        logLevel: "info",
         forceLogin: true
       });
 

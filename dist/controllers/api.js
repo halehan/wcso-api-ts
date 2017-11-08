@@ -20,7 +20,11 @@ exports.listenBot = (fbEmail, fbPassword) => {
     const messageTxt = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respone.  If this is an emergency situation please call 911.";
     // Create simple echo bot
     login({ email: fbEmail, password: fbPassword }, (err, api) => {
-        api.setOptions({ listenEvents: false, forceLogin: true });
+        api.setOptions({
+            listenEvents: false,
+            logLevel: "verbose",
+            forceLogin: true
+        });
         if (err)
             return console.error(err + "l");
         console.log("Logging into FB  ");
