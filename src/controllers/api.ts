@@ -32,7 +32,7 @@ export let listenBot = (fbEmail: String, fbPassword: String) => {
   login({email: fbEmail, password: fbPassword}, (err: any, api: any) => {
     
     if (err) {
-      console.error("ERROR " + err.error);
+      console.error("ERROR  " + err.error);
       return "Error: " + err.error;
     } 
   

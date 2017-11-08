@@ -61,4 +61,5 @@ typings/
 .env
 
 dist/*
-dis/controllers/*.js
+dist/controllers/*
+dist/entities/*
