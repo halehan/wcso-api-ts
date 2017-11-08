@@ -20,6 +20,8 @@ const login = require("facebook-chat-api");
 
 export let listenBot = (fbEmail: String, fbPassword: String) => {
 
+  console.log("Starting ListenBot  ");
+
   // TODO: hack will change later when i figure out how to handle passwords
   fbEmail = credentials.email;
   fbPassword = credentials.password;
