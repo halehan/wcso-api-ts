@@ -32,7 +32,7 @@ app.use(morgan('dev')); // log requests to the console
 app.post("/api/user", apiController.postUser);
 app.get("/api/user", apiController.getUsers);
 //Message
-// app.put("/messages/sendmessage", apiController.sendMessage);
+app.put("/messages/closethread/:thread_id", apiController.closeThread);
 app.post("/messages/sendmessage", apiController.sendMessage);
 app.get("/messages", apiController.getMessages);
 app.get("/message/:message_id", apiController.getMessage);

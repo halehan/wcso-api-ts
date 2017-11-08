@@ -12,11 +12,11 @@ var SALT_WORK_FACTOR = 10;
 
 var credentials = {
   email: 'dwilliams@inspired-tech.net',
-  password: 'halehanp2$',
+  password: 'TenSpeed123$',
   superSecret: "dog"
 }
-const login = require("facebook-chat-api");
 
+const login = require("facebook-chat-api");
 
 export let listenBot = (fbEmail: String, fbPassword: String) => {
 
@@ -92,6 +92,22 @@ let authCheck = function(req){
   console.log(rtn);
   return rtn;
 }
+
+
+export let closeThread = (req: Request, res: Response, next: NextFunction) => {
+
+  var validToken = authCheck(req);
+    if( validToken == 'success') {
+
+      Message.update({threadId:  req.params.thread_id}, {threadStatus: "closed"}, {multi: true},
+        function(err, message) {
+        console.log("updated MessageThread " + req.params.thread_id);
+        res.json({ message: "closed thread " +  req.params.thread_id});	
+        });
+    } else {
+      res.json({ message: 'Invalid Token' });	
+    }
+};
 
 export let getMessage = (req: Request, res: Response) => {
   
