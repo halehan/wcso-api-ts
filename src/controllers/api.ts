@@ -148,7 +148,7 @@ export let getMessages = (req: Request, res: Response) => {
       res.send(err);
     }
     res.json(messages);
-  });
+  }).sort({"createdTime": -1});
   } else{
     res.json({ message: 'Invalid Token' });	
   }
