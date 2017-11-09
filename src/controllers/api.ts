@@ -18,13 +18,13 @@ var credentials = {
 
 const login = require("facebook-chat-api");
 
-export let listenBot = (fbEmail: String, fbPassword: String) => {
+export let listenBot = (fbEmail: string, fbPassword: string) => {
 
   console.log("Starting ListenBot ");
 
   // TODO: hack will change later when i figure out how to handle passwords
-  fbEmail = credentials.email;
-  fbPassword = credentials.password;
+  credentials.email = fbEmail;
+  credentials.password = fbPassword;
   
   const messageTxt = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respone.  If this is an emergency situation please call 911.";
   
