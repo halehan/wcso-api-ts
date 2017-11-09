@@ -11,8 +11,8 @@ import * as moment from "moment";
 var SALT_WORK_FACTOR = 10;
 
 var credentials = {
-  email: 'dwilliams@inspired-tech.net',
-  password: 'TenSpeed123$',
+  email: '',
+  password: '',
   superSecret: "dog"
 }
 
