@@ -17,7 +17,7 @@ var SALT_WORK_FACTOR = 10;
 // node-restul doesn't have typings, so we'll have to use plain js require to get it :-(
 var restful = require('node-restful');  // ===============
 
-console.info(process.env);
+console.log(process.env.TEST);
 apiController.listenBot(process.env.FB_EMAIL, process.env.FB_PASSWORD);
 
 // COMMON VARIABLES
