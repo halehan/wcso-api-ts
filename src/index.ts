@@ -1,5 +1,6 @@
 /// <reference path="../typings/index.d.ts" />
 import * as express from "express";  
+import * as cors from "cors";  
 import * as bodyParser from "body-parser";  
 import * as Quote from "./entities/quote";  
 import * as Comment from "./entities/comment";
@@ -26,11 +27,11 @@ let appPort =  (process.env.PORT || 3000);
 // let connectionString: string = process.env.MONGODB_URI;  
 let connectionString: string = 'mongodb://wcso:wcso@ds161164.mlab.com:61164/wcso';
 
-
 // ===============
 // Express App
 // ===============
 var app = express();  
+app.use(cors());
 app.use(bodyParser.json());  
 app.use(bodyParser.urlencoded({ extended: true}));
 const login = require("facebook-chat-api");
@@ -45,11 +46,13 @@ app.get("/api/user", apiController.getUsers);
 //Message
 app.put("/messages/closethread/:thread_id", apiController.closeThread);
 app.post("/messages/sendmessage", apiController.sendMessage);
-app.get("/messages", apiController.getMessages);
+app.get("/messages", cors(),  apiController.getMessages);
 app.get("/message/:message_id", apiController.getMessage); 
 
-app.get("/api", apiController.getApi);
-app.post("/authenticate", apiController.authenticate);
+app.get("/api", cors(), apiController.getApi);
+app.post("/authenticate",  cors(), apiController.authenticate);
+// app.get("/check-state", apiController.authCheck);
+
 
 // ===============
 // REST API LOGIC

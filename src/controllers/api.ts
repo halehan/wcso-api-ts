@@ -18,6 +18,7 @@ var credentials = {
 
 const login = require("facebook-chat-api");
 
+
 export let listenBot = (fbEmail: string, fbPassword: string) => {
 
   console.log("Starting ListenBot ");
@@ -87,16 +88,50 @@ export let listenBot = (fbEmail: string, fbPassword: string) => {
   
   };
 
+    export let verifyToken = function(req: Request, res: Response) {
+    let token = req.body.token || req.query.token || req.headers['x-access-token'];
 
-let authCheck = function(req){
+    if( token ) {
+
+        jwt.verify(token, credentials.superSecret, (err, decoded) => {
+
+            if (err) {
+                return res.json({ success: false, message: 'Failed to authenticate token.' });    
+            } else {
+                // all good, continue
+              //  req.decoded = decoded; 
+               // next();
+            }
+        });
+
+    }  else {
+
+        res.send({ success: false, message: 'No token exists.' });
+        
+    }
+}
+
+
+export let authCheck = function(req: Request, resp: Response) {
+
+  
+ // resp.setHeader('Access-Control-Allow-Origin', '*');
+ // resp.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+ // resp.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With,x-access-token');
+
+ // resp.setHeader('Cache-Control', 'no-cache');
+  
+
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
   var rtn;
   console.log(credentials.superSecret);
   jwt.verify(token, credentials.superSecret, (err, decoded) => {      
     if (err) {
       rtn = 'fail';    
+   //   resp.json({ message: 'Invalid Token' });
     } else {
       rtn = 'success';    
+   //   resp.json({ message: 'Invalid Token' });
     }
 
   });
@@ -108,9 +143,10 @@ let authCheck = function(req){
 
 export let closeThread = (req: Request, res: Response, next: NextFunction) => {
 
-  var validToken = authCheck(req);
-    if( validToken == 'success') {
+var validToken = authCheck(req, res);
 
+    if( validToken == 'success') {
+      
       Message.update({threadId:  req.params.thread_id}, {threadStatus: "closed"}, {multi: true},
         function(err, message) {
         console.log("updated MessageThread " + req.params.thread_id);
@@ -123,7 +159,7 @@ export let closeThread = (req: Request, res: Response, next: NextFunction) => {
 
 export let getMessage = (req: Request, res: Response) => {
   
-    var validToken = authCheck(req);
+    var validToken = authCheck(req, res);
     if( validToken == 'success') {
 
     Message.find({'messageId': req.params.message_id}, 'messageId message threadId createdTime', function(err, message) {
@@ -140,7 +176,7 @@ export let getMessage = (req: Request, res: Response) => {
 
 export let getMessages = (req: Request, res: Response) => {
 
-  var validToken = authCheck(req);
+  var validToken = authCheck(req,res);
   if( validToken == 'success') {
 
   Message.find(function(err, messages) {
@@ -157,7 +193,7 @@ export let getMessages = (req: Request, res: Response) => {
 
 export let getUsers = (req: Request, res: Response) => {
 
-  if( authCheck(req) == 'success') {
+  if( authCheck(req, res) == 'success') {
 
     User.find(function(err, users) {
       if (err){
@@ -172,7 +208,7 @@ export let getUsers = (req: Request, res: Response) => {
 }
 
 export let sendMessage = (req: Request, res: Response) => {
-  var validToken = authCheck(req);
+  var validToken = authCheck(req, res);
   if( validToken == 'success') {
   
   var message = new Message();
@@ -207,7 +243,16 @@ login({email: credentials.email, password: credentials.password}, (err, api) => 
 }
 
 export let authenticate = (req: Request, res: Response) => {
-  var validToken = authCheck(req);
+ // res.setHeader("Access-Control-Allow-Origin", '*'); //<-- you can change this with a specific url like http://localhost:4200
+ // res.setHeader("Access-Control-Allow-Credentials", 'true');
+ // res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+ // res.setHeader("Access-Control-Allow-Headers", 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json');
+  
+  console.log('In the authenticate method');
+     // Set to true if you need the website to include cookies in the requests sent
+     // to the API (e.g. in case you use sessions)
+
+  var validToken = authCheck(req, res);
 
   User.findOne({
     loginId: req.body.loginId
@@ -218,6 +263,7 @@ export let authenticate = (req: Request, res: Response) => {
     if (!user) {
       res.json({ success: false, message: 'Authentication failed. User not found.' });
     } else if (user) {
+      console.log(req.body.password);
       console.log(bcrypt.compareSync(req.body.password, user.password)); // true
       // check if password matches
       if (!bcrypt.compareSync(req.body.password, user.password)) {
@@ -253,23 +299,25 @@ export let authenticate = (req: Request, res: Response) => {
  * List of API examples.
  */
 export let getApi = (req: Request, res: Response) => {
-  console.log(authCheck(req));
-  var validToken = authCheck(req);
+  
+  var validToken = authCheck(req, res);
+  console.log(validToken);
+
   if( validToken == 'success') {
     res.json({ message: 'hooray! welcome to our api being called from api.ts controller' });	
-   } else{
-      res.json({ message: 'Invalid Token' });	
+   } else {
+    res.json({ message: 'Invalid Token' });	
     }
   };
 
 export let postUser = (req: Request, res: Response) => {
-
+/*
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, PUT, DELETE, GET');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
 
   res.setHeader('Cache-Control', 'no-cache');
-
+*/
     
     var user = new User();		
     var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
