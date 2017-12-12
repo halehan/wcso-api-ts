@@ -1,7 +1,7 @@
 import * as mongoose from "mongoose";
 
 interface IMessage{  
-    createdTime:string;
+    createdTime:Date;
     threadStatus:string;    
     message:string;
     threadId:string;
@@ -13,7 +13,7 @@ interface IMessage{
 interface IMessageModel extends IMessage, mongoose.Document{};
 
 var messageSchema = new mongoose.Schema({  
-    createdTime: String,
+    createdTime: Date,
     threadStatus: String,
     message: String,
     threadId: String,

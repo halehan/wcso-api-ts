@@ -75,7 +75,7 @@ export let listenBot = (fbEmail: string, fbPassword: string) => {
                     message.threadId = fbMessage.threadID;
                     message.message = fbMessage.body;
                     message.threadStatus = "open";
-                    message.createdTime = nowDate;
+                    message.createdTime = moment().toDate();
   
                     message.save(function(err: any) {
                         if (err)
@@ -89,7 +89,7 @@ export let listenBot = (fbEmail: string, fbPassword: string) => {
   };
 
     export let verifyToken = function(req: Request, res: Response) {
-    let token = req.body.token || req.query.token || req.headers['x-access-token'];
+    let token = req.body.token || req.query.token || req.headers['x-access-token'] || req.headers['Authorization'];
 
     if( token ) {
 
@@ -114,15 +114,13 @@ export let listenBot = (fbEmail: string, fbPassword: string) => {
 
 export let authCheck = function(req: Request, resp: Response) {
 
-  
  // resp.setHeader('Access-Control-Allow-Origin', '*');
  // resp.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
  // resp.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With,x-access-token');
 
  // resp.setHeader('Cache-Control', 'no-cache');
   
-
-  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  var token = req.body.token || req.query.token || req.headers['x-access-token'] || req.headers['authorization'];
   var rtn;
   console.log(credentials.superSecret);
   jwt.verify(token, credentials.superSecret, (err, decoded) => {      
@@ -179,14 +177,33 @@ export let getMessages = (req: Request, res: Response) => {
   var validToken = authCheck(req,res);
   if( validToken == 'success') {
 
+    Message.find({threadStatus:"open"}).sort("-createdTime").exec(function(err,messages){
+      if (err){ 
+        res.send(err);
+      }
+        res.json(messages);
+    });
+
+   /*
+    var query = Message.find({threadStatus:"open"});
+    query.sort('-createdTime')
+    query.exec(function(err, messages){
+      if (err){ 
+        res.send(err);
+      }
+      res.json(messages);
+    });
+*/
+   
+     /*
   Message.find(function(err, messages) {
-    if (err){
+    if (err){ 
       res.send(err);
     }
     res.json(messages);
   }).sort({"createdTime": -1});
   } else{
-    res.json({ message: 'Invalid Token' });	
+    res.json({ message: 'Invalid Token' });	*/
   }
 
 }
@@ -199,10 +216,13 @@ export let getUsers = (req: Request, res: Response) => {
       if (err){
         res.send(err);
       }
-      res.json(users);
+   //     res.json(users);
+        res.send(users);
     });
-  } else{
-    res.json({ message: 'Invalid Token' });	
+      } else{
+        let testUser = { username: 'test', password: 'test', firstName: 'Test', lastName: 'User' };
+      //  res.json({ message: 'Invalid Token' });	
+      res.json({ testUser });	
   }
 
 }
@@ -219,7 +239,7 @@ export let sendMessage = (req: Request, res: Response) => {
   message.threadId = req.body.threadId;
   message.threadStatus = req.body.threadStatus;
   message.userId = req.body.userId;
-  message.createdTime = nowDate;
+  message.createdTime = moment().toDate();
 
   // Create simple echo bot 
 login({email: credentials.email, password: credentials.password}, (err, api) => {
@@ -252,7 +272,7 @@ export let authenticate = (req: Request, res: Response) => {
      // Set to true if you need the website to include cookies in the requests sent
      // to the API (e.g. in case you use sessions)
 
-  var validToken = authCheck(req, res);
+  // var validToken = authCheck(req, res);
 
   User.findOne({
     loginId: req.body.loginId
@@ -311,13 +331,6 @@ export let getApi = (req: Request, res: Response) => {
   };
 
 export let postUser = (req: Request, res: Response) => {
-/*
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, PUT, DELETE, GET');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
-
-  res.setHeader('Cache-Control', 'no-cache');
-*/
     
     var user = new User();		
     var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
@@ -338,15 +351,61 @@ export let postUser = (req: Request, res: Response) => {
             console.log(hash);    
             console.log(bcrypt.compareSync("halehanp2$", hash)); // true
             console.log(bcrypt.compareSync("catBoy", hash)); // false
+
+
+            user.save(function (err, user) {
+              if (err) { return err }
+              res.json(201, user)
+            })
   
-            user.save(function(err) {
+     /*       user.save(function(err) {
               if (err)
                 res.send(err);
         
               res.json({ message: 'User created from Controller! ' + user.firstName +'  ' + user.lastName });
-            });
+            }); */
          
         });
     });
   
+  
   };
+
+  export let putUser = (req: Request, res: Response) => {
+
+    User.findOne({
+      loginId: req.params.loginId
+    }, function(err, user) {
+  
+      if (err) throw err;
+  
+      if (!user) {
+        res.json({ success: false, message: 'Authentication failed. User not found.' });
+      } else if (user) {
+    	
+        var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
+        user.firstName = req.body.firstName;  
+        user.lastName = req.body.lastName;
+        user.role = req.body.role;
+        user.phoneMobile = req.body.phoneMobile;
+        user.supervisor = req.body.supervisor;
+        user.updateDate = nowDate;
+        user.updateBy = req.body.updateBy;
+        
+        user.save((err, user) => {
+          if (err) {
+              res.status(500).send(err)
+          }
+          res.status(200).send(user);
+      });
+   
+      /*      user.save(function (err, user) {
+              if (err) { res.json(500, err) }
+              res.json(201, user)
+            })  */
+
+          } 
+        });  
+  
+  }
+  

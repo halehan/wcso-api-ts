@@ -40,19 +40,18 @@ app.set("port", appPort);
 app.use(morgan('dev')); // log requests to the console  
 
 //User
+app.put("/api/user", apiController.putUser);
 app.post("/api/user", apiController.postUser);
-app.get("/api/user", apiController.getUsers);
+app.get("/api/user", cors(), apiController.getUsers);
 
 //Message
-app.put("/messages/closethread/:thread_id", apiController.closeThread);
-app.post("/messages/sendmessage", apiController.sendMessage);
+app.put("/messages/closethread/:thread_id", cors(), apiController.closeThread);
+app.post("/messages/sendmessage", cors(), apiController.sendMessage);
 app.get("/messages", cors(),  apiController.getMessages);
-app.get("/message/:message_id", apiController.getMessage); 
+app.get("/messages/:message_id", apiController.getMessage); 
 
-app.get("/api", cors(), apiController.getApi);
-app.post("/authenticate",  cors(), apiController.authenticate);
-// app.get("/check-state", apiController.authCheck);
-
+app.get("/api",  apiController.getApi);
+app.post("/authenticate",   apiController.authenticate);
 
 // ===============
 // REST API LOGIC
