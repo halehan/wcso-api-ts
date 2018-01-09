@@ -40,9 +40,10 @@ app.set("port", appPort);
 app.use(morgan('dev')); // log requests to the console  
 
 //User
-app.put("/api/user", apiController.putUser);
+app.put("/api/user/:loginId", apiController.putUser);
 app.post("/api/user", apiController.postUser);
-app.get("/api/user", cors(), apiController.getUsers);
+app.get("/api/user/", apiController.getUsers);
+app.get("/api/user/:loginId",  apiController.getUser);
 
 //Message
 app.put("/messages/closethread/:thread_id", cors(), apiController.closeThread);

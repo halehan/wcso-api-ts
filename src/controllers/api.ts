@@ -175,6 +175,7 @@ export let getMessage = (req: Request, res: Response) => {
 export let getMessages = (req: Request, res: Response) => {
 
   var validToken = authCheck(req,res);
+//  var validToken = 'success';
   if( validToken == 'success') {
 
     Message.find({threadStatus:"open"}).sort("-createdTime").exec(function(err,messages){
@@ -184,26 +185,8 @@ export let getMessages = (req: Request, res: Response) => {
         res.json(messages);
     });
 
-   /*
-    var query = Message.find({threadStatus:"open"});
-    query.sort('-createdTime')
-    query.exec(function(err, messages){
-      if (err){ 
-        res.send(err);
-      }
-      res.json(messages);
-    });
-*/
-   
-     /*
-  Message.find(function(err, messages) {
-    if (err){ 
-      res.send(err);
-    }
-    res.json(messages);
-  }).sort({"createdTime": -1});
-  } else{
-    res.json({ message: 'Invalid Token' });	*/
+  } else {
+    res.json({ message: 'Invalid Token' });	
   }
 
 }
@@ -260,6 +243,32 @@ login({email: credentials.email, password: credentials.password}, (err, api) => 
   res.json({ message: 'Invalid Token' });	
 }
 
+}
+
+export let getUser = (req: Request, res: Response) => {
+
+  var validToken = authCheck(req, res);
+  
+  if( validToken == 'success') {
+
+    User.findOne({
+    'loginId': req.params.loginId
+  }, function(err, user) {
+
+    if (err) {
+      res.json({ success: false, message: 'ERROR finding user ' + err});
+    } 
+
+    if (!user) {
+      res.json({ success: false, message: 'ERROR finding user ' +  req.body.loginId });
+    } else if (user) {
+        return  res.json(user.toJSON());
+      }   
+
+  });
+ } else {
+  res.json({ message: 'Invalid Token' });	
+ }
 }
 
 export let authenticate = (req: Request, res: Response) => {
@@ -340,8 +349,8 @@ export let postUser = (req: Request, res: Response) => {
     user.role = req.body.role;
     user.phoneMobile = req.body.phoneMobile;
     user.supervisor = req.body.supervisor;
-    user.createDate = nowDate;
-    user.updateDate = nowDate;
+    user.createdTime = moment().toDate();
+    user.updateDate =  moment().toDate();
     user.updateBy = req.body.updateBy;
   
     bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt){
@@ -351,23 +360,16 @@ export let postUser = (req: Request, res: Response) => {
             console.log(hash);    
             console.log(bcrypt.compareSync("halehanp2$", hash)); // true
             console.log(bcrypt.compareSync("catBoy", hash)); // false
-
-
-            user.save(function (err, user) {
-              if (err) { return err }
-              res.json(201, user)
-            })
-  
-     /*       user.save(function(err) {
-              if (err)
-                res.send(err);
-        
-              res.json({ message: 'User created from Controller! ' + user.firstName +'  ' + user.lastName });
-            }); */
          
-        });
-    });
   
+                  });
+
+         });
+
+         user.save(function (err, user) {
+          if (err) {  res.json(500, err) }
+          res.json(201, user)
+        })
   
   };
 
@@ -383,21 +385,30 @@ export let postUser = (req: Request, res: Response) => {
         res.json({ success: false, message: 'Authentication failed. User not found.' });
       } else if (user) {
     	
-        var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
         user.firstName = req.body.firstName;  
         user.lastName = req.body.lastName;
         user.role = req.body.role;
         user.phoneMobile = req.body.phoneMobile;
         user.supervisor = req.body.supervisor;
-        user.updateDate = nowDate;
+        user.updateDate = moment().toDate();
         user.updateBy = req.body.updateBy;
+        user.about = req.body.about;
+        user.city = req.body.city;
+        user.state = req.body.state;
+        user.address = req.body.address;
+
+    /*    let promise = user.save();
+
+        promise.then(function () {
+          res.status(200).send(user);
+        }); */
         
         user.save((err, user) => {
           if (err) {
               res.status(500).send(err)
           }
           res.status(200).send(user);
-      });
+      });  
    
       /*      user.save(function (err, user) {
               if (err) { res.json(500, err) }
