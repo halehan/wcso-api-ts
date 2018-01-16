@@ -139,7 +139,7 @@ export let authCheck = function(req: Request, resp: Response) {
 }
 
 
-export let closeThread = (req: Request, res: Response, next: NextFunction) => {
+export let closeThread = (req: Request, res: Response) => {
 
 var validToken = authCheck(req, res);
 
@@ -339,39 +339,51 @@ export let getApi = (req: Request, res: Response) => {
     }
   };
 
-export let postUser = (req: Request, res: Response) => {
+  export let postUser = (req: Request, res: Response) => {
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, PUT, DELETE, GET');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
+  
+    res.setHeader('Cache-Control', 'no-cache');
     
-    var user = new User();		
-    var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
-    user.firstName = req.body.firstName;  
-    user.lastName = req.body.lastName;
-    user.loginId = req.body.loginId;
-    user.role = req.body.role;
-    user.phoneMobile = req.body.phoneMobile;
-    user.supervisor = req.body.supervisor;
-    user.createdTime = moment().toDate();
-    user.updateDate =  moment().toDate();
-    user.updateBy = req.body.updateBy;
-  
-    bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt){
+        
+        var user = new User();		
+        var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
+        user.firstName = req.body.firstName;  
+        user.lastName = req.body.lastName;
+        user.loginId = req.body.loginId;
+        user.role = req.body.role;
+        user.phoneMobile = req.body.phoneMobile;
+        user.supervisor = req.body.supervisor;
+        user.createdTime = moment().toDate();
+        user.updateDate = moment().toDate();
+        user.updateBy = req.body.updateBy;
+        user.zip = req.body.zip;
+        user.city = req.body.city;
+        user.state = req.body.state;
+        user.address = req.body.address;
       
-        bcrypt.hash(req.body.password, salt, function(err, hash){
-            user.password = hash;
-            console.log(hash);    
-            console.log(bcrypt.compareSync("halehanp2$", hash)); // true
-            console.log(bcrypt.compareSync("catBoy", hash)); // false
-         
-  
-                  });
+        bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt){
+          
+            bcrypt.hash(req.body.password, salt, function(err, hash){
+                user.password = hash;
+                console.log(hash);    
+                console.log(bcrypt.compareSync("halehanp2$", hash)); // true
+                console.log(bcrypt.compareSync("catBoy", hash)); // false
+      
+                user.save(function(err) {
+                  if (err)
+                    res.send(err);
+            
+                  res.json({ message: 'User created from Controller! ' + user.firstName +'  ' + user.lastName });
+                });
+             
+            });
+        });
+      
+      };
 
-         });
-
-         user.save(function (err, user) {
-          if (err) {  res.json(500, err) }
-          res.json(201, user)
-        })
-  
-  };
 
   export let putUser = (req: Request, res: Response) => {
 
@@ -393,6 +405,7 @@ export let postUser = (req: Request, res: Response) => {
         user.updateDate = moment().toDate();
         user.updateBy = req.body.updateBy;
         user.about = req.body.about;
+        user.zip = req.body.zip;
         user.city = req.body.city;
         user.state = req.body.state;
         user.address = req.body.address;

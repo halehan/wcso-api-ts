@@ -4,7 +4,7 @@ interface IMessage{
     createdTime:Date;
     threadStatus:string;    
     message:string;
-    threadId:string;
+    threadId:number;
     messageId:string;
     userId:string;
 
@@ -16,7 +16,7 @@ var messageSchema = new mongoose.Schema({
     createdTime: Date,
     threadStatus: String,
     message: String,
-    threadId: String,
+    threadId: Number,
     messageId: String,
     userId: String
 
