@@ -46,7 +46,7 @@ app.get("/api/user/", apiController.getUsers);
 app.get("/api/user/:loginId",  apiController.getUser);
 
 //Message
-app.put("/messages/closethread/:thread_id", cors(), apiController.closeThread);
+app.post("/messages/closethread",  apiController.closeThread);
 app.post("/messages/sendmessage", cors(), apiController.sendMessage);
 app.get("/messages", cors(),  apiController.getMessages);
 app.get("/messages/:message_id", apiController.getMessage); 

@@ -27,7 +27,7 @@ export let listenBot = (fbEmail: string, fbPassword: string) => {
   credentials.email = fbEmail;
   credentials.password = fbPassword;
   
-  const messageTxt = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respone.  If this is an emergency situation please call 911.";
+  const messageTxt = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911.";
   
   // Create simple echo bot
   login({email: fbEmail, password: fbPassword}, (err: any, api: any) => {
@@ -119,6 +119,7 @@ export let authCheck = function(req: Request, resp: Response) {
  // resp.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With,x-access-token');
 
  // resp.setHeader('Cache-Control', 'no-cache');
+ console.log(req.headers);
   
   var token = req.body.token || req.query.token || req.headers['x-access-token'] || req.headers['authorization'];
   var rtn;
@@ -142,13 +143,14 @@ export let authCheck = function(req: Request, resp: Response) {
 export let closeThread = (req: Request, res: Response) => {
 
 var validToken = authCheck(req, res);
+console.log(validToken);
 
     if( validToken == 'success') {
-      
-      Message.update({threadId:  req.params.thread_id}, {threadStatus: "closed"}, {multi: true},
+    
+      Message.update({threadId:  req.body.threadId}, {threadStatus: "closed"}, {multi: true},
         function(err, message) {
-        console.log("updated MessageThread " + req.params.thread_id);
-        res.json({ message: "closed thread " +  req.params.thread_id});	
+        console.log("updated MessageThread " + req.body.threadId);
+        res.json({ message: "closed thread " +  req.body.threadId});	
         });
     } else {
       res.json({ message: 'Invalid Token' });	
