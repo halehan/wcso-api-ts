@@ -14,6 +14,7 @@ import * as moment from "moment";
 import * as facebookChatAPI from "facebook-chat-api";
 import * as apiController from "./controllers/api";
 var SALT_WORK_FACTOR = 10;
+var suck = 111;
 
 // node-restul doesn't have typings, so we'll have to use plain js require to get it :-(
 var restful = require('node-restful');  // ===============
