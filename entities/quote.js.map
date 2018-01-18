@@ -1,0 +1,1 @@
+{"version":3,"file":"quote.js","sourceRoot":"","sources":["../../src/entities/quote.ts"],"names":[],"mappings":";AAAA,qCAAqC;AAOoB,CAAC;AAE1D,IAAI,WAAW,GAAG,IAAI,QAAQ,CAAC,MAAM,CAAC;IAClC,IAAI,EAAE,MAAM;IACZ,MAAM,EAAE,MAAM;CACjB,CAAC,CAAC;AAEH,IAAI,KAAK,GAAG,QAAQ,CAAC,KAAK,CAAc,OAAO,EAAE,WAAW,CAAC,CAAC;AAC9D,iBAAS,KAAK,CAAC"}
