@@ -12,21 +12,23 @@ import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import * as moment from "moment";
 import * as facebookChatAPI from "facebook-chat-api";
-import * as apiController from "./controllers/api";
+// import * as apiController from "./controllers/api";
+import * as apiController from "./controllers/fb-page-messenger";
+
 var SALT_WORK_FACTOR = 10;
 var suck = 1112;
 
 // node-restul doesn't have typings, so we'll have to use plain js require to get it :-(
-var restful = require('node-restful');  // ===============
+// var restful = require('node-restful');  // ===============
 
 console.log(process.env.TEST);
-apiController.listenBot(process.env.FB_EMAIL, process.env.FB_PASSWORD);
+// apiController.listenBot(process.env.FB_EMAIL, process.env.FB_PASSWORD);
 
 // COMMON VARIABLES
 // ===============
 let appPort =  (process.env.PORT || 3000);  
-// let connectionString: string = process.env.MONGODB_URI;  
-let connectionString: string = 'mongodb://wcso:wcso@ds161164.mlab.com:61164/wcso';
+let connectionString: string = process.env.MONGODB_URI;  
+// let connectionString: string = 'mongodb://wcso:wcso@ds161164.mlab.com:61164/wcso';
 
 // ===============
 // Express App
@@ -39,6 +41,10 @@ const login = require("facebook-chat-api");
 
 app.set("port", appPort);
 app.use(morgan('dev')); // log requests to the console  
+
+// FB Webhook
+app.post("/webhook/", apiController.postWebhook);
+app.get("/webhook/", apiController.getWebhook);
 
 //User
 app.put("/api/user/:loginId", apiController.putUser);
@@ -55,25 +61,6 @@ app.get("/messages/:message_id", apiController.getMessage);
 app.get("/api",  apiController.getApi);
 app.post("/authenticate",   apiController.authenticate);
 
-// ===============
-// REST API LOGIC
-// ===============
-/*
-var quoteApi = restful.model("quote", Quote.schema)  
-.methods(["get", "post", "put", "delete"])
-.register(app, "/api/quote");
-
-var commentApi = restful.model("comment", Comment.schema)  
-.methods(["get", "post", "put", "delete"])
-.register(app, "/api/comment");
-
-var messageApi = restful.model("message", Message.schema)  
-.methods(["get", "post", "put", "delete"])
-.register(app, "/api/message");
-*/
-// ===============
-// DB 
-// ===============
 var dbOpt : any = { 
     useMongoClient: true
 } 

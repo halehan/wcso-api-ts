@@ -17,7 +17,7 @@ var credentials = {
 }
 
 const login = require("facebook-chat-api");
-
+const messageTxt = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911.";
 
 export let listenBot = (fbEmail: string, fbPassword: string) => {
 
@@ -27,7 +27,6 @@ export let listenBot = (fbEmail: string, fbPassword: string) => {
   credentials.email = fbEmail;
   credentials.password = fbPassword;
   
-  const messageTxt = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911.";
   
   // Create simple echo bot
   login({email: fbEmail, password: fbPassword}, (err: any, api: any) => {
@@ -84,7 +83,7 @@ export let listenBot = (fbEmail: string, fbPassword: string) => {
   
         });
      });
-  });
+  });   
   
   };
 
@@ -227,6 +226,7 @@ export let sendMessage = (req: Request, res: Response) => {
   message.createdTime = moment().toDate();
 
   // Create simple echo bot 
+  /*
 login({email: credentials.email, password: credentials.password}, (err, api) => {
   if(err) return console.error(err + 'l');
   
@@ -239,7 +239,7 @@ login({email: credentials.email, password: credentials.password}, (err, api) => 
 
       res.json({ message: 'Just sent Message to ' + req.body.threadId});
  
-});
+});  */
 
 } else{
   res.json({ message: 'Invalid Token' });	
@@ -434,4 +434,92 @@ export let getApi = (req: Request, res: Response) => {
         });  
   
   }
+
+  // Adds support for GET requests to our webhook
+export let getWebhook = (req: Request, res: Response) => { 
+  console.log('Calling getWebhook');
   
+    // Your verify token. Should be a random string.
+let VERIFY_TOKEN = "halehan";
+
+// Parse the query params
+let mode = req.query['hub.mode'];
+console.log('hub.mode = ' + mode);
+let token = req.query['hub.verify_token'];
+console.log('hub.verify_token = ' + token);
+let challenge = req.query['hub.challenge'];
+console.log('hub.challenge = ' + challenge);
+
+// Checks if a token and mode is in the query string of the request
+if (mode && token) {
+
+// Checks the mode and token sent is correct
+if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+  
+  // Responds with the challenge token from the request
+  console.log('WEBHOOK_VERIFIED');
+  res.status(200).send(challenge);
+
+} else {
+  // Responds with '403 Forbidden' if verify tokens do not match
+  res.sendStatus(403);      
+}
+}
+}
+
+  export let postWebhook = (req: Request, res: Response) => {
+    console.log('Calling postWebhook');
+    let body = req.body;
+    
+      // Checks this is an event from a page subscription
+      if (body.object === 'page') {
+        console.log('body.object ===  page');
+        // Iterates over each entry - there may be multiple if batched
+        body.entry.forEach(function(entry) {
+    
+          // Gets the message. entry.messaging is an array, but 
+          // will only ever contain one message, so we get index 0
+          let webhook_event = entry.messaging[0];
+         
+          if (webhook_event.message && webhook_event.message.text) {
+            let text = webhook_event.message.text;
+            let sender = webhook_event.sender.id;
+       //     api.sendMessage(messageTxt + "\n\n Your message:  \n\n " + fbMessage.body, fbMessage.threadID);
+            sendTextMessage(sender, messageTxt + " \n\nYour Message:\n" + text);
+        //    sendTextMessage(sender, "Text received : " + text.substring(0, 1000))
+            console.log("=====================================================================");
+            console.log(webhook_event);
+            console.log("=====================================================================");
+            console.log(webhook_event.message);
+          }
+          
+        });
+    
+        // Returns a '200 OK' response to all requests
+        res.status(200).send('EVENT_RECEIVED');
+      } else {
+        // Returns a '404 Not Found' if event is not from a page subscription
+        res.sendStatus(404);
+      }
+ } 
+  
+  export let sendTextMessage = (sender, text) => {
+    // function sendTextMessage(sender, text) {
+     let messageData = { text:text }
+     let VERIFY_TOKEN = 'EAAHuAlckN1IBAExUeBgFzbVstAZBXVtBpks3eu7CjZAylV3Wmk3xZBS5U6UgkFzanIlMRBQZC1onZCgpLsbOxJe79E2CPZAwMtpmCD78Gp3z18ntv7XNZBqzpZC3hZC0O8QuSqMa7mdtILpjf1T0oMnVABfFJwVr5l6BBJRjdG4tdIHsXOyVo3QTwZABhAjDdTyBEZD';
+     request({
+       url: 'https://graph.facebook.com/v2.11/me/messages',
+       qs: {access_token: VERIFY_TOKEN},
+       method: 'POST',
+       json: {
+         recipient: {id:sender},
+         message: messageData,
+       }
+     }, function(error, response, body) {
+       if (error) {
+         console.log('Error sending message: ', error)
+       } else if (response.body.error) {
+         console.log('Error: ', response.body.error)
+       }
+     })
+   }

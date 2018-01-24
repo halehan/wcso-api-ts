@@ -2,6 +2,10 @@
   "name": "wcso-api-ts",
   "version": "1.0.0",
   "description": "WCSO api using TypeScript",
+  "engines": {
+    "node": "8.5.0",
+    "npm": "5.4.2"
+  },
   "main": "index.js",
   "scripts": {
     "test": "gulp",
