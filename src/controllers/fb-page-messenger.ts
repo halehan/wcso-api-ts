@@ -397,9 +397,7 @@ if (mode === 'subscribe' && token === VERIFY_TOKEN) {
           if (webhook_event.message && webhook_event.message.text) {
             let text = webhook_event.message.text;
             let sender = webhook_event.sender.id;
-       //     api.sendMessage(messageTxt + "\n\n Your message:  \n\n " + fbMessage.body, fbMessage.threadID);
             sendTextMessage(sender, messageTxt + " \n\nYour Message:\n" + text);
-        //    sendTextMessage(sender, "Text received : " + text.substring(0, 1000))
             console.log("=====================================================================");
             console.log(webhook_event);
             console.log("=====================================================================");
