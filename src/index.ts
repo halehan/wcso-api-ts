@@ -16,7 +16,6 @@ import * as facebookChatAPI from "facebook-chat-api";
 import * as apiController from "./controllers/fb-page-messenger";
 
 var SALT_WORK_FACTOR = 10;
-var suck = 1112;
 
 // node-restul doesn't have typings, so we'll have to use plain js require to get it :-(
 // var restful = require('node-restful');  // ===============
