@@ -70,6 +70,10 @@ export let authCheck = function(req: Request, resp: Response) {
   return rtn;
 }
 
+export let get  = (req: Request, res: Response) => {
+  res.json({ message: 'Hello and welcome' });
+}
+
 
 export let closeThread = (req: Request, res: Response) => {
 
