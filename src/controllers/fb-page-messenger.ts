@@ -395,34 +395,34 @@ export let getApi = (req: Request, res: Response) => {
 
   // Adds support for GET requests to our webhook
 export let getWebhook = (req: Request, res: Response) => { 
-  console.log('Calling getWebhook');
+    console.log('Calling getWebhook');
   
-    // Your verify token. Should be a random string.
-let VERIFY_TOKEN = "halehan";
+      // Your verify token. Should be a random string.
+      let VERIFY_TOKEN = "halehan";
 
-// Parse the query params
-let mode = req.query['hub.mode'];
-console.log('hub.mode = ' + mode);
-let token = req.query['hub.verify_token'];
-console.log('hub.verify_token = ' + token);
-let challenge = req.query['hub.challenge'];
-console.log('hub.challenge = ' + challenge);
+      // Parse the query params
+      let mode = req.query['hub.mode'];
+      console.log('hub.mode = ' + mode);
+      let token = req.query['hub.verify_token'];
+      console.log('hub.verify_token = ' + token);
+      let challenge = req.query['hub.challenge'];
+      console.log('hub.challenge = ' + challenge);
 
-// Checks if a token and mode is in the query string of the request
-if (mode && token) {
+      // Checks if a token and mode is in the query string of the request
+      if (mode && token) {
 
-// Checks the mode and token sent is correct
-if (mode === 'subscribe' && token === VERIFY_TOKEN) {
-  
-  // Responds with the challenge token from the request
-  console.log('WEBHOOK_VERIFIED');
-  res.status(200).send(challenge);
+        // Checks the mode and token sent is correct
+        if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+          
+          // Responds with the challenge token from the request
+          console.log('WEBHOOK_VERIFIED');
+          res.status(200).send(challenge);
 
-} else {
-  // Responds with '403 Forbidden' if verify tokens do not match
-  res.sendStatus(403);      
-}
-}
+        } else {
+          // Responds with '403 Forbidden' if verify tokens do not match
+          res.sendStatus(403);      
+        }
+    }
 }
 
   export let postWebhook = (req: Request, res: Response) => {
@@ -438,6 +438,19 @@ if (mode === 'subscribe' && token === VERIFY_TOKEN) {
           // Gets the message. entry.messaging is an array, but 
           // will only ever contain one message, so we get index 0
           let webhook_event = entry.messaging[0];
+          let messageAttachments = webhook_event.message.attachments;
+          if (messageAttachments) {
+            console.log('message Has Attachment');
+            var lat = null;
+            var long = null;
+            if(messageAttachments[0].payload.coordinates)
+            {
+                lat = messageAttachments[0].payload.coordinates.lat;
+                long = messageAttachments[0].payload.coordinates.long;
+            }
+
+            var msg = "lat : " + lat + " ,long : " + long + "\n";
+          }
 
           if (webhook_event.message && webhook_event.message.text) {
             let sender = webhook_event.sender.id;
