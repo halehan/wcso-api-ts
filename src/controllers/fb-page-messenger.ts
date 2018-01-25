@@ -396,20 +396,20 @@ if (mode === 'subscribe' && token === VERIFY_TOKEN) {
          
           if (webhook_event.message && webhook_event.message.text) {
             let sender = webhook_event.sender.id;
-            let recipient = webhook_event.recipient;
+            let recipient = webhook_event.recipient.id;
             let timestamp = webhook_event.timestamp;
             let text = webhook_event.message.text;
             let mid = webhook_event.message.mid;
             let seq = webhook_event.message.seq;
             sendTextMessage(sender, messageTxt + " \n\nYour Message:\n" + text);
-            console.log("=====================================================================");
-            console.log("Sender = " +sender);
-            console.log("recipient = " +recipient);
-            console.log("timestamp = " +timestamp);
-            console.log("text = " +text);
-            console.log("mid = " +mid);
-            console.log("seq = " +seq);
-            console.log("=====================================================================");
+              console.log("=====================================================================");
+              console.log("Sender = " +sender);
+              console.log("recipient = " +recipient);
+              console.log("timestamp = " +timestamp);
+              console.log("text = " +text);
+              console.log("mid = " +mid);
+              console.log("seq = " +seq);
+              console.log("=====================================================================");
           }
           
         });
