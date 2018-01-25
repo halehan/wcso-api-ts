@@ -469,6 +469,7 @@ export let getWebhook = (req: Request, res: Response) => {
                           console.log(messageCheck);
                      //     api.sendMessage(messageTxt + "\n\n Your message:  \n\n " + fbMessage.body, fbMessage.threadID);
                           sendTextMessage(sender, messageTxt + " \n\nYour Message:\n" + text);
+                          sendTextMessage(sender, { text: "Please share your location:", quick_replies: [{ content_type: "location" }] });
         
                       }
                   }
