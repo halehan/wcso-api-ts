@@ -161,6 +161,29 @@ export let sendMessage = (req: Request, res: Response) => {
   message.userId = req.body.userId;
   message.createdTime = moment().toDate();
 
+  sendTextMessage( message.threadId, messageTxt + " \n\nYour Message:\n" +  message.message);
+
+  message.save(function(err) {
+    if (err)
+    console.log(err);
+    });
+
+    // Create simple echo bot 
+  /*
+login({email: credentials.email, password: credentials.password}, (err, api) => {
+  if(err) return console.error(err + 'l');
+  
+          message.save(function(err) {
+              if (err)
+              console.log(err);
+              });
+
+      api.sendMessage(req.body.message, req.body.threadId);
+
+      res.json({ message: 'Just sent Message to ' + req.body.threadId});
+ 
+});  */
+
 } else{
   res.json({ message: 'Invalid Token' });	
 }
@@ -398,9 +421,6 @@ if (mode === 'subscribe' && token === VERIFY_TOKEN) {
           // will only ever contain one message, so we get index 0
           let webhook_event = entry.messaging[0];
 
-         
-
-         
           if (webhook_event.message && webhook_event.message.text) {
             let sender = webhook_event.sender.id;
             let recipient = webhook_event.recipient.id;
