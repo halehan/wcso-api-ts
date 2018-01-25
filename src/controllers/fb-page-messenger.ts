@@ -410,6 +410,21 @@ if (mode === 'subscribe' && token === VERIFY_TOKEN) {
               console.log("mid = " +mid);
               console.log("seq = " +seq);
               console.log("=====================================================================");
+
+              const  message = new Message();
+              const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+              
+              message.messageId = mid;
+              message.threadId = sender;
+              message.message = text;
+              message.threadStatus = "open";
+              message.createdTime = moment().toDate();
+              
+                message.save(function(err: any) {
+                        if (err)
+                          console.log(err);
+                    });
+              
           }
           
         });
