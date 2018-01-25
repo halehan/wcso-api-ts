@@ -170,9 +170,11 @@ export let sendMessage = (req: Request, res: Response) => {
                 console.log(messageCheck);
            //     api.sendMessage(messageTxt + "\n\n Your message:  \n\n " + fbMessage.body, fbMessage.threadID);
                 sendTextMessage(message.threadId, messageTxt + " \n\nYour Message:\n" + message.message);
+                res.json({ message: 'Just sent Message to ' + message.threadId});
 
             } else {
               sendTextMessage(message.threadId,  message.message);
+              res.json({ message: 'Just sent Message to ' + message.threadId});
             }
         }
       });
