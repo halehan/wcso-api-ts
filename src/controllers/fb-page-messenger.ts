@@ -161,7 +161,23 @@ export let sendMessage = (req: Request, res: Response) => {
   message.userId = req.body.userId;
   message.createdTime = moment().toDate();
 
-  sendTextMessage( message.threadId, messageTxt + " \n\nYour Message:\n" +  message.message);
+  Message.find({"threadId": message.threadId}, "messageId message threadId threadStatus", function(err: any, messageCheck: any) {
+    console.log("messageCheck = " + messageCheck);
+        if (err)
+           console.log(err);
+        else {
+            if (messageCheck.length === 0 || messageCheck[messageCheck.length - 1].threadStatus === "closed") {
+                console.log(messageCheck);
+           //     api.sendMessage(messageTxt + "\n\n Your message:  \n\n " + fbMessage.body, fbMessage.threadID);
+                sendTextMessage(message.threadId, messageTxt + " \n\nYour Message:\n" + message.message);
+
+            } else {
+              sendTextMessage(message.threadId,  message.message);
+            }
+        }
+      });
+
+ // sendTextMessage( message.threadId, messageTxt + " \n\nYour Message:\n" +  message.message);
 
   message.save(function(err) {
     if (err)
