@@ -44,7 +44,7 @@ app.use(morgan('dev')); // log requests to the console
 // FB Webhook
 app.post("/webhook/", apiController.postWebhook);
 app.get("/webhook/", apiController.getWebhook);
-app.get("/webhook/", apiController.get);
+app.get("/", apiController.get);
 
 //User
 app.put("/api/user/:loginId", apiController.putUser);
