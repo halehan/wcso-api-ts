@@ -397,6 +397,9 @@ if (mode === 'subscribe' && token === VERIFY_TOKEN) {
           // Gets the message. entry.messaging is an array, but 
           // will only ever contain one message, so we get index 0
           let webhook_event = entry.messaging[0];
+
+         
+
          
           if (webhook_event.message && webhook_event.message.text) {
             let sender = webhook_event.sender.id;
@@ -405,7 +408,21 @@ if (mode === 'subscribe' && token === VERIFY_TOKEN) {
             let text = webhook_event.message.text;
             let mid = webhook_event.message.mid;
             let seq = webhook_event.message.seq;
-            sendTextMessage(sender, messageTxt + " \n\nYour Message:\n" + text);
+
+            Message.find({"threadId": sender}, "messageId message threadId threadStatus", function(err: any, messageCheck: any) {
+              console.log("messageCheck = " + messageCheck);
+                  if (err)
+                     console.log(err);
+                  else {
+                      if (messageCheck.length === 0 || messageCheck[messageCheck.length - 1].threadStatus === "closed") {
+                          console.log(messageCheck);
+                     //     api.sendMessage(messageTxt + "\n\n Your message:  \n\n " + fbMessage.body, fbMessage.threadID);
+                          sendTextMessage(sender, messageTxt + " \n\nYour Message:\n" + text);
+        
+                      }
+                  }
+
+           
               console.log("=====================================================================");
               console.log("Sender = " +sender);
               console.log("recipient = " +recipient);
