@@ -163,17 +163,26 @@ export let sendMessage = (req: Request, res: Response) => {
 
   Message.find({"threadId": message.threadId}, "messageId message threadId threadStatus", function(err: any, messageCheck: any) {
     console.log("messageCheck = " + messageCheck);
+
+    let quickReplyPayload = {'recipient': {'id': message.threadId}, 'message': {'text': "Share your location", quick_replies: [{ content_type: "location" }] }};
+    let messagePayload = {'recipient': {'id': message.threadId}, 'message': {'text': messageTxt + " \n\nYour Message:\n" +  message.message}};
+    
         if (err)
            console.log(err);
         else {
             if (messageCheck.length === 0 || messageCheck[messageCheck.length - 1].threadStatus === "closed") {
+              
+
                 console.log(messageCheck);
            //     api.sendMessage(messageTxt + "\n\n Your message:  \n\n " + fbMessage.body, fbMessage.threadID);
-                sendTextMessage(message.threadId, messageTxt + " \n\nYour Message:\n" + message.message);
+               sendTextMessage(message.threadId, messageTxt + " \n\nYour Message:\n" + message.message);
+          //   sendTextMessage(messagePayload);
                 res.json({ message: 'Just sent Message to ' + message.threadId});
 
             } else {
               sendTextMessage(message.threadId,  message.message);
+              
+         //   sendTextMessage(messagePayload);
               res.json({ message: 'Just sent Message to ' + message.threadId});
             }
         }
@@ -438,21 +447,29 @@ export let getWebhook = (req: Request, res: Response) => {
           // Gets the message. entry.messaging is an array, but 
           // will only ever contain one message, so we get index 0
           let webhook_event = entry.messaging[0];
-          let messageAttachments = webhook_event.message.attachments;
-          if (messageAttachments) {
+          let lat = null;
+          let long = null;
+          
+          if (webhook_event && webhook_event.message.attachments) {
+            let messageAttachments = webhook_event.message.attachments;
             console.log('message Has Attachment');
-            var lat = null;
-            var long = null;
+            
             if(messageAttachments[0].payload.coordinates)
             {
                 lat = messageAttachments[0].payload.coordinates.lat;
                 long = messageAttachments[0].payload.coordinates.long;
+
+                Message.update({threadId: webhook_event.sender.id, threadStatus: "open"}, {lat: lat, long: long}, {multi: true},
+                function(err, message) {
+                console.log("updated MessageThread " + webhook_event.sender.id);
+                });
             }
 
             var msg = "lat : " + lat + " ,long : " + long + "\n";
+            console.log("Location = " + msg);
           }
 
-          if (webhook_event.message && webhook_event.message.text) {
+          if (webhook_event.message && webhook_event.message.text ) {
             let sender = webhook_event.sender.id;
             let recipient = webhook_event.recipient.id;
             let timestamp = webhook_event.timestamp;
@@ -467,9 +484,16 @@ export let getWebhook = (req: Request, res: Response) => {
                   else {
                       if (messageCheck.length === 0 || messageCheck[messageCheck.length - 1].threadStatus === "closed") {
                           console.log(messageCheck);
+                         let quickReplyPayload = {recipient: {'id': sender}, 'message': {'text': "Share your location", 'quick_replies': [{ 'content_type': "location" }] }};
+                         let messagePayload  =   {recipient: {'id': sender}, 'message': {'text': messageTxt + " \n\nYour Message:\n" + text}};
+
+
                      //     api.sendMessage(messageTxt + "\n\n Your message:  \n\n " + fbMessage.body, fbMessage.threadID);
-                          sendTextMessage(sender, messageTxt + " \n\nYour Message:\n" + text);
-                          sendTextMessage(sender, { text: "Please share your location:", quick_replies: [{ content_type: "location" }] });
+                     //     sendTextMessage(sender, messageTxt + " \n\nYour Message:\n" + text);
+                          let txt = 'We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond. \n\n If you would like to share your location that may help us find you in the event that this is applicable.';
+                          sendLocationMessage(sender, txt);
+            
+                      //    sendTextMessage(sender, { text: "Please share your location:", quick_replies: [{ content_type: "location" }] });
         
                       }
                   }
@@ -493,6 +517,13 @@ export let getWebhook = (req: Request, res: Response) => {
               message.message = text;
               message.threadStatus = "open";
               message.createdTime = moment().toDate();
+
+              if(lat){
+                message.lat = lat;
+              }
+              if (long){
+                message.long = long;
+              }
               
                 message.save(function(err: any) {
                         if (err)
@@ -511,18 +542,46 @@ export let getWebhook = (req: Request, res: Response) => {
       }
  } 
   
-  export let sendTextMessage = (sender, text) => {
-    // function sendTextMessage(sender, text) {
+  
+ export let sendTextMessage = (sender, text) => {
      let messageData = { text:text }
-     let VERIFY_TOKEN = 'EAAHuAlckN1IBAExUeBgFzbVstAZBXVtBpks3eu7CjZAylV3Wmk3xZBS5U6UgkFzanIlMRBQZC1onZCgpLsbOxJe79E2CPZAwMtpmCD78Gp3z18ntv7XNZBqzpZC3hZC0O8QuSqMa7mdtILpjf1T0oMnVABfFJwVr5l6BBJRjdG4tdIHsXOyVo3QTwZABhAjDdTyBEZD';
+     let VERIFY_TOKEN = 'EAAHuAlckN1IBAIZBiZB9dfqXpEi9zk0PyzOd7sG7RwHALntFtxxEEFSt8o1CJcrMrW1bGMYkD4LQN0s1LZCDqknBziTvImDLBAsqIYiFEtaEOaALEoNfnFoI0DY986tpsjBPlDQsZAzhXJhTjtIY9IP9A6rwBujHz4jsH7vZBt4NN61BuUZCZBIKtdWV3nFihMZD';
+     request({
+       url: 'https://graph.facebook.com/v2.11/me/messages',
+       qs: {access_token: VERIFY_TOKEN},
+       method: 'POST',
+       json: { 
+       recipient: {id:sender},
+       message: messageData,
+       }
+     }, function(error, response, body) {
+       if (error) {
+         console.log('Error sending message: ', error)
+       } else if (response.body.error) {
+         console.log('Error: ', response.body.error)
+       }
+     })
+   }
+
+   export let sendLocationMessage = (sender, text) => {
+ //    let messageData = { text:text }
+     let VERIFY_TOKEN = 'EAAHuAlckN1IBAIZBiZB9dfqXpEi9zk0PyzOd7sG7RwHALntFtxxEEFSt8o1CJcrMrW1bGMYkD4LQN0s1LZCDqknBziTvImDLBAsqIYiFEtaEOaALEoNfnFoI0DY986tpsjBPlDQsZAzhXJhTjtIY9IP9A6rwBujHz4jsH7vZBt4NN61BuUZCZBIKtdWV3nFihMZD';
      request({
        url: 'https://graph.facebook.com/v2.11/me/messages',
        qs: {access_token: VERIFY_TOKEN},
        method: 'POST',
        json: {
-         recipient: {id:sender},
-         message: messageData,
-       }
+        "recipient":{
+          "id": sender
+        },
+        "message":{
+          "text": text,
+          "quick_replies":[
+            {
+              "content_type":"location"
+            }
+          ]
+        }}
      }, function(error, response, body) {
        if (error) {
          console.log('Error sending message: ', error)
