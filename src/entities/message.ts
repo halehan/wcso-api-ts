@@ -9,6 +9,7 @@ interface IMessage{
     userId:string;
     lat:number;
     long:number;
+    address:string;
 
 }
 
@@ -22,7 +23,8 @@ var messageSchema = new mongoose.Schema({
     messageId: String,
     userId: String,
     lat: Number,
-    long: Number
+    long: Number,
+    address: String
 
 });
 

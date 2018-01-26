@@ -8,6 +8,7 @@ import * as Message from "../entities/message";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import * as moment from "moment";
+import * as GoogleMapsAPI from "googlemaps";
 var SALT_WORK_FACTOR = 10;
 
 var credentials = {
@@ -17,6 +18,15 @@ var credentials = {
 }
 
 const messageTxt = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911.";
+const GOOGLE_API_KEY = 'AIzaSyAGZ6xu-PUDubQLdxQvBl5DeJgXscWEbPo';
+
+var publicConfig = {
+  key: GOOGLE_API_KEY,
+  stagger_time:       1000, // for elevationPath
+  encode_polylines:   false,
+  secure:             true
+};
+var gmAPI = new GoogleMapsAPI(publicConfig);
 
 
     export let verifyToken = function(req: Request, res: Response) {
@@ -438,6 +448,7 @@ export let getWebhook = (req: Request, res: Response) => {
     console.log('Calling postWebhook');
     let body = req.body;
     
+    
       // Checks this is an event from a page subscription
       if (body.object === 'page') {
         console.log('body.object ===  page');
@@ -449,6 +460,9 @@ export let getWebhook = (req: Request, res: Response) => {
           let webhook_event = entry.messaging[0];
           let lat = null;
           let long = null;
+          let address = null;
+
+
           
           if (webhook_event && ( !(webhook_event.message === undefined || webhook_event.message.attachments === undefined)) ){
             let messageAttachments = webhook_event.message.attachments;
@@ -459,14 +473,29 @@ export let getWebhook = (req: Request, res: Response) => {
                 lat = messageAttachments[0].payload.coordinates.lat;
                 long = messageAttachments[0].payload.coordinates.long;
 
-                Message.update({threadId: webhook_event.sender.id, threadStatus: "open"}, {lat: lat, long: long}, {multi: true},
-                function(err, message) {
-                console.log("updated MessageThread " + webhook_event.sender.id);
-                });
+                const reverseGeocodeParams = {
+                  'latlng':        lat + ',' + long,
+                  'language':      'en'
+                };
+                  gmAPI.reverseGeocode(reverseGeocodeParams, function(err, result){
+                    console.log(result);
+                    address = result.results[0].formatted_address;
+                    console.log('address ' + address);
+
+                    Message.update({threadId: webhook_event.sender.id, threadStatus: "open"}, {lat: lat, long: long, address: address}, {multi: true},
+                    function(err, message) {
+                    console.log("updated MessageThread " + webhook_event.sender.id);
+                    });
+
+                  });
+
+            //    address = getAddress(lat, long);
+
+               
+                
             }
 
-            var msg = "lat : " + lat + " ,long : " + long + "\n";
-            console.log("Location = " + msg);
+        
           }
 
           if (webhook_event.message && webhook_event.message.text ) {
@@ -492,6 +521,7 @@ export let getWebhook = (req: Request, res: Response) => {
                      //     sendTextMessage(sender, messageTxt + " \n\nYour Message:\n" + text);
                           let txt = 'We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond. \n\n If you would like to share your location that may help us find you in the event that this is applicable.';
                           sendLocationMessage(sender, txt);
+                      //    console.log(getGoogleMapData(sender));
             
                       //    sendTextMessage(sender, { text: "Please share your location:", quick_replies: [{ content_type: "location" }] });
         
@@ -499,7 +529,6 @@ export let getWebhook = (req: Request, res: Response) => {
                   }
                 });
 
-           
               console.log("=====================================================================");
               console.log("Sender = " +sender);
               console.log("recipient = " +recipient);
@@ -524,6 +553,9 @@ export let getWebhook = (req: Request, res: Response) => {
               if (long){
                 message.long = long;
               }
+              if (address){
+                message.address = address;
+              }
               
                 message.save(function(err: any) {
                         if (err)
@@ -541,6 +573,25 @@ export let getWebhook = (req: Request, res: Response) => {
         res.sendStatus(404);
       }
  } 
+
+ export let getAddress = (lat: number, long: number): string => {
+  let address = null;
+  
+  const reverseGeocodeParams = {
+    'latlng':        lat + ',' + long,
+    'language':      'en'
+  };
+    gmAPI.reverseGeocode(reverseGeocodeParams, function(err, result){
+      console.log(result);
+      address = result.results[0].formatted_address;
+      console.log('address ' + address);
+    });
+  
+    const msg = 'lat : ' +lat + ' long : ' + long + '\n';
+    console.log('Location = ' + msg);
+  
+  return address;
+  }
   
   
  export let sendTextMessage = (sender, text) => {
@@ -590,3 +641,22 @@ export let getWebhook = (req: Request, res: Response) => {
        }
      })
    }
+
+   export let getGoogleMapData = (sender) => {
+           request({
+          url: 'https://graph.facebook.com/v2.11/me/messages',
+          qs: {key: GOOGLE_API_KEY},
+          method: 'GET',
+          json: {
+           "recipient":{
+             "id": sender
+           }
+          }
+        }, function(error, response, body) {
+          if (error) {
+            console.log('Error getting message: ', error)
+          } else if (response.body.error) {
+            console.log('Error: ', response.body.error)
+          }
+        })
+      }
