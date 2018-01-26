@@ -450,7 +450,7 @@ export let getWebhook = (req: Request, res: Response) => {
           let lat = null;
           let long = null;
           
-          if (webhook_event && webhook_event.message.attachments) {
+          if (webhook_event && !(webhook_event.message.attachments === null)) {
             let messageAttachments = webhook_event.message.attachments;
             console.log('message Has Attachment');
             
