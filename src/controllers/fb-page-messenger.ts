@@ -162,7 +162,7 @@ export let sendMessage = (req: Request, res: Response) => {
   message.createdTime = moment().toDate();
 
   Message.find({"threadId": message.threadId}, "messageId message threadId threadStatus", function(err: any, messageCheck: any) {
-    console.log("messageCheck = " + messageCheck);
+   // console.log("messageCheck = " + messageCheck);
 
     let quickReplyPayload = {'recipient': {'id': message.threadId}, 'message': {'text': "Share your location", quick_replies: [{ content_type: "location" }] }};
     let messagePayload = {'recipient': {'id': message.threadId}, 'message': {'text': messageTxt + " \n\nYour Message:\n" +  message.message}};
@@ -450,7 +450,7 @@ export let getWebhook = (req: Request, res: Response) => {
           let lat = null;
           let long = null;
           
-          if (webhook_event && !(webhook_event.message.attachments === null)) {
+          if (webhook_event && ( !(webhook_event.message === undefined || webhook_event.message.attachments === undefined)) ){
             let messageAttachments = webhook_event.message.attachments;
             console.log('message Has Attachment');
             
