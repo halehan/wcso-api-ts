@@ -439,7 +439,8 @@ export let postWebhook = (req: Request, res: Response) => {
         let attachmentUrl = null;
         let saveMessage: boolean = false;
 
-        if (webhook_event && ( !(webhook_event.message === undefined || webhook_event.message.attachments === undefined)) ){
+    //    if (webhook_event && ( !(webhook_event.message === undefined || webhook_event.message.attachments === undefined)) ){
+          if (webhook_event.message && ( !(webhook_event.message.attachments === undefined)) ){
           let messageAttachments = webhook_event.message.attachments;
           console.log('message Has Attachment');
           
@@ -470,64 +471,28 @@ export let postWebhook = (req: Request, res: Response) => {
                   attachmentUrl = messageAttachments[0].payload.url;
                   saveMessage = true;
                   console.log(attachmentUrl);
-
-                  const  message = new Message();
-                  const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
-
-                  let sender = webhook_event.sender.id;
-                  let recipient = webhook_event.recipient.id;
-                  let timestamp = webhook_event.timestamp;
-                  let mid = webhook_event.message.mid;
-                
-                  
-                  message.messageId = mid;
-                  message.threadId = sender;
-                  message.threadStatus = "open";
-                  message.createdTime = moment().toDate();
-                  message.attachmentUrl = attachmentUrl;
-
-                  message.save(function(err: any) {
-                    if (err)
-                      console.log(err);
-                });
-      
-
-               /*   Message.update({messageId: webhook_event.message.mid}, {attachmentUrl: attachmentUrl}, {multi: false},
-                  function(err, message) {
-                  console.log("updated MessageThread " + webhook_event.sender.id);
-                  });
-*/
+    
                 }
 
         }
 
-        if (webhook_event.message && webhook_event.message.text ) {
+        if ((webhook_event.message && webhook_event.message.text) || saveMessage) {
+          let text = webhook_event.message.text;
           let sender = webhook_event.sender.id;
           let recipient = webhook_event.recipient.id;
           let timestamp = webhook_event.timestamp;
-          let text = webhook_event.message.text;
           let mid = webhook_event.message.mid;
           let seq = webhook_event.message.seq;
 
           Message.find({"threadId": sender}, "messageId message threadId threadStatus", function(err: any, msg: any) {
-     //       console.log("msg = " + msg);
                 if (err)
                    console.log(err);
                 else {
                     if (msg.length === 0 || msg[msg.length - 1].threadStatus === "closed") {
-                  //      console.log(msg);
-                  //     let quickReplyPayload = {recipient: {'id': sender}, 'message': {'text': "Share your location", 'quick_replies': [{ 'content_type': "location" }] }};
-                  //     let messagePayload  =   {recipient: {'id': sender}, 'message': {'text': messageTxt + " \n\nYour Message:\n" + text}};
-
-                  /*      let txt = 'We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.' + 
-                        '\n\n If you would like to share your location that may help us find you in the event that this is applicable.\n\n' +
-                        'Your Message: \n' + text;
-                  */
                         let txt = Constants.REPLY_MESSAGE + text;
-
                         sendLocationMessage(sender, txt);
                     }
-                }
+                  }
               });
 
             console.log("=====================================================================");
@@ -544,9 +509,16 @@ export let postWebhook = (req: Request, res: Response) => {
             
             message.messageId = mid;
             message.threadId = sender;
-            message.message = text;
+            if (text) {
+              message.message = text;
+            }
             message.threadStatus = "open";
             message.createdTime = moment().toDate();
+
+            if (saveMessage){
+              message.message = 'Attachment';
+              message.attachmentUrl = attachmentUrl;
+            }
 
             if(lat){
               message.lat = lat;
