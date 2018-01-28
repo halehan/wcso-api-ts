@@ -52,14 +52,10 @@ var gmAPI = new GoogleMapsAPI(publicConfig);
     }
 }
 
-
 export let authCheck = function(req: Request, resp: Response) {
 
- // resp.setHeader('Access-Control-Allow-Origin', '*');
- // resp.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
- // resp.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With,x-access-token');
+ resp.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With,x-access-token');
 
- // resp.setHeader('Cache-Control', 'no-cache');
  console.log(req.headers);
   
   var token = req.body.token || req.query.token || req.headers['x-access-token'] || req.headers['authorization'];
@@ -172,11 +168,7 @@ export let sendMessage = (req: Request, res: Response) => {
   message.createdTime = moment().toDate();
 
   Message.find({"threadId": message.threadId}, "messageId message threadId threadStatus", function(err: any, messageCheck: any) {
-   // console.log("messageCheck = " + messageCheck);
-
-   // let quickReplyPayload = {'recipient': {'id': message.threadId}, 'message': {'text': "Share your location", quick_replies: [{ content_type: "location" }] }};
-  //  let messagePayload = {'recipient': {'id': message.threadId}, 'message': {'text': messageTxt + " \n\nYour Message:\n" +  message.message}};
-    
+   
         if (err)
            console.log(err);
         else {
@@ -204,22 +196,6 @@ export let sendMessage = (req: Request, res: Response) => {
     if (err)
     console.log(err);
     });
-
-    // Create simple echo bot 
-  /*
-login({email: credentials.email, password: credentials.password}, (err, api) => {
-  if(err) return console.error(err + 'l');
-  
-          message.save(function(err) {
-              if (err)
-              console.log(err);
-              });
-
-      api.sendMessage(req.body.message, req.body.threadId);
-
-      res.json({ message: 'Just sent Message to ' + req.body.threadId});
- 
-});  */
 
 } else{
   res.json({ message: 'Invalid Token' });	
@@ -516,7 +492,9 @@ export let getWebhook = (req: Request, res: Response) => {
 
                      //     api.sendMessage(messageTxt + "\n\n Your message:  \n\n " + fbMessage.body, fbMessage.threadID);
                      //     sendTextMessage(sender, messageTxt + " \n\nYour Message:\n" + text);
-                          let txt = 'We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond. \n\n If you would like to share your location that may help us find you in the event that this is applicable.';
+                          let txt = 'We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.' + 
+                          '\n\n If you would like to share your location that may help us find you in the event that this is applicable.\n\n' +
+                          'Your Message: \n' + text;
                           sendLocationMessage(sender, txt);
                       //    console.log(getGoogleMapData(sender));
             
