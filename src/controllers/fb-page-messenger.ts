@@ -642,7 +642,7 @@ export let getWebhook = (req: Request, res: Response) => {
    export let getGoogleMapData = (sender) => {
            request({
           url: 'https://graph.facebook.com/v2.11/me/messages',
-          qs: {key: GOOGLE_API_KEY},
+          qs: {key: Constants.GOOGLE_API_KEY},
           method: 'GET',
           json: {
            "recipient":{
