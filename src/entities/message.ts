@@ -10,6 +10,7 @@ interface IMessage{
     lat:number;
     long:number;
     address:string;
+    attachmentUrl:string;
 
 }
 
@@ -24,7 +25,8 @@ var messageSchema = new mongoose.Schema({
     userId: String,
     lat: Number,
     long: Number,
-    address: String
+    address: String,
+    attachmentUrl: String
 
 });
 

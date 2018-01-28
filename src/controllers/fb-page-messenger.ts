@@ -417,10 +417,173 @@ export let getWebhook = (req: Request, res: Response) => {
     }
 }
 
+/* ============================================================================= */
+
+export let postWebhook = (req: Request, res: Response) => {
+  console.log('Calling postWebhook');
+  let body = req.body;
+  
+  
+    // Checks this is an event from a page subscription
+    if (body.object === 'page') {
+      console.log('body.object ===  page');
+      // Iterates over each entry - there may be multiple if batched
+      body.entry.forEach(function(entry) {
+  
+        // Gets the message. entry.messaging is an array, but 
+        // will only ever contain one message, so we get index 0
+        let webhook_event = entry.messaging[0];
+        let lat = null;
+        let long = null;
+        let address = null;
+        let attachmentUrl = null;
+        let saveMessage: boolean = false;
+
+        if (webhook_event && ( !(webhook_event.message === undefined || webhook_event.message.attachments === undefined)) ){
+          let messageAttachments = webhook_event.message.attachments;
+          console.log('message Has Attachment');
+          
+          if(messageAttachments[0].payload.coordinates)
+          {
+              lat = messageAttachments[0].payload.coordinates.lat;
+              long = messageAttachments[0].payload.coordinates.long;
+
+              const reverseGeocodeParams = {
+                'latlng':        lat + ',' + long,
+                'language':      'en'
+              };
+                gmAPI.reverseGeocode(reverseGeocodeParams, function(err, result){
+                  console.log(result);
+                  address = result.results[0].formatted_address;
+                  console.log('address ' + address);
+
+                  Message.update({threadId: webhook_event.sender.id, threadStatus: "open"}, {lat: lat, long: long, address: address}, {multi: true},
+                  function(err, message) {
+                  console.log("updated MessageThread " + webhook_event.sender.id);
+                  });
+
+                });
+
+          }
+
+                if(messageAttachments[0].payload.url){
+                  attachmentUrl = messageAttachments[0].payload.url;
+                  saveMessage = true;
+                  console.log(attachmentUrl);
+
+                  const  message = new Message();
+                  const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+
+                  let sender = webhook_event.sender.id;
+                  let recipient = webhook_event.recipient.id;
+                  let timestamp = webhook_event.timestamp;
+                  let mid = webhook_event.message.mid;
+                
+                  
+                  message.messageId = mid;
+                  message.threadId = sender;
+                  message.threadStatus = "open";
+                  message.createdTime = moment().toDate();
+                  message.attachmentUrl = attachmentUrl;
+
+                  message.save(function(err: any) {
+                    if (err)
+                      console.log(err);
+                });
+      
+
+               /*   Message.update({messageId: webhook_event.message.mid}, {attachmentUrl: attachmentUrl}, {multi: false},
+                  function(err, message) {
+                  console.log("updated MessageThread " + webhook_event.sender.id);
+                  });
+*/
+                }
+
+        }
+
+        if (webhook_event.message && webhook_event.message.text ) {
+          let sender = webhook_event.sender.id;
+          let recipient = webhook_event.recipient.id;
+          let timestamp = webhook_event.timestamp;
+          let text = webhook_event.message.text;
+          let mid = webhook_event.message.mid;
+          let seq = webhook_event.message.seq;
+
+          Message.find({"threadId": sender}, "messageId message threadId threadStatus", function(err: any, msg: any) {
+     //       console.log("msg = " + msg);
+                if (err)
+                   console.log(err);
+                else {
+                    if (msg.length === 0 || msg[msg.length - 1].threadStatus === "closed") {
+                  //      console.log(msg);
+                  //     let quickReplyPayload = {recipient: {'id': sender}, 'message': {'text': "Share your location", 'quick_replies': [{ 'content_type': "location" }] }};
+                  //     let messagePayload  =   {recipient: {'id': sender}, 'message': {'text': messageTxt + " \n\nYour Message:\n" + text}};
+
+                  /*      let txt = 'We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.' + 
+                        '\n\n If you would like to share your location that may help us find you in the event that this is applicable.\n\n' +
+                        'Your Message: \n' + text;
+                  */
+                        let txt = Constants.REPLY_MESSAGE + text;
+
+                        sendLocationMessage(sender, txt);
+                    }
+                }
+              });
+
+            console.log("=====================================================================");
+            console.log("Sender = " +sender);
+            console.log("recipient = " +recipient);
+            console.log("timestamp = " +timestamp);
+            console.log("text = " +text);
+            console.log("mid = " +mid);
+            console.log("seq = " +seq);
+            console.log("=====================================================================");
+
+            const  message = new Message();
+            const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+            
+            message.messageId = mid;
+            message.threadId = sender;
+            message.message = text;
+            message.threadStatus = "open";
+            message.createdTime = moment().toDate();
+
+            if(lat){
+              message.lat = lat;
+            }
+            if (long){
+              message.long = long;
+            }
+            if (address){
+              message.address = address;
+            }
+            
+              message.save(function(err: any) {
+                      if (err)
+                        console.log(err);
+                  });
+            
+        }
+        
+      });
+  
+      // Returns a '200 OK' response to all requests
+      res.status(200).send('EVENT_RECEIVED');
+    } else {
+      // Returns a '404 Not Found' if event is not from a page subscription
+      res.sendStatus(404);
+    }
+} 
+
+
+
+/* ============================================================================= */
+/*
+
   export let postWebhook = (req: Request, res: Response) => {
     console.log('Calling postWebhook');
     let body = req.body;
-    
+    let saveMessage: boolean = false;
     
       // Checks this is an event from a page subscription
       if (body.object === 'page') {
@@ -434,15 +597,23 @@ export let getWebhook = (req: Request, res: Response) => {
           let lat = null;
           let long = null;
           let address = null;
+          let attachment = null;
 
           if (webhook_event && ( !(webhook_event.message === undefined || webhook_event.message.attachments === undefined)) ){
             let messageAttachments = webhook_event.message.attachments;
             console.log('message Has Attachment');
             
+            if(messageAttachments[0].payload.url){
+              attachment = messageAttachments[0].payload.url;
+              saveMessage = true;
+              console.log(attachment);
+            }
+            
             if(messageAttachments[0].payload.coordinates)
             {
                 lat = messageAttachments[0].payload.coordinates.lat;
                 long = messageAttachments[0].payload.coordinates.long;
+                saveMessage = true;
 
                 const reverseGeocodeParams = {
                   'latlng':        lat + ',' + long,
@@ -453,15 +624,8 @@ export let getWebhook = (req: Request, res: Response) => {
                     address = result.results[0].formatted_address;
                     console.log('address ' + address);
 
-                    Message.update({threadId: webhook_event.sender.id, threadStatus: "open"}, {lat: lat, long: long, address: address}, {multi: true},
-                    function(err, message) {
-                    console.log("updated MessageThread " + webhook_event.sender.id);
-                    });
-
                   });
-
             }
-
           }
 
           if (webhook_event.message && webhook_event.message.text ) {
@@ -472,20 +636,12 @@ export let getWebhook = (req: Request, res: Response) => {
             let mid = webhook_event.message.mid;
             let seq = webhook_event.message.seq;
 
-            Message.find({"threadId": sender}, "messageId message threadId threadStatus", function(err: any, messageCheck: any) {
-              console.log("messageCheck = " + messageCheck);
+            Message.find({"threadId": sender}, "messageId message threadId threadStatus lat long address attachmentUrl", function(err: any, savedMessage: any) {
                   if (err)
                      console.log(err);
                   else {
-                      if (messageCheck.length === 0 || messageCheck[messageCheck.length - 1].threadStatus === "closed") {
-                          console.log(messageCheck);
-                         let quickReplyPayload = {recipient: {'id': sender}, 'message': {'text': "Share your location", 'quick_replies': [{ 'content_type': "location" }] }};
-                         let messagePayload  =   {recipient: {'id': sender}, 'message': {'text': messageTxt + " \n\nYour Message:\n" + text}};
-
-                    /*      let txt = 'We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.' + 
-                          '\n\n If you would like to share your location that may help us find you in the event that this is applicable.\n\n' +
-                          'Your Message: \n' + text;
-                    */
+                      if (savedMessage.length === 0 || savedMessage[savedMessage.length - 1].threadStatus === "closed") {
+                          console.log(savedMessage)
                           let txt = Constants.REPLY_MESSAGE + text;
 
                           sendLocationMessage(sender, txt);
@@ -527,16 +683,16 @@ export let getWebhook = (req: Request, res: Response) => {
                     });
               
           }
-          
-        });
+         
+        });  
     
-        // Returns a '200 OK' response to all requests
+    
         res.status(200).send('EVENT_RECEIVED');
       } else {
         // Returns a '404 Not Found' if event is not from a page subscription
         res.sendStatus(404);
       }
- } 
+ } */
 
  export let getAddress = (lat: number, long: number): string => {
   let address = null;
