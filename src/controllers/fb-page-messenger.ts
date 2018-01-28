@@ -9,6 +9,7 @@ import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import * as moment from "moment";
 import * as GoogleMapsAPI from "googlemaps";
+import { Constants } from '../utils/constants';
 var SALT_WORK_FACTOR = 10;
 
 var credentials = {
@@ -18,10 +19,9 @@ var credentials = {
 }
 
 const messageTxt = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911.";
-const GOOGLE_API_KEY = 'AIzaSyAGZ6xu-PUDubQLdxQvBl5DeJgXscWEbPo';
 
 var publicConfig = {
-  key: GOOGLE_API_KEY,
+  key: Constants.GOOGLE_API_KEY,
   stagger_time:       1000, // for elevationPath
   encode_polylines:   false,
   secure:             true
@@ -174,8 +174,8 @@ export let sendMessage = (req: Request, res: Response) => {
   Message.find({"threadId": message.threadId}, "messageId message threadId threadStatus", function(err: any, messageCheck: any) {
    // console.log("messageCheck = " + messageCheck);
 
-    let quickReplyPayload = {'recipient': {'id': message.threadId}, 'message': {'text': "Share your location", quick_replies: [{ content_type: "location" }] }};
-    let messagePayload = {'recipient': {'id': message.threadId}, 'message': {'text': messageTxt + " \n\nYour Message:\n" +  message.message}};
+   // let quickReplyPayload = {'recipient': {'id': message.threadId}, 'message': {'text': "Share your location", quick_replies: [{ content_type: "location" }] }};
+  //  let messagePayload = {'recipient': {'id': message.threadId}, 'message': {'text': messageTxt + " \n\nYour Message:\n" +  message.message}};
     
         if (err)
            console.log(err);
@@ -416,9 +416,6 @@ export let getApi = (req: Request, res: Response) => {
 export let getWebhook = (req: Request, res: Response) => { 
     console.log('Calling getWebhook');
   
-      // Your verify token. Should be a random string.
-      let VERIFY_TOKEN = "halehan";
-
       // Parse the query params
       let mode = req.query['hub.mode'];
       console.log('hub.mode = ' + mode);
@@ -431,7 +428,7 @@ export let getWebhook = (req: Request, res: Response) => {
       if (mode && token) {
 
         // Checks the mode and token sent is correct
-        if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+        if (mode === 'subscribe' && token === Constants.FACEBOOK_VERIFY_TOKEN) {
           
           // Responds with the challenge token from the request
           console.log('WEBHOOK_VERIFIED');

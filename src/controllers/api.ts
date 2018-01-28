@@ -8,6 +8,7 @@ import * as Message from "../entities/message";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import * as moment from "moment";
+import { Constants } from '../utils/constants';
 var SALT_WORK_FACTOR = 10;
 
 var credentials = {
@@ -454,7 +455,7 @@ console.log('hub.challenge = ' + challenge);
 if (mode && token) {
 
 // Checks the mode and token sent is correct
-if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+if (mode === 'subscribe' && token === Constants.FACEBOOK_VERIFY_TOKEN) {
   
   // Responds with the challenge token from the request
   console.log('WEBHOOK_VERIFIED');
