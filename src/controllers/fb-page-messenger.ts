@@ -435,8 +435,6 @@ export let getWebhook = (req: Request, res: Response) => {
           let long = null;
           let address = null;
 
-
-          
           if (webhook_event && ( !(webhook_event.message === undefined || webhook_event.message.attachments === undefined)) ){
             let messageAttachments = webhook_event.message.attachments;
             console.log('message Has Attachment');
@@ -462,13 +460,8 @@ export let getWebhook = (req: Request, res: Response) => {
 
                   });
 
-            //    address = getAddress(lat, long);
-
-               
-                
             }
 
-        
           }
 
           if (webhook_event.message && webhook_event.message.text ) {
@@ -489,17 +482,13 @@ export let getWebhook = (req: Request, res: Response) => {
                          let quickReplyPayload = {recipient: {'id': sender}, 'message': {'text': "Share your location", 'quick_replies': [{ 'content_type': "location" }] }};
                          let messagePayload  =   {recipient: {'id': sender}, 'message': {'text': messageTxt + " \n\nYour Message:\n" + text}};
 
-
-                     //     api.sendMessage(messageTxt + "\n\n Your message:  \n\n " + fbMessage.body, fbMessage.threadID);
-                     //     sendTextMessage(sender, messageTxt + " \n\nYour Message:\n" + text);
-                          let txt = 'We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.' + 
+                    /*      let txt = 'We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.' + 
                           '\n\n If you would like to share your location that may help us find you in the event that this is applicable.\n\n' +
                           'Your Message: \n' + text;
+                    */
+                          let txt = Constants.REPLY_MESSAGE + text;
+
                           sendLocationMessage(sender, txt);
-                      //    console.log(getGoogleMapData(sender));
-            
-                      //    sendTextMessage(sender, { text: "Please share your location:", quick_replies: [{ content_type: "location" }] });
-        
                       }
                   }
                 });
