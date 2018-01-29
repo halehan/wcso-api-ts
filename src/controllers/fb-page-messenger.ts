@@ -485,6 +485,7 @@ export let postWebhook = (req: Request, res: Response) => {
           let timestamp = webhook_event.timestamp;
           let mid = webhook_event.message.mid;
           let seq = webhook_event.message.seq;
+          console.log(webhook_event.message.text);
 
           Message.find({"threadId": sender}, "messageId message threadId threadStatus", function(err: any, msg: any) {
                 if (err)
