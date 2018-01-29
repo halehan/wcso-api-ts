@@ -457,6 +457,7 @@ export let postWebhook = (req: Request, res: Response) => {
                   console.log(result);
                   address = result.results[0].formatted_address;
                   console.log('address ' + address);
+                  console.log(webhook_event.message);
 
                   Message.update({messageId: webhook_event.message.messageId, threadStatus: "open"}, {lat: lat, long: long, address: address}, {multi: true},
                   function(err, message) {
