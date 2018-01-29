@@ -115,7 +115,6 @@ export let getMessage = (req: Request, res: Response) => {
   
   }
 
-
 export let getMessages = (req: Request, res: Response) => {
 
   var validToken = authCheck(req,res);
@@ -459,7 +458,7 @@ export let postWebhook = (req: Request, res: Response) => {
                   address = result.results[0].formatted_address;
                   console.log('address ' + address);
 
-                  Message.update({threadId: webhook_event.sender.id, threadStatus: "open"}, {lat: lat, long: long, address: address}, {multi: true},
+                  Message.update({messageId: webhook_event.message.messageId, threadStatus: "open"}, {lat: lat, long: long, address: address}, {multi: true},
                   function(err, message) {
                   console.log("updated MessageThread " + webhook_event.sender.id);
                   });
@@ -489,7 +488,7 @@ export let postWebhook = (req: Request, res: Response) => {
                 if (err)
                    console.log(err);
                 else {
-                    if (msg.length === 0 || msg[msg.length - 1].threadStatus === "closed" || equalsIgnoreCase(webhook_event.message.text, "#LOCATION")) {
+                    if (msg.length === 0 || msg[msg.length - 1].threadStatus === "closed" || equalsIgnoreCase(webhook_event.message.text.trim(), "#LOCATION")) {
                         let txt = Constants.REPLY_MESSAGE + text;
                         sendLocationMessage(sender, txt);
                     }
