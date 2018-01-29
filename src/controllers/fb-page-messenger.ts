@@ -488,7 +488,7 @@ export let postWebhook = (req: Request, res: Response) => {
                 if (err)
                    console.log(err);
                 else {
-                    if (msg.length === 0 || msg[msg.length - 1].threadStatus === "closed") {
+                    if (msg.length === 0 || msg[msg.length - 1].threadStatus === "closed" || webhook_event.message.text === '#LOCATION') {
                         let txt = Constants.REPLY_MESSAGE + text;
                         sendLocationMessage(sender, txt);
                     }
