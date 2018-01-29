@@ -487,16 +487,28 @@ export let postWebhook = (req: Request, res: Response) => {
           let seq = webhook_event.message.seq;
           console.log(webhook_event.message.text);
 
-          Message.find({"threadId": sender}, "messageId message threadId threadStatus", function(err: any, msg: any) {
+          Message.find({
+            threadId: sender// Search Filters
+              },
+              ['messageId','message', 'threadId','threadStatus'], // Columns to Return
+              {
+                skip:0, // Starting Row
+                limit:100, // Ending Row
+               sort:{
+                createdTime: -1 //Sort by Date Added DESC
+            }
+        },
+            function(err: any, msg: any){
                 if (err)
-                   console.log(err);
-                else {
-                    if (msg.length === 0 || msg[msg.length - 1].threadStatus === "closed" || equalsIgnoreCase(webhook_event.message.text, "#LOCATION")) {
-                        let txt = Constants.REPLY_MESSAGE + text;
-                        sendLocationMessage(sender, txt);
-                    }
-                  }
-              });
+                console.log(err);
+                  else {
+                  console.log(msg);
+                  if (msg.length === 0  || ( msg.length > 0 && msg[0].threadStatus === 'closed') || equalsIgnoreCase(webhook_event.message.text, '#LOCATION')) {
+                    let txt = Constants.REPLY_MESSAGE + text;
+                    sendLocationMessage(sender, txt);
+                }
+              }
+        })
 
             console.log("=====================================================================");
             console.log("Sender = " +sender);
