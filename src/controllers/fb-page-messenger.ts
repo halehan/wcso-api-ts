@@ -460,7 +460,7 @@ export let postWebhook = (req: Request, res: Response) => {
                   console.log(webhook_event.message);
                   console.log(webhook_event.message.mid);
 
-                  Message.update({messageId: webhook_event.message.messageId, threadStatus: "open"}, {lat: lat, long: long, address: address}, {multi: true},
+                  Message.update({messageId:  webhook_event.message.mid, threadStatus: "open"}, {lat: lat, long: long, address: address}, {multi: true},
                   function(err, message) {
                   console.log("updated MessageThread " + webhook_event.sender.id);
                   });
