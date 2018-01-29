@@ -10,6 +10,7 @@ import * as jwt from "jsonwebtoken";
 import * as moment from "moment";
 import * as GoogleMapsAPI from "googlemaps";
 import { Constants } from '../utils/constants';
+import equalsIgnoreCase from "@composite/equals-ignore-case";
 var SALT_WORK_FACTOR = 10;
 
 var credentials = {
@@ -488,7 +489,7 @@ export let postWebhook = (req: Request, res: Response) => {
                 if (err)
                    console.log(err);
                 else {
-                    if (msg.length === 0 || msg[msg.length - 1].threadStatus === "closed" || webhook_event.message.text === '#LOCATION') {
+                    if (msg.length === 0 || msg[msg.length - 1].threadStatus === "closed" || equalsIgnoreCase(webhook_event.message.text, "#LOCATION")) {
                         let txt = Constants.REPLY_MESSAGE + text;
                         sendLocationMessage(sender, txt);
                     }

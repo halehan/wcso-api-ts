@@ -19,6 +19,7 @@
   "author": "Thomas D. Williams",
   "license": "ISC",
   "dependencies": {
+    "@composite/equals-ignore-case": "^1.0.0",
     "@types/moment": "^2.13.0",
     "async": "^2.5.0",
     "bcrypt": "^1.0.3",
