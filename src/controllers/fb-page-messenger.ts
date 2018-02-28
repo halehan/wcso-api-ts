@@ -420,7 +420,7 @@ export let getWebhook = (req: Request, res: Response) => {
 /* ============================================================================= */
 
 export let postWebhook = (req: Request, res: Response) => {
-  console.log('Calling postWebhook');
+  console.log('Calling postWebhook...');
   let body = req.body;
   
   
