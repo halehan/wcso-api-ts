@@ -298,6 +298,7 @@ export let authenticate = (req: Request, res: Response) => {
       res.json({ success: false, message: 'Authentication failed. User not found.' });
      
     } else if (user) {
+      console.log('found user');
       console.log(req.body.password);
       console.log(bcrypt.compareSync(req.body.password, user.password)); // true
       // check if password matches
