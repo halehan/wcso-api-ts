@@ -294,15 +294,17 @@ export let authenticate = (req: Request, res: Response) => {
     if (err) throw err;
 
     if (!user) {
-      res.json({ success: false, message: 'Authentication failed. User not found.' });
       this.putActivity(this.loginId, 'Authentication failed. User not found.');
+      res.json({ success: false, message: 'Authentication failed. User not found.' });
+     
     } else if (user) {
       console.log(req.body.password);
       console.log(bcrypt.compareSync(req.body.password, user.password)); // true
       // check if password matches
       if (!bcrypt.compareSync(req.body.password, user.password)) {
-        res.json({ success: false, message: 'Authentication failed. Wrong password.' });
         this.putActivity(this.loginId, 'Authentication failed. Wrong password.');
+        res.json({ success: false, message: 'Authentication failed. Wrong password.' });
+        
       } else {
         this.putActivity(this.loginId, 'Success');
 
