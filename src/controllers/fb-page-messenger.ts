@@ -707,12 +707,12 @@ export let postWebhook = (req: Request, res: Response) => {
   return address;
   }
 
-  export let putActivity = (logIn: string, message: string) => {
+  export let putActivity = (login, message) => {
     console.log('IN THE putActivity method');
     var activity = new Activity();
     var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
     activity.createdTime = moment().toDate();
-    activity.loginId = logIn;
+    activity.loginId = login;
     activity.message = message;
 
     activity.save(function(err) {
