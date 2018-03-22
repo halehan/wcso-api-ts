@@ -707,23 +707,6 @@ export let postWebhook = (req: Request, res: Response) => {
   return address;
   }
 
-  export let putActivity = (login, message) => {
-    console.log('IN THE putActivity method');
-    var activity = new Activity();
-    var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
-    activity.createdTime = moment().toDate();
-    activity.loginId = login;
-    activity.message = message;
-
-    activity.save(function(err) {
-      if (err)
-       console.log(err);
-      else 
-       console.log('Activity Created ');
-    });
-
-  }
-  
   
  export let sendTextMessage = (sender, text) => {
      let messageData = { text:text }
@@ -791,3 +774,23 @@ export let postWebhook = (req: Request, res: Response) => {
           }
         })
       }
+
+      export let putActivity = (login, message) => {
+        console.log('IN THE putActivity method');
+        console.log('Login = ' + login + " message = " + message);
+      /*  var activity = new Activity();
+        var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
+        activity.createdTime = moment().toDate();
+        activity.loginId = login;
+        activity.message = message;
+    
+        activity.save(function(err) {
+          if (err)
+           console.log(err);
+          else 
+           console.log('Activity Created ');
+        });  */
+    
+      }
+    
+      
