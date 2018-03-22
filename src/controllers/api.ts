@@ -295,12 +295,14 @@ export let authenticate = (req: Request, res: Response) => {
 
     if (!user) {
       res.json({ success: false, message: 'Authentication failed. User not found.' });
+      this.putActivity(this.loginId, 'Authentication failed. User not found.');
     } else if (user) {
       console.log(req.body.password);
       console.log(bcrypt.compareSync(req.body.password, user.password)); // true
       // check if password matches
       if (!bcrypt.compareSync(req.body.password, user.password)) {
         res.json({ success: false, message: 'Authentication failed. Wrong password.' });
+        this.putActivity(this.loginId, 'Authentication failed. Wrong password.');
       } else {
 
       // if user is found and password is right
@@ -319,6 +321,8 @@ export let authenticate = (req: Request, res: Response) => {
           message: 'Enjoy your token!',
           token: token
         });
+
+        this.putActivity(this.loginId, 'Success');
       }   
 
     }
@@ -388,12 +392,13 @@ export let getApi = (req: Request, res: Response) => {
       
       };
 
-  export let putActivity = (logIn: string) => {
+  export let putActivity = (logIn: string, message: string) => {
 
     var activity = new Activity();
     var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
     activity.createdTime = moment().toDate();
     activity.loginId = logIn;
+    activity.message = message;
 
     activity.save(function(err) {
       if (err)
