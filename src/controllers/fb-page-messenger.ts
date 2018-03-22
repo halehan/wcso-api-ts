@@ -257,7 +257,7 @@ export let authenticate = (req: Request, res: Response) => {
         res.json({ success: false, message: 'Authentication failed. Wrong password.' });
       } else {
 
-        this.putActivity(this.loginId, 'Success');
+        this.putActivity(req.body.loginId, 'Success');
 
       // if user is found and password is right
       // create a token with only our given payload
