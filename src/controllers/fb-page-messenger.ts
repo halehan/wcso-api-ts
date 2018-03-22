@@ -247,7 +247,7 @@ export let authenticate = (req: Request, res: Response) => {
     if (err) throw err;
 
     if (!user) {
-      this.putActivity('TEST', 'Authentication failed. User not found.');
+   //   this.putActivity('TEST', 'Authentication failed. User not found.');
       res.json({ success: false, message: 'Authentication failed. User not found.' });
     } else if (user) {
       console.log(req.body.password);
@@ -257,7 +257,7 @@ export let authenticate = (req: Request, res: Response) => {
         res.json({ success: false, message: 'Authentication failed. Wrong password.' });
       } else {
 
-        this.putActivity('Test', 'Success');
+ //       this.putActivity('Test', 'Success');
 
       // if user is found and password is right
       // create a token with only our given payload
