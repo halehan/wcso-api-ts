@@ -247,17 +247,18 @@ export let authenticate = (req: Request, res: Response) => {
     if (err) throw err;
 
     if (!user) {
-   //   this.putActivity('TEST', 'Authentication failed. User not found.');
+      putActivity(req.body.loginId, 'FAIL', 'Authentication failed. User not found.');
       res.json({ success: false, message: 'Authentication failed. User not found.' });
     } else if (user) {
-      console.log(req.body.password);
-      console.log(bcrypt.compareSync(req.body.password, user.password)); // true
+  //    console.log(req.body.password);
+  //    console.log(bcrypt.compareSync(req.body.password, user.password)); // true
       // check if password matches
       if (!bcrypt.compareSync(req.body.password, user.password)) {
+        putActivity(req.body.loginId, 'FAIL', 'Authentication failed. Wrong password.');
         res.json({ success: false, message: 'Authentication failed. Wrong password.' });
       } else {
 
- //       this.putActivity('Test', 'Success');
+        putActivity(req.body.loginId, 'SUCCESS', 'Authentication successful.' );
 
       // if user is found and password is right
       // create a token with only our given payload
@@ -775,21 +776,22 @@ export let postWebhook = (req: Request, res: Response) => {
         })
       }
 
-      export let putActivity = (login, message) => {
+      export let putActivity = (login, message, messageText) => {
         console.log('IN THE putActivity method');
         console.log('Login = ' + login + " message = " + message);
-      /*  var activity = new Activity();
+      var activity = new Activity();
         var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
         activity.createdTime = moment().toDate();
         activity.loginId = login;
         activity.message = message;
+        activity.messageTxt = messageText;
     
         activity.save(function(err) {
           if (err)
            console.log(err);
           else 
            console.log('Activity Created ');
-        });  */
+        });  
     
       }
     
