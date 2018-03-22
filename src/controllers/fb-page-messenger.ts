@@ -545,6 +545,8 @@ export let postWebhook = (req: Request, res: Response) => {
             if (address){
               message.address = address;
             }
+
+            message.from = 'Messenger';
             
               message.save(function(err: any) {
                       if (err)
