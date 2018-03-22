@@ -118,11 +118,11 @@ export let getMessage = (req: Request, res: Response) => {
 export let getMessages = (req: Request, res: Response) => {
 
   var validToken = authCheck(req,res);
-//  var validToken = 'success';
+
   if( validToken == 'success') {
 
     Message.find({threadStatus:"open"}).sort("-createdTime").exec(function(err,messages){
-      if (err){ 
+      if (err){
         res.send(err);
       }
         res.json(messages);

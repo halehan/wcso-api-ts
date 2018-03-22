@@ -5,6 +5,7 @@ import * as request from "request";
 import { Response, Request, NextFunction } from "express";
 import * as User from "../entities/user";
 import * as Message from "../entities/message";
+import * as Activity from "../entities/activity";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import * as moment from "moment";
@@ -387,6 +388,21 @@ export let getApi = (req: Request, res: Response) => {
       
       };
 
+  export let putActivity = (logIn: string) => {
+
+    var activity = new Activity();
+    var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
+    activity.createdTime = moment().toDate();
+    activity.loginId = logIn;
+
+    activity.save(function(err) {
+      if (err)
+       console.log(err);
+      else 
+       console.log('Activity Created ');
+    });
+
+  }
 
   export let putUser = (req: Request, res: Response) => {
 
