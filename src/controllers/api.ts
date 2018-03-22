@@ -304,6 +304,7 @@ export let authenticate = (req: Request, res: Response) => {
         res.json({ success: false, message: 'Authentication failed. Wrong password.' });
         this.putActivity(this.loginId, 'Authentication failed. Wrong password.');
       } else {
+        this.putActivity(this.loginId, 'Success');
 
       // if user is found and password is right
       // create a token with only our given payload
@@ -322,7 +323,7 @@ export let authenticate = (req: Request, res: Response) => {
           token: token
         });
 
-        this.putActivity(this.loginId, 'Success');
+       
       }   
 
     }
