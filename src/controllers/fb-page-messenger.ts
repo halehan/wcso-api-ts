@@ -166,6 +166,7 @@ export let sendMessage = (req: Request, res: Response) => {
   message.threadStatus = req.body.threadStatus;
   message.userId = req.body.userId;
   message.createdTime = moment().toDate();
+  message.from = 'WCSO';
 
   Message.find({"threadId": message.threadId}, "messageId message threadId threadStatus", function(err: any, messageCheck: any) {
    
