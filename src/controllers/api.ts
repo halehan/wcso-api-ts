@@ -398,23 +398,7 @@ export let getApi = (req: Request, res: Response) => {
       
       };
 
-  export let putActivity = (logIn: string, message: string) => {
-    console.log('IN THE putActivity method');
-    var activity = new Activity();
-    var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
-    activity.createdTime = moment().toDate();
-    activity.loginId = logIn;
-    activity.message = message;
-
-    activity.save(function(err) {
-      if (err)
-       console.log(err);
-      else 
-       console.log('Activity Created ');
-    });
-
-  }
-
+  
   export let putUser = (req: Request, res: Response) => {
 
     User.findOne({

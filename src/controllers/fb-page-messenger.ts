@@ -5,6 +5,7 @@ import * as request from "request";
 import { Response, Request, NextFunction } from "express";
 import * as User from "../entities/user";
 import * as Message from "../entities/message";
+import * as Activity from "../entities/activity";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import * as moment from "moment";
@@ -246,6 +247,7 @@ export let authenticate = (req: Request, res: Response) => {
     if (err) throw err;
 
     if (!user) {
+      this.putActivity(this.loginId, 'Authentication failed. User not found.');
       res.json({ success: false, message: 'Authentication failed. User not found.' });
     } else if (user) {
       console.log(req.body.password);
@@ -254,6 +256,8 @@ export let authenticate = (req: Request, res: Response) => {
       if (!bcrypt.compareSync(req.body.password, user.password)) {
         res.json({ success: false, message: 'Authentication failed. Wrong password.' });
       } else {
+
+        this.putActivity(this.loginId, 'Success');
 
       // if user is found and password is right
       // create a token with only our given payload
@@ -701,6 +705,23 @@ export let postWebhook = (req: Request, res: Response) => {
     console.log('Location = ' + msg);
   
   return address;
+  }
+
+  export let putActivity = (logIn: string, message: string) => {
+    console.log('IN THE putActivity method');
+    var activity = new Activity();
+    var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
+    activity.createdTime = moment().toDate();
+    activity.loginId = logIn;
+    activity.message = message;
+
+    activity.save(function(err) {
+      if (err)
+       console.log(err);
+      else 
+       console.log('Activity Created ');
+    });
+
   }
   
   
