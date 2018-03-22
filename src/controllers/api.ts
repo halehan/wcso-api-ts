@@ -302,6 +302,7 @@ export let authenticate = (req: Request, res: Response) => {
       console.log(bcrypt.compareSync(req.body.password, user.password)); // true
       // check if password matches
       if (!bcrypt.compareSync(req.body.password, user.password)) {
+        console.log('Authentication failed. Wrong password.');
         this.putActivity(this.loginId, 'Authentication failed. Wrong password.');
         res.json({ success: false, message: 'Authentication failed. Wrong password.' });
         
@@ -320,11 +321,11 @@ export let authenticate = (req: Request, res: Response) => {
         });
 
         // return the information including token as JSON
-            res.json({
-          success: true,
-          message: 'Enjoy your token!',
-          token: token
-        });
+          res.json({
+            success: true,
+            message: 'Enjoy your token!',
+            token: token
+          });
 
        
       }   
