@@ -306,6 +306,7 @@ export let authenticate = (req: Request, res: Response) => {
         res.json({ success: false, message: 'Authentication failed. Wrong password.' });
         
       } else {
+        console.log('Prior to calling putActivity');
         this.putActivity(this.loginId, 'Success');
 
       // if user is found and password is right
