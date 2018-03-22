@@ -164,7 +164,7 @@ export let sendMessage = (req: Request, res: Response) => {
   message.messageId = req.body.messageId;
   message.threadId = req.body.threadId;
   message.threadStatus = req.body.threadStatus;
-  message.userId = req.body.userId;
+ // message.userId = req.body.userId;
   message.createdTime = moment().toDate();
   message.from = 'WCSO';
 
@@ -546,7 +546,7 @@ export let postWebhook = (req: Request, res: Response) => {
               message.address = address;
             }
 
-            message.from = 'Messenger';
+            message.from = 'FaceBook';
             
               message.save(function(err: any) {
                       if (err)
