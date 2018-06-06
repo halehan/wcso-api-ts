@@ -6,6 +6,7 @@ import { Response, Request, NextFunction } from "express";
 import * as User from "../entities/user";
 import * as Message from "../entities/message";
 import * as Activity from "../entities/activity";
+import * as Content from "../entities/content";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import * as moment from "moment";
@@ -151,6 +152,41 @@ export let getUsers = (req: Request, res: Response) => {
       //  res.json({ message: 'Invalid Token' });	
       res.json({ testUser });	
   }
+
+}
+
+export let getContents = (req: Request, res: Response) => {
+
+  if( authCheck(req, res) == 'success') {
+
+   Content.find(function(err, contents) {
+      if (err){
+        res.send(err);
+      }
+   //     res.json(users);
+        res.send(contents);
+    });
+      } else{
+        let testUser = { username: 'test', password: 'test', firstName: 'Test', lastName: 'User' };
+      //  res.json({ message: 'Invalid Token' });	
+      res.json({ testUser });	
+  } 
+
+}
+
+export let getContent = (req: Request, res: Response) => {
+  
+ var validToken = authCheck(req, res);
+  if( validToken == 'success') {
+
+  Content.find({'contentKey': req.params.content_id}, 'contentKey content', function(err, message) {
+      if (err)
+        res.send(err);
+      res.json(message);
+    });  
+  } else {
+    res.json({ message: 'Invalid Token' });	
+  } 
 
 }
 

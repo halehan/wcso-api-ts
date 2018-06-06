@@ -20,13 +20,14 @@ var SALT_WORK_FACTOR = 10;
 // node-restul doesn't have typings, so we'll have to use plain js require to get it :-(
 // var restful = require('node-restful');  // ===============
 
-console.log(process.env.TEST);
+// console.log(process.env.TEST);
 // apiController.listenBot(process.env.FB_EMAIL, process.env.FB_PASSWORD);
 
 // COMMON VARIABLES
 // ===============
 let appPort =  (process.env.PORT || 3000);  
 let connectionString: string = process.env.MONGODB_URI;  
+console.log(appPort + '  ' + connectionString);
 // let connectionString: string = 'mongodb://wcso:wcso@ds161164.mlab.com:61164/wcso';
 
 // ===============
@@ -60,6 +61,10 @@ app.get("/messages/:message_id", apiController.getMessage);
 
 app.get("/api",  apiController.getApi);
 app.post("/authenticate",   apiController.authenticate);
+
+//content
+app.get("/api/content/", apiController.getContents);
+app.get("/api/content/:content_id",  apiController.getContent);
 
 var dbOpt : any = { 
     useMongoClient: true
