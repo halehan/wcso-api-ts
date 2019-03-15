@@ -37,7 +37,7 @@ var app = express();
 app.use(cors());
 app.use(bodyParser.json());  
 app.use(bodyParser.urlencoded({ extended: true}));
-const login = require("facebook-chat-api");
+// const login = require("facebook-chat-api");
 
 app.set("port", appPort);
 app.use(morgan('dev')); // log requests to the console  
