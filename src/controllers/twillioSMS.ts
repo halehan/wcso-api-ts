@@ -15,6 +15,7 @@ import { Constants } from '../utils/constants';
 import equalsIgnoreCase from "@composite/equals-ignore-case";
 // import * as twilio from "twilio";
 import { resolve } from "path";
+import { fromCompare } from "fp-ts/lib/Ord";
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
 var SALT_WORK_FACTOR = 10;
 
@@ -69,9 +70,24 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
     const twiml = new MessagingResponse();
 
   twiml.message('The Robots are coming! Head for the hills!');
+  console.log(req.params);
 
   resp.writeHead(200, {'Content-Type': 'text/xml'});
   resp.end(twiml.toString());
+
+}
+
+export let getSMSMessage = function(req: Request, resp: Response) {
+
+const client = require('twilio')(accountSid, authToken);
+
+client.messages(req.params.messageId)
+      .fetch()
+      .then(function (message) {
+
+        resp.json({ message:  message });	
+
+      });  
 
 }
 
@@ -84,11 +100,38 @@ export let sendSMSMessage = function(req: Request, resp: Response) {
         body: req.body.msg,
         to: req.body.to,  // Text this number
         from: twilioNumber // From a valid Twilio number
-    }).then(function(results) {
+    }).then(function(results) { 
+
+      const  message = new Message();
+      const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+                
+                message.messageId = results.sid;
+                message.threadId  = results.sid;
+                message.date_sent =  results.date_sent;
+                message.from = results.from;
+                message.to = results.to;
+                message.status = results.status;
+                message.direction = results.direction;
+                message.messaging_service_sid = results.messaging_service_sid;
+               
+           //     message.messageId = '123123123';
+            //    message.threadId  = '234234234';
+                message.message = req.body.msg;
+
+                message.source = 'SMS';
+                message.threadStatus = 'open';
+                message.createdTime = moment().toDate();
+            
+                message.save(function(err: any) {
+                        if (err)
+                          console.log(err);
+                    });
+    
             
   resp.json({ sid:  results.sid });	
   });
 
+ 
 }
 
 export let authCheck = function(req: Request, resp: Response) {

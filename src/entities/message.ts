@@ -4,7 +4,7 @@ interface IMessage{
     createdTime:Date;
     threadStatus:string;    
     message:string;
-    threadId:number;
+    threadId:string;
     messageId:string;
     userId:string;
     lat:number;
@@ -12,6 +12,12 @@ interface IMessage{
     address:string;
     attachmentUrl:string;
     from:string;
+    source:string;
+    date_sent: Date,
+    to: string,
+    status: string,
+    direction: string,
+    messaging_service_sid: string
 
 }
 
@@ -21,14 +27,20 @@ var messageSchema = new mongoose.Schema({
     createdTime: Date,
     threadStatus: String,
     message: String,
-    threadId: Number,
+    threadId: String,
     messageId: String,
     userId: String,
     lat: Number,
     long: Number,
     address: String,
     attachmentUrl: String,
-    from: String
+    from: String,
+    source: String,
+    date_sent: Date,
+    to: String,
+    status: String,
+    direction: String,
+    messaging_service_sid: String
 
 });
 
