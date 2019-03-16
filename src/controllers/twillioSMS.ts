@@ -70,7 +70,7 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
     const twiml = new MessagingResponse();
 
   twiml.message('The Robots are coming! Head for the hills!');
-  console.log(req.params);
+  console.log('Parms = ' + req.params);
 
   resp.writeHead(200, {'Content-Type': 'text/xml'});
   resp.end(twiml.toString());
