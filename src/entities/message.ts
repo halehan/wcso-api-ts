@@ -17,7 +17,11 @@ interface IMessage{
     to: string,
     status: string,
     direction: string,
-    messaging_service_sid: string
+    messaging_service_sid: string,
+    fromCity: string,
+    fromZip: string,
+    toCity: string
+    
 
 }
 
@@ -40,7 +44,10 @@ var messageSchema = new mongoose.Schema({
     to: String,
     status: String,
     direction: String,
-    messaging_service_sid: String
+    messaging_service_sid: String,
+    fromCity: String,
+    fromZip: String,
+    toCity: String
 
 });
 

@@ -65,15 +65,71 @@ var gmAPI = new GoogleMapsAPI(publicConfig);
     }
 }
 
+export let getSMSMessages = (req: Request, res: Response) => {
+
+  var validToken = authCheck(req,res);
+
+  if( validToken == 'success') { 
+
+    Message.find({threadStatus:"open", source:"SMS"}).sort("-createdTime").exec(function(err,messages){
+      if (err){
+        res.send(err);
+      }
+        res.json(messages);
+    });
+
+  } else {
+    res.json({ message: 'Invalid Token' });	
+  }  
+
+}
+
 
 export let listenSMSMessage = function(req: Request, resp: Response) {
     const twiml = new MessagingResponse();
 
-  twiml.message('The Robots are coming! Head for the hills!');
-  console.log('Parms = ' + req.params);
+  twiml.message('Your message has been logged and someone will respond shortly. ');
+  console.log('message  = ' + req.body.Body);
+  console.log('messageId  = ' + req.body.MessageSid);
+  console.log('from = ' + req.body.From);
+  console.log('from city = ' + req.body.FromCity);
+  console.log('from state = ' + req.body.FromState);
+  console.log('from country = ' + req.body.FromCountry);
+  console.log('from zip = ' + req.body.FromZip);
+  console.log('to = ' + req.body.To);
+  console.log('to city = ' + req.body.ToCity);
+  console.log('to state = ' + req.body.ToState);
+  console.log('to country = ' + req.body.ToCountry);
+  console.log('to zip = ' + req.body.ToZip);
+  console.log('SMS Status = ' + req.body.SmsStatus);
+  console.log('SMS Status = ' + req.body.SmsStatus);
+  console.log('SMS Status = ' + req.body.SmsStatus);
 
   resp.writeHead(200, {'Content-Type': 'text/xml'});
   resp.end(twiml.toString());
+  
+  const  message = new Message();
+  const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+            
+            message.messageId = req.body.MessageSid;
+            message.threadId  = req.body.MessageSid;
+            message.message =  req.body.Body;
+            message.from = req.body.From;
+            message.to = req.body.To;
+            message.status = req.body.SmsStatus;
+            message.direction = 'incoming-api';
+            message.toCity = req.body.ToCity;
+            message.fromCity = req.body.FromCity;
+            message.fromZip = req.body.FromZip;
+
+            message.source = 'SMS';
+            message.threadStatus = 'open';
+            message.createdTime = moment().toDate();
+        
+            message.save(function(err: any) {
+                    if (err)
+                      console.log(err);
+                });
 
 }
 
@@ -96,6 +152,11 @@ export let sendSMSMessage = function(req: Request, resp: Response) {
     let client = new twilio(accountSid, authToken);
     let rtn: string = '';
 
+    var validToken = authCheck(req,resp);
+
+    if( validToken == 'success') { 
+
+
     client.messages.create({
         body: req.body.msg,
         to: req.body.to,  // Text this number
@@ -114,8 +175,6 @@ export let sendSMSMessage = function(req: Request, resp: Response) {
                 message.direction = results.direction;
                 message.messaging_service_sid = results.messaging_service_sid;
                
-           //     message.messageId = '123123123';
-            //    message.threadId  = '234234234';
                 message.message = req.body.msg;
 
                 message.source = 'SMS';
@@ -130,6 +189,12 @@ export let sendSMSMessage = function(req: Request, resp: Response) {
             
   resp.json({ sid:  results.sid });	
   });
+
+} else {
+  resp.json({ message: 'Invalid Token' });	
+}  
+
+
 
  
 }
@@ -162,19 +227,21 @@ export let get  = (req: Request, res: Response) => {
   res.json({ message: 'Hello and welcome' });
 }
 
+/*
+this will close the current session using the incoming phone number
+*/
+export let closeTxt = (req: Request, res: Response) => {
 
-export let closeThread = (req: Request, res: Response) => {
-
-var validToken = authCheck(req, res);
-console.log(validToken);
+let validToken: string = authCheck(req, res);
 
     if( validToken == 'success') {
     
-      Message.update({threadId:  req.body.threadId}, {threadStatus: "closed"}, {multi: true},
+      Message.update({source: "SMS",  from: req.body.from, to: req.body.to}, {threadStatus: "closed"}, {multi: true},
         function(err, message) {
-        console.log("updated MessageThread " + req.body.threadId);
+        console.log("updated MessageThread " + req.body.from);
         res.json({ message: "closed thread " +  req.body.threadId});	
         });
+
     } else {
       res.json({ message: 'Invalid Token' });	
     }
