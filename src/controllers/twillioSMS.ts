@@ -13,7 +13,7 @@ import * as moment from "moment";
 import * as GoogleMapsAPI from "googlemaps";
 import { Constants } from '../utils/constants';
 import equalsIgnoreCase from "@composite/equals-ignore-case";
-import * as twilio from "twilio";
+// import * as twilio from "twilio";
 import { resolve } from "path";
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
 var SALT_WORK_FACTOR = 10;
