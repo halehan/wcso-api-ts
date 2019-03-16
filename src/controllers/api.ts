@@ -276,9 +276,9 @@ export let getUser = (req: Request, res: Response) => {
 }
 
 export let authenticate = (req: Request, res: Response) => {
- // res.setHeader("Access-Control-Allow-Origin", '*'); //<-- you can change this with a specific url like http://localhost:4200
+  res.setHeader("Access-Control-Allow-Origin", '*'); //<-- you can change this with a specific url like http://localhost:4200
  // res.setHeader("Access-Control-Allow-Credentials", 'true');
- // res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
  // res.setHeader("Access-Control-Allow-Headers", 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json');
   
   console.log('In the authenticate methodxxxx');
