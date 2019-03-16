@@ -44,6 +44,7 @@
     "nodemon": "^1.12.1",
     "oauth": "^0.9.15",
     "passport": "^0.4.0",
+    "twilio": "^3.29.2",
     "twitter-api-ts": "0.0.29",
     "typescript": "^2.5.3",
     "typings": "^2.1.1"

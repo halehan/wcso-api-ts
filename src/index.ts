@@ -14,6 +14,7 @@ import * as moment from "moment";
 import * as facebookChatAPI from "facebook-chat-api";
 // import * as apiController from "./controllers/api";
 import * as apiController from "./controllers/fb-page-messenger";
+import * as twilioSMS from "./controllers/twillioSMS";
 
 var SALT_WORK_FACTOR = 10;
 
@@ -41,6 +42,10 @@ app.use(bodyParser.urlencoded({ extended: true}));
 
 app.set("port", appPort);
 app.use(morgan('dev')); // log requests to the console  
+
+//Twillio SMS
+app.post("/sms/listen/", twilioSMS.listenSMSMessage);
+app.post("/sms/send/", twilioSMS.sendSMSMessage);
 
 // FB Webhook
 app.post("/webhook/", apiController.postWebhook);
