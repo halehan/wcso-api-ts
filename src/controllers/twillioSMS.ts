@@ -269,7 +269,7 @@ export let getMessages = (req: Request, res: Response) => {
 
   if( validToken == 'success') {
 
-    Message.find({threadStatus:"open"}).sort("-createdTime").exec(function(err,messages){
+    Message.find({threadStatus:"open", source: "SMS"}).sort("-createdTime").exec(function(err,messages){
       if (err){
         res.send(err);
       }

@@ -106,7 +106,7 @@ export let getMessage = (req: Request, res: Response) => {
     var validToken = authCheck(req, res);
     if( validToken == 'success') {
 
-    Message.find({'messageId': req.params.message_id}, 'messageId message threadId createdTime', function(err, message) {
+    Message.find({'messageId': req.params.message_id, source: 'FaceBook'}, 'messageId message threadId createdTime', function(err, message) {
         if (err)
           res.send(err);
         res.json(message);
@@ -123,7 +123,7 @@ export let getMessages = (req: Request, res: Response) => {
 
   if( validToken == 'success') {
 
-    Message.find({threadStatus:"open"}).sort("-createdTime").exec(function(err,messages){
+    Message.find({threadStatus:"open", source: 'FaceBook'}).sort("-createdTime").exec(function(err,messages){
       if (err){
         res.send(err);
       }
@@ -201,6 +201,7 @@ export let sendMessage = (req: Request, res: Response) => {
   message.messageId = req.body.messageId;
   message.threadId = req.body.threadId;
   message.threadStatus = req.body.threadStatus;
+  message.source = 'FaceBook';
  // message.userId = req.body.userId;
   message.createdTime = moment().toDate();
   message.from = 'WCSO';
