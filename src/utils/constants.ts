@@ -7,7 +7,7 @@ export class Constants {
 
     static readonly FACEBOOK_VERIFY_TOKEN = 'halehan';
     // static readonly FACEBOOK_PAGE_VERIFY_TOKEN = 'EAAHuAlckN1IBAIZBiZB9dfqXpEi9zk0PyzOd7sG7RwHALntFtxxEEFSt8o1CJcrMrW1bGMYkD4LQN0s1LZCDqknBziTvImDLBAsqIYiFEtaEOaALEoNfnFoI0DY986tpsjBPlDQsZAzhXJhTjtIY9IP9A6rwBujHz4jsH7vZBt4NN61BuUZCZBIKtdWV3nFihMZD';
-    static readonly FACEBOOK_PAGE_VERIFY_TOKEN = 'EAAMGq9ZBqZBG0BAGW3VZCUCzsvSfvhrTGgde5vYQIXqUKJH7xyHFANILAHbeV8IBvXi89JlZCm2xZBGZCG8rm0ZCcAvaSGBxa8Y84qBrwqZCclU2v7FYupfq39FUF78B74CohInzAx9qF8wmDV1XyCROwD4hB2KiW1hLjNIrAa3JED9Mf2P0O0SZB9oxDQPD8EqwZD';
+    static readonly FACEBOOK_PAGE_VERIFY_TOKEN = 'EAAMGq9ZBqZBG0BAC9u1xheVbyDkZCV0OZAcZBQKjxh2S8E2NNhUtf3yqRXA1IBabxaa5OUWQrTPGD60SeZBZChC2wwpfmZC8y5NG4j3GdaFuCCZBOBamTaEXIUQ8WPAinxzTuTQu3XGbWRBUydQI56j4864l2mw4PDTWdAr6UnFJ673WnndhHtCbcWsqRIqXAYoQZD';
     static readonly GOOGLE_API_KEY = 'AIzaSyAGZ6xu-PUDubQLdxQvBl5DeJgXscWEbPo';
 
     static readonly REPLY_MESSAGE = 'We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.' + 
