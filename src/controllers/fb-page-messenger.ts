@@ -465,6 +465,7 @@ export let getWebhook = (req: Request, res: Response) => {
 export let postWebhook = (req: Request, res: Response) => {
   console.log('Calling postWebhook...');
   let body = req.body;
+  let count = 0;
   
   
     // Checks this is an event from a page subscription
@@ -472,10 +473,12 @@ export let postWebhook = (req: Request, res: Response) => {
       console.log('body.object ===  page');
       // Iterates over each entry - there may be multiple if batched
       body.entry.forEach(function(entry) {
+        count = count++;
   
         // Gets the message. entry.messaging is an array, but 
         // will only ever contain one message, so we get index 0
         let webhook_event = entry.messaging[0];
+        console.log('webhook_event ' + webhook_event);
         let lat = null;
         let long = null;
         let address = null;
@@ -598,6 +601,8 @@ export let postWebhook = (req: Request, res: Response) => {
         }
         
       });
+
+      console.log('count = ' + count);
   
       // Returns a '200 OK' response to all requests
       res.status(200).send('EVENT_RECEIVED');
