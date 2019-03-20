@@ -433,7 +433,7 @@ export let getApi = (req: Request, res: Response) => {
 
   // Adds support for GET requests to our webhook
 export let getWebhook = (req: Request, res: Response) => { 
-    console.log('Calling getWebhook');
+    console.log('Calling getWebhook 320');
   
       // Parse the query params
       let mode = req.query['hub.mode'];
