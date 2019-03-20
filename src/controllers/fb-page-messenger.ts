@@ -473,7 +473,7 @@ export let postWebhook = (req: Request, res: Response) => {
       console.log('body.object ===  page');
       // Iterates over each entry - there may be multiple if batched
       body.entry.forEach(function(entry) {
-        count = count++;
+        count = count + 1;
   
         // Gets the message. entry.messaging is an array, but 
         // will only ever contain one message, so we get index 0
