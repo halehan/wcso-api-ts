@@ -106,42 +106,47 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
   console.log('SMS Status = ' + req.body.SmsStatus);
   console.log('SMS Status = ' + req.body.SmsStatus);
 
-  if(req.body.NumMedia !== '0') {
-    const filename = `${req.body.MessageSid}.png`;
-    const url = req.body.MediaUrl0;
-
-    console.log('fileName = ' +filename);
-    console.log('url = ' + url);
-
-    request(url).pipe(fs.createWriteStream(filename))
-      .on('close', () => console.log('Image downloaded.'));
-  }
-
-  resp.writeHead(200, {'Content-Type': 'text/xml'});
-  resp.end(twiml.toString());
-  
   const  message = new Message();
   const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
-            
-            message.messageId = req.body.MessageSid;
-            message.threadId  = req.body.MessageSid;
-            message.message =  req.body.Body;
-            message.from = req.body.From;
-            message.to = req.body.To;
-            message.status = req.body.SmsStatus;
-            message.direction = 'incoming-api';
-            message.toCity = req.body.ToCity;
-            message.fromCity = req.body.FromCity;
-            message.fromZip = req.body.FromZip;
 
-            message.source = 'SMS';
-            message.threadStatus = 'open';
-            message.createdTime = moment().toDate();
+          message.messageId = req.body.MessageSid;
+          message.threadId  = req.body.MessageSid;
+          message.from = req.body.From;
+          message.to = req.body.To;
+          message.status = req.body.SmsStatus;
+          message.direction = 'incoming-api';
+          message.toCity = req.body.ToCity;
+          message.fromCity = req.body.FromCity;
+          message.fromZip = req.body.FromZip;
+          message.source = 'SMS';
+          message.threadStatus = 'open';
+          message.createdTime = moment().toDate();
+            
+            if(req.body.NumMedia !== '0') {
+              const filename = `${req.body.MessageSid}.png`;
+              const url = req.body.MediaUrl0;
+
+              message.message =  'Attachment';
+              message.attachmentUrl = url;
+          
+              console.log('fileName = ' +filename);
+              console.log('url = ' + url);
+          
+         /*     request(url).pipe(fs.createWriteStream(filename))
+                .on('close', () => console.log('Image downloaded.')); */
+            } else {
+
+              message.message =  req.body.Body;
+
+            }
         
             message.save(function(err: any) {
                     if (err)
                       console.log(err);
                 });
+
+  resp.writeHead(200, {'Content-Type': 'text/xml'});
+  resp.end(twiml.toString());
 
 }
 
