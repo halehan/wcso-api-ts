@@ -570,6 +570,7 @@ export let postWebhook = (req: Request, res: Response) => {
             
             message.messageId = mid;
             message.threadId = sender;
+            message.source = 'FaceBook';
             if (text) {
               message.message = text;
             }
