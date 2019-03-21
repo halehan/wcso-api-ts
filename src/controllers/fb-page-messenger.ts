@@ -191,6 +191,7 @@ export let getContent = (req: Request, res: Response) => {
 }
 
 export let sendMessage = (req: Request, res: Response) => {
+  console.log('In the SendMessage.  Sending a FaceBook message');
   var validToken = authCheck(req, res);
   if( validToken == 'success') {
   
@@ -205,6 +206,8 @@ export let sendMessage = (req: Request, res: Response) => {
  // message.userId = req.body.userId;
   message.createdTime = moment().toDate();
   message.from = 'WCSO';
+
+  console.log('Message = ' +  message.message);
 
   Message.find({"threadId": message.threadId}, "messageId message threadId threadStatus", function(err: any, messageCheck: any) {
    
