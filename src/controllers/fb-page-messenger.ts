@@ -757,7 +757,7 @@ export let postWebhook = (req: Request, res: Response) => {
   
  export let sendTextMessage = (sender, text) => {
      let messageData = { text:text }
-     let VERIFY_TOKEN = 'EAAHuAlckN1IBAIZBiZB9dfqXpEi9zk0PyzOd7sG7RwHALntFtxxEEFSt8o1CJcrMrW1bGMYkD4LQN0s1LZCDqknBziTvImDLBAsqIYiFEtaEOaALEoNfnFoI0DY986tpsjBPlDQsZAzhXJhTjtIY9IP9A6rwBujHz4jsH7vZBt4NN61BuUZCZBIKtdWV3nFihMZD';
+     let VERIFY_TOKEN = 'EAAMGq9ZBqZBG0BAIvfvHhrGVxOnZA1CdaOOPsgMqSCgtgMeiaTZBdmyt3rrlh7gP8uzY3sA5gaaRgt29ApZAMyvdHuXDqgvqaIRtpUqdeognrZCQyhpULV9ASjZA6wZC4bVeIGLmvwlfvt1TlN8dZBy8c0YoKCUK1oZCn35ddEf9iiZCJAot1qZBriC6aI7ZCOZBx4k44ZD';
      request({
        url: 'https://graph.facebook.com/v2.11/me/messages',
        qs: {access_token: VERIFY_TOKEN},
@@ -777,7 +777,7 @@ export let postWebhook = (req: Request, res: Response) => {
 
    export let sendLocationMessage = (sender, text) => {
  //    let messageData = { text:text }
-     let VERIFY_TOKEN = 'EAAHuAlckN1IBAIZBiZB9dfqXpEi9zk0PyzOd7sG7RwHALntFtxxEEFSt8o1CJcrMrW1bGMYkD4LQN0s1LZCDqknBziTvImDLBAsqIYiFEtaEOaALEoNfnFoI0DY986tpsjBPlDQsZAzhXJhTjtIY9IP9A6rwBujHz4jsH7vZBt4NN61BuUZCZBIKtdWV3nFihMZD';
+     let VERIFY_TOKEN = 'EAAMGq9ZBqZBG0BAIvfvHhrGVxOnZA1CdaOOPsgMqSCgtgMeiaTZBdmyt3rrlh7gP8uzY3sA5gaaRgt29ApZAMyvdHuXDqgvqaIRtpUqdeognrZCQyhpULV9ASjZA6wZC4bVeIGLmvwlfvt1TlN8dZBy8c0YoKCUK1oZCn35ddEf9iiZCJAot1qZBriC6aI7ZCOZBx4k44ZD';
      request({
        url: 'https://graph.facebook.com/v2.11/me/messages',
        qs: {access_token: VERIFY_TOKEN},
