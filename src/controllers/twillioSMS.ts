@@ -1,5 +1,6 @@
 "use strict";
 
+import * as fs from "fs";
 import * as async from "async";
 import * as request from "request";
 import { Response, Request, NextFunction } from "express";
@@ -86,7 +87,7 @@ export let getSMSMessages = (req: Request, res: Response) => {
 
 
 export let listenSMSMessage = function(req: Request, resp: Response) {
-    const twiml = new MessagingResponse();
+  const twiml = new MessagingResponse();
 
   twiml.message('Your message has been logged and someone will respond shortly. ');
   console.log('message  = ' + req.body.Body);
@@ -104,6 +105,17 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
   console.log('SMS Status = ' + req.body.SmsStatus);
   console.log('SMS Status = ' + req.body.SmsStatus);
   console.log('SMS Status = ' + req.body.SmsStatus);
+
+  if(req.body.NumMedia !== '0') {
+    const filename = `${req.body.MessageSid}.png`;
+    const url = req.body.MediaUrl0;
+
+    console.log('fileName = ' +filename);
+    console.log('url = ' + url);
+
+    request(url).pipe(fs.createWriteStream(filename))
+      .on('close', () => console.log('Image downloaded.'));
+  }
 
   resp.writeHead(200, {'Content-Type': 'text/xml'});
   resp.end(twiml.toString());
