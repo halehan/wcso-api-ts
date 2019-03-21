@@ -135,8 +135,9 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
          /*     request(url).pipe(fs.createWriteStream(filename))
                 .on('close', () => console.log('Image downloaded.')); */
             } else {
-
+              
               message.message =  req.body.Body;
+              console.log('regular txt ' + message.message);
 
             }
         
