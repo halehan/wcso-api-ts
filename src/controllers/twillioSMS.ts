@@ -89,6 +89,12 @@ export let getSMSMessages = (req: Request, res: Response) => {
 export let listenSMSMessage = function(req: Request, resp: Response) {
   const twiml = new MessagingResponse();
 
+  const client = require('twilio')(accountSid, authToken);
+
+  client.lookups.phoneNumbers(req.body.From)
+              .fetch({type: 'carrier'})
+              .then(phone_number => console.log(phone_number.carrier));
+
   twiml.message('Your message has been logged and someone will respond shortly. ');
   console.log('message  = ' + req.body.Body);
   console.log('messageId  = ' + req.body.MessageSid);
