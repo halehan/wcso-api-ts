@@ -27,7 +27,7 @@ interface IMessage{
     callertype: string,
     mobileCountryCode: string,
     carrierName: string,
-    mobileNetworkType: string
+    carrierType: string
 
     
 
