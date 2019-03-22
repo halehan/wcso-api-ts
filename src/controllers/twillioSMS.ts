@@ -96,6 +96,9 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
        .fetch({type: 'carrier'})
        .then(function (phone_number) {
 
+        console.log(phone_number.carrier.name);
+        console.log(phone_number.carrier.type);
+
          message.carrierName = phone_number.carrier.name;
          message.carrierType = phone_number.carrier.type;
          message.mobileCountryCode = phone_number.carrier.mobile_country_code;
@@ -105,7 +108,9 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
       client.lookups.phoneNumbers(req.body.From)
        .fetch({type: 'caller-name'})
        .then(function (phone_number) {
-         
+
+         console.log(phone_number.callerName.caller_name);
+         console.log(phone_number.callerName.caller_type);
          message.callerName = phone_number.callerName.caller_name;
          message.callertype = phone_number.callerName.caller_type;
        
