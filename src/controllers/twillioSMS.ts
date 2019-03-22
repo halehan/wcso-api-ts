@@ -110,6 +110,7 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
   const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
 
           message.messageId = req.body.MessageSid;
+          message.message =  req.body.Body;
           message.threadId  = req.body.MessageSid;
           message.from = req.body.From;
           message.to = req.body.To;
@@ -123,23 +124,17 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
           message.createdTime = moment().toDate();
             
             if(req.body.NumMedia !== '0') {
-              const filename = `${req.body.MessageSid}.png`;
+        //      const filename = `${req.body.MessageSid}.png`;
               const url = req.body.MediaUrl0;
 
-              message.message =  'Attachment';
               message.attachmentUrl = url;
           
-              console.log('fileName = ' +filename);
+        //      console.log('fileName = ' +filename);
               console.log('url = ' + url);
           
          /*     request(url).pipe(fs.createWriteStream(filename))
                 .on('close', () => console.log('Image downloaded.')); */
-            } else {
-              
-              message.message =  req.body.Body;
-              console.log('regular txt ' + message.message);
-
-            }
+            } 
         
             message.save(function(err: any) {
                     if (err)
