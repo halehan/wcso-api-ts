@@ -95,6 +95,10 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
               .fetch({type: 'carrier'})
               .then(phone_number => console.log(phone_number.carrier));
 
+              client.lookups.phoneNumbers(req.body.From)
+              .fetch({type: 'caller_name'})
+              .then(phone_number => console.log(phone_number.caller_name));
+
   twiml.message('Your message has been logged and someone will respond shortly. ');
   console.log('message  = ' + req.body.Body);
   console.log('messageId  = ' + req.body.MessageSid);
