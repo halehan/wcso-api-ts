@@ -138,7 +138,7 @@ console.log('------ Caller Meta  ---------------------------------');
  
   console.log('Caller Name = ' + message.callerName);
   console.log('Caller Type = ' +  message.callertype);
-  console.log('Mobile Network Type = ' +  message.mobileNetworkType);
+  console.log('Mobile Network Type = ' +  message.carrierType);
   console.log('Mobile Country Code = ' + message.mobileCountryCode );
 
 
