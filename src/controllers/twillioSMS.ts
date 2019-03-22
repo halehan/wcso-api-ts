@@ -87,27 +87,28 @@ export let getSMSMessages = (req: Request, res: Response) => {
 }
 
 export let listenSMSMessage = function(req: Request, resp: Response) {
-  const twiml = new MessagingResponse();
-  let  message = new Message();
+   const twiml = new MessagingResponse();
+   let  message = new Message();
 
-  const client = require('twilio')(accountSid, authToken);
+   const client = require('twilio')(accountSid, authToken);
 
-  var promise = new Promise(function(resolve, reject) {
+   var promise = new Promise(function(resolve, reject) {
 
     client.lookups.phoneNumbers(req.body.From)
     .fetch({type: 'caller-name'})
     .then(callerInfo => {
-     console.log('in the promise method '+ callerInfo);
+     console.log('in the promise method '+ callerInfo.callerName);
    }); 
 
 });
 
-    promise.then(function(data) {
-      console.log('in the promise.then() method '+ data);
-    });
+    promise.then(function success(data) {
+      console.log('in the promise method '+ data);
+  }, function error(data) {
+      console.error(data);
+  });
 
-
-  client.lookups.phoneNumbers(req.body.From)
+    client.lookups.phoneNumbers(req.body.From)
        .fetch({type: 'carrier'})
        .then(function (carrierInfo) {
         
