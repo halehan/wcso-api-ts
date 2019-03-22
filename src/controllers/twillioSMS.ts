@@ -97,7 +97,7 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
        .then(function (phone_number) {
 
          message.carrierName = phone_number.carrier.name;
-         message.mobileNetworkType = phone_number.carrier.type;
+         message.carrierType = phone_number.carrier.type;
          message.mobileCountryCode = phone_number.carrier.mobile_country_code;
 
       }); 
@@ -108,8 +108,7 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
          
          message.callerName = phone_number.callerName.caller_name;
          message.callertype = phone_number.callerName.caller_type;
-         message.mobileNetworkType = phone_number.carrier.type;
-         message.mobileCountryCode = phone_number.carrier.mobile_country_code;
+       
 
       }); 
 
@@ -133,8 +132,15 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
   console.log('to country = ' + req.body.ToCountry);
   console.log('to zip = ' + req.body.ToZip);
   console.log('SMS Status = ' + req.body.SmsStatus);
-  console.log('SMS Status = ' + req.body.SmsStatus);
-  console.log('SMS Status = ' + req.body.SmsStatus);
+
+
+console.log('------ Caller Meta  ---------------------------------');
+ 
+  console.log('Caller Name = ' + message.callerName);
+  console.log('Caller Type = ' +  message.callertype);
+  console.log('Mobile Network Type = ' +  message.mobileNetworkType);
+  console.log('Mobile Country Code = ' + message.mobileCountryCode );
+
 
  
   const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
