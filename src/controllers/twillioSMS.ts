@@ -89,37 +89,40 @@ export let getSMSMessages = (req: Request, res: Response) => {
 export let listenSMSMessage = function(req: Request, resp: Response) {
   const twiml = new MessagingResponse();
   let  message = new Message();
-  let carrierInfo;
+
 
   const client = require('twilio')(accountSid, authToken);
 
   client.lookups.phoneNumbers(req.body.From)
        .fetch({type: 'carrier'})
-       .then(function (info) {
-        carrierInfo = info;
-
+       .then(function (carrierInfo) {
+        
         console.log(carrierInfo.carrier.name);
         console.log(carrierInfo.carrier.type);
+
+        message.carrierName = carrierInfo.carrier.name;
+        message.carrierType = carrierInfo.carrier.type;
+        message.mobileCountryCode = carrierInfo.carrier.mobile_country_code;
 
       }); 
 
       client.lookups.phoneNumbers(req.body.From)
        .fetch({type: 'caller-name'})
-       .then(function (phone_number) {
+       .then(function (callerInfo) {
 
-         console.log(phone_number.callerName.caller_name);
-         console.log(phone_number.callerName.caller_type);
+         console.log(callerInfo.callerName.caller_name);
+         console.log(callerInfo.callerName.caller_type);
 
-         message.callerName = phone_number.callerName.caller_name;
-         message.callertype = phone_number.callerName.caller_type;
+         message.callerName = callerInfo.callerName.caller_name;
+         message.callertype = callerInfo.callerName.caller_type;
        
 
       }); 
 
-/*
+
   client.lookups.phoneNumbers(req.body.From)
               .fetch({type: 'caller-name'})
-              .then(phone_number => console.log(phone_number.callerName.caller_name));  */
+              .then(phone_number => console.log(phone_number.callerName.caller_name));  
 
 
   twiml.message('Your message has been logged and someone will respond shortly. ');
@@ -138,7 +141,7 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
   console.log('SMS Status = ' + req.body.SmsStatus);
 
 
-console.log('------ Caller Meta  ---------------------------------');
+  console.log('------ Caller Meta  ---------------------------------');
  
   console.log('Caller Name = ' + message.callerName);
   console.log('Caller Type = ' +  message.callertype);
@@ -164,9 +167,7 @@ console.log('------ Caller Meta  ---------------------------------');
           message.threadStatus = 'open';
           message.createdTime = moment().toDate();
 
-          message.carrierName = carrierInfo.carrier.name;
-          message.carrierType = carrierInfo.carrier.type;
-          message.mobileCountryCode = carrierInfo.carrier.mobile_country_code;
+         
  
             
             if(req.body.NumMedia !== '0') {
