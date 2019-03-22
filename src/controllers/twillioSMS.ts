@@ -94,11 +94,11 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
 
    var promise = new Promise(function(resolve, reject) {
 
-    client.lookups.phoneNumbers(req.body.From)
+    resolve(client.lookups.phoneNumbers(req.body.From)
     .fetch({type: 'caller-name'})
     .then(callerInfo => {
      console.log('in the promise method '+ callerInfo.callerName);
-   }); 
+   })); 
 
 });
 
