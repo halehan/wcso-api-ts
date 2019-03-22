@@ -88,18 +88,36 @@ export let getSMSMessages = (req: Request, res: Response) => {
 
 export let listenSMSMessage = function(req: Request, resp: Response) {
   const twiml = new MessagingResponse();
+  let  message = new Message();
 
   const client = require('twilio')(accountSid, authToken);
 
   client.lookups.phoneNumbers(req.body.From)
-              .fetch({type: 'carrier'})
-              .then(phone_number => console.log(phone_number.carrier));
-    console.log('-----------------------------------------------------------');
-              client.lookups.phoneNumbers(req.body.From)
-              .fetch({type: 'caller-name'})
-              .then(phone_number => console.log(phone_number.callerName));
+       .fetch({type: 'carrier'})
+       .then(function (phone_number) {
 
-           
+         message.carrierName = phone_number.carrier.name;
+         message.mobileNetworkType = phone_number.carrier.type;
+         message.mobileCountryCode = phone_number.carrier.mobile_country_code;
+
+      }); 
+
+      client.lookups.phoneNumbers(req.body.From)
+       .fetch({type: 'caller-name'})
+       .then(function (phone_number) {
+         
+         message.callerName = phone_number.callerName.caller_name;
+         message.callertype = phone_number.callerName.caller_type;
+         message.mobileNetworkType = phone_number.carrier.type;
+         message.mobileCountryCode = phone_number.carrier.mobile_country_code;
+
+      }); 
+
+/*
+  client.lookups.phoneNumbers(req.body.From)
+              .fetch({type: 'caller-name'})
+              .then(phone_number => console.log(phone_number.callerName.caller_name));  */
+
 
   twiml.message('Your message has been logged and someone will respond shortly. ');
   console.log('message  = ' + req.body.Body);
@@ -118,7 +136,7 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
   console.log('SMS Status = ' + req.body.SmsStatus);
   console.log('SMS Status = ' + req.body.SmsStatus);
 
-  const  message = new Message();
+ 
   const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
 
           message.messageId = req.body.MessageSid;
@@ -130,6 +148,7 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
           message.direction = 'incoming-api';
           message.toCity = req.body.ToCity;
           message.fromCity = req.body.FromCity;
+          message.fromState = req.body.FromState;
           message.fromZip = req.body.FromZip;
           message.source = 'SMS';
           message.threadStatus = 'open';

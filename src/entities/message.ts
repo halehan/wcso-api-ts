@@ -18,9 +18,17 @@ interface IMessage{
     status: string,
     direction: string,
     messaging_service_sid: string,
+    fromState: string,
     fromCity: string,
     fromZip: string,
-    toCity: string
+    toCity: string,
+    toState: string,
+    callerName: string,
+    callertype: string,
+    mobileCountryCode: string,
+    carrierName: string,
+    mobileNetworkType: string
+
     
 
 }
