@@ -17,6 +17,7 @@ import equalsIgnoreCase from "@composite/equals-ignore-case";
 // import * as twilio from "twilio";
 import { resolve } from "path";
 import { fromCompare } from "fp-ts/lib/Ord";
+import { setupMaster } from "cluster";
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
 var SALT_WORK_FACTOR = 10;
 
@@ -85,13 +86,26 @@ export let getSMSMessages = (req: Request, res: Response) => {
 
 }
 
-
 export let listenSMSMessage = function(req: Request, resp: Response) {
   const twiml = new MessagingResponse();
   let  message = new Message();
 
-
   const client = require('twilio')(accountSid, authToken);
+
+  var promise = new Promise(function(resolve, reject) {
+
+    client.lookups.phoneNumbers(req.body.From)
+    .fetch({type: 'caller-name'})
+    .then(callerInfo => {
+     console.log('in the promise method '+ callerInfo);
+   }); 
+
+});
+
+    promise.then(function(data) {
+      console.log('in the promise.then() method '+ data);
+    });
+
 
   client.lookups.phoneNumbers(req.body.From)
        .fetch({type: 'carrier'})
@@ -104,25 +118,26 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
         message.carrierType = carrierInfo.carrier.type;
         message.mobileCountryCode = carrierInfo.carrier.mobile_country_code;
 
-      }); 
+      }); /*
 
-      client.lookups.phoneNumbers(req.body.From)
+  client.lookups.phoneNumbers(req.body.From)
        .fetch({type: 'caller-name'})
-       .then(function (callerInfo) {
+       .then(callerInfo => {
 
-         console.log(callerInfo.callerName.caller_name);
-         console.log(callerInfo.callerName.caller_type);
+        return callerInfo;
 
          message.callerName = callerInfo.callerName.caller_name;
          message.callertype = callerInfo.callerName.caller_type;
        
 
-      }); 
+      }); */
 
 
-  client.lookups.phoneNumbers(req.body.From)
+/*  client.lookups.phoneNumbers(req.body.From)
               .fetch({type: 'caller-name'})
-              .then(phone_number => console.log(phone_number.callerName.caller_name));  
+              .then(phone_number => {
+                console.log(phone_number.callerName.caller_name)
+              });   */
 
 
   twiml.message('Your message has been logged and someone will respond shortly. ');
