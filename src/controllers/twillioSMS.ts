@@ -128,6 +128,10 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
               const url = req.body.MediaUrl0;
 
               message.attachmentUrl = url;
+
+              if (message.message === undefined || message.message === null){
+                message.message = 'Attachment';
+            }
           
         //      console.log('fileName = ' +filename);
               console.log('url = ' + url);
