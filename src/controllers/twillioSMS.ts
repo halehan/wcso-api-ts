@@ -89,19 +89,17 @@ export let getSMSMessages = (req: Request, res: Response) => {
 export let listenSMSMessage = function(req: Request, resp: Response) {
   const twiml = new MessagingResponse();
   let  message = new Message();
+  let carrierInfo;
 
   const client = require('twilio')(accountSid, authToken);
 
   client.lookups.phoneNumbers(req.body.From)
        .fetch({type: 'carrier'})
-       .then(function (phone_number) {
+       .then(function (info) {
+        carrierInfo = info;
 
-        console.log(phone_number.carrier.name);
-        console.log(phone_number.carrier.type);
-
-         message.carrierName = phone_number.carrier.name;
-         message.carrierType = phone_number.carrier.type;
-         message.mobileCountryCode = phone_number.carrier.mobile_country_code;
+        console.log(carrierInfo.carrier.name);
+        console.log(carrierInfo.carrier.type);
 
       }); 
 
@@ -111,6 +109,7 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
 
          console.log(phone_number.callerName.caller_name);
          console.log(phone_number.callerName.caller_type);
+
          message.callerName = phone_number.callerName.caller_name;
          message.callertype = phone_number.callerName.caller_type;
        
@@ -164,6 +163,11 @@ console.log('------ Caller Meta  ---------------------------------');
           message.source = 'SMS';
           message.threadStatus = 'open';
           message.createdTime = moment().toDate();
+
+          message.carrierName = carrierInfo.carrier.name;
+          message.carrierType = carrierInfo.carrier.type;
+          message.mobileCountryCode = carrierInfo.carrier.mobile_country_code;
+ 
             
             if(req.body.NumMedia !== '0') {
         //      const filename = `${req.body.MessageSid}.png`;
@@ -175,11 +179,8 @@ console.log('------ Caller Meta  ---------------------------------');
                 message.message = 'Attachment';
             }
           
-        //      console.log('fileName = ' +filename);
               console.log('url = ' + url);
           
-         /*     request(url).pipe(fs.createWriteStream(filename))
-                .on('close', () => console.log('Image downloaded.')); */
             } 
         
             message.save(function(err: any) {
