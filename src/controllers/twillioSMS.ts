@@ -21,15 +21,15 @@ import { setupMaster } from "cluster";
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
 var SALT_WORK_FACTOR = 10;
 
-
-
+const authToken = process.env.TWILIO_AUTHTOKEN;
+const  accountSid = process.env.TWILIO_ACCOUNTSID;
+const twilioNumber =  process.env.TWILIO_NUMBER;
 
 var credentials = {
   email: '',
   password: '',
   superSecret: "dog"
 }
-
 
 const messageTxt = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911.";
 
