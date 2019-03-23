@@ -49,6 +49,7 @@ app.post("/sms/send/", twilioSMS.sendSMSMessage);
 app.get("/sms/message/:messageId", twilioSMS.getSMSMessage);
 app.get("/sms/messages/", twilioSMS.getSMSMessages);
 app.post("/sms/closeThread/", twilioSMS.closeTxt);
+app.get("/sms/test", twilioSMS.testPromise);
 
 // FB Webhook
 app.post("/webhook/", apiController.postWebhook);

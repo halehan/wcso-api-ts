@@ -86,6 +86,159 @@ export let getSMSMessages = (req: Request, res: Response) => {
 
 }
 
+export let testPromise = (req: Request, res: Response) => {
+
+  const client = require('twilio')(accountSid, authToken);
+
+  let  message = new Message();
+
+  message.messageId = req.body.MessageSid;
+  message.message =  req.body.Body;
+  message.threadId  = req.body.MessageSid;
+  message.from = req.body.From;
+  message.to = req.body.To;
+  message.status = req.body.SmsStatus;
+  message.direction = 'incoming-api';
+  message.toCity = req.body.ToCity;
+  message.fromCity = req.body.FromCity;
+  message.fromState = req.body.FromState;
+  message.fromZip = req.body.FromZip;
+  message.source = 'SMS';
+  message.threadStatus = 'open';
+  message.createdTime = moment().toDate();
+
+Promise.resolve(req.body.From)
+    .then((res) => {
+      client.lookups.phoneNumbers(req.body.From)
+      .fetch({type: 'caller-name'})
+      .then(callerInfo => {
+       console.log('in the promise method '+ callerInfo.callerName.caller_name);
+       message.callerName = callerInfo.callerName.caller_name;
+       message.callertype = callerInfo.callerName.caller_type;
+     
+     })
+        return req.body.From;
+    })
+    .then((res) => {
+      client.lookups.phoneNumbers(req.body.From)
+      .fetch({type: 'carrier'})
+      .then(carrierInfo => {
+       console.log('in the promise method '+ carrierInfo.carrier.name);
+       message.carrierName = carrierInfo.carrier.name;
+       message.carrierType = carrierInfo.carrier.type;
+       message.mobileCountryCode = carrierInfo.carrier.mobile_country_code;
+
+       message.save(function(err: any) {
+        if (err)
+          console.log(err);
+    });
+
+     })
+  
+    })
+    .then((res) => {
+        console.log ('Now save message');
+        console.log(res); // 123 : Notice that this `then` is called with the resolved value
+        return 123;
+    })
+
+}   
+
+export let listenSMSMessage = function(req: Request, resp: Response) {
+  const twiml = new MessagingResponse();
+  const client = require('twilio')(accountSid, authToken);
+
+  let  message = new Message();
+
+  const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+
+  message.messageId = req.body.MessageSid;
+  message.message =  req.body.Body;
+  message.threadId  = req.body.MessageSid;
+  message.from = req.body.From;
+  message.to = req.body.To;
+  message.status = req.body.SmsStatus;
+  message.direction = 'incoming-api';
+  message.toCity = req.body.ToCity;
+  message.fromCity = req.body.FromCity;
+  message.fromState = req.body.FromState;
+  message.fromZip = req.body.FromZip;
+  message.source = 'SMS';
+  message.threadStatus = 'open';
+  message.createdTime = moment().toDate();
+
+    
+    if(req.body.NumMedia !== '0') {
+      const url = req.body.MediaUrl0;
+
+      message.attachmentUrl = url;
+
+      if (message.message === undefined || message.message === null){
+        message.message = 'Attachment';
+    }
+  
+      console.log('url = ' + url);
+  
+    } 
+
+Promise.resolve(req.body.From)
+    .then((res) => {
+      client.lookups.phoneNumbers(req.body.From)
+      .fetch({type: 'caller-name'})
+      .then(callerInfo => {
+       console.log('in the promise method '+ callerInfo.callerName.caller_name);
+       message.callerName = callerInfo.callerName.caller_name;
+       message.callertype = callerInfo.callerName.caller_type;
+     
+     })
+
+        return req.body.From;
+    })
+    .then((res) => {
+      client.lookups.phoneNumbers(req.body.From)
+      .fetch({type: 'carrier'})
+      .then(carrierInfo => {
+       console.log('in the promise method '+ carrierInfo.carrier.name);
+       message.carrierName = carrierInfo.carrier.name;
+       message.carrierType = carrierInfo.carrier.type;
+       message.mobileCountryCode = carrierInfo.carrier.mobile_country_code;
+
+       twiml.message('Your message has been logged and someone will respond shortly. ');
+       console.log('message callerName = ' + message.callerName );
+       console.log('message carrierName = ' + message.carrierName );
+       console.log('message carrierType  = ' +  message.carrierType);
+       console.log('message  = ' + message.message);
+        console.log('message  = ' + message.message);
+        console.log('messageId  = ' + message.messageId);
+        console.log('from = ' + message.from);
+        console.log('from city = ' + message.fromCity );
+        console.log('from state = ' + message.fromState);
+ // console.log('from country = ' + message.from);
+        console.log('from zip = ' + message.fromZip);
+        console.log('to = ' +  message.to);
+ /* console.log('to city = ' + req.body.ToCity);
+  console.log('to state = ' + req.body.ToState);
+  console.log('to country = ' + req.body.ToCountry);
+  console.log('to zip = ' + req.body.ToZip); */
+        console.log('SMS Status = ' + message.status);
+
+       message.save(function(err: any) {
+        if (err)
+          console.log(err);
+    });
+
+     })
+  
+    })
+    .then((res) => {
+        console.log ('Now save message');
+        console.log(res); // 123 : Notice that this `then` is called with the resolved value
+        return 123;
+    })
+
+}
+
+/* 
 export let listenSMSMessage = function(req: Request, resp: Response) {
    const twiml = new MessagingResponse();
    let  message = new Message();
@@ -140,7 +293,7 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
                 console.log(phone_number.callerName.caller_name)
               });   */
 
-
+/*
   twiml.message('Your message has been logged and someone will respond shortly. ');
   console.log('message  = ' + req.body.Body);
   console.log('messageId  = ' + req.body.MessageSid);
@@ -208,7 +361,7 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
   resp.writeHead(200, {'Content-Type': 'text/xml'});
   resp.end(twiml.toString());
 
-}
+} */
 
 export let getSMSMessage = function(req: Request, resp: Response) {
 
