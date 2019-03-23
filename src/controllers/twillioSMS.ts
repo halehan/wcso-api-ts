@@ -233,6 +233,7 @@ Promise.resolve(req.body.From)
         return 123;
     })
 
+    console.log('Prior to sending back');
     resp.writeHead(200, {'Content-Type': 'text/xml'});
     resp.end(twiml.toString());
 
