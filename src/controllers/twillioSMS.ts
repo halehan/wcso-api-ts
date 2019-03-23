@@ -204,22 +204,18 @@ Promise.resolve(req.body.From)
        message.mobileCountryCode = carrierInfo.carrier.mobile_country_code;
 
        twiml.message('Your message has been logged and someone will respond shortly. ');
-       console.log('message callerName = ' + message.callerName );
-       console.log('message carrierName = ' + message.carrierName );
-       console.log('message carrierType  = ' +  message.carrierType);
-       console.log('message  = ' + message.message);
+        console.log('message callerName = ' + message.callerName );
+        console.log('message carrierName = ' + message.carrierName );
+        console.log('message carrierType  = ' +  message.carrierType);
+        console.log('message  = ' + message.message);
         console.log('message  = ' + message.message);
         console.log('messageId  = ' + message.messageId);
         console.log('from = ' + message.from);
         console.log('from city = ' + message.fromCity );
         console.log('from state = ' + message.fromState);
- // console.log('from country = ' + message.from);
         console.log('from zip = ' + message.fromZip);
         console.log('to = ' +  message.to);
- /* console.log('to city = ' + req.body.ToCity);
-  console.log('to state = ' + req.body.ToState);
-  console.log('to country = ' + req.body.ToCountry);
-  console.log('to zip = ' + req.body.ToZip); */
+
         console.log('SMS Status = ' + message.status);
 
        message.save(function(err: any) {
@@ -236,6 +232,9 @@ Promise.resolve(req.body.From)
         console.log(res); // 123 : Notice that this `then` is called with the resolved value
         return 123;
     })
+
+    resp.writeHead(200, {'Content-Type': 'text/xml'});
+    resp.end(twiml.toString());
 
 }
 
