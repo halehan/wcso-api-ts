@@ -223,6 +223,7 @@ Promise.resolve(req.body.From)
         console.log('SMS Status = ' + message.status);
 
        message.save(function(err: any) {
+         console.log('In the message.save method');
         if (err)
           console.log(err);
     });
