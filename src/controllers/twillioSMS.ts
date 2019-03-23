@@ -21,9 +21,7 @@ import { setupMaster } from "cluster";
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
 var SALT_WORK_FACTOR = 10;
 
-const  accountSid = 'AC50ae9834031069c90cbbb4df1c31af67'; // Your Account SID from www.twilio.com/console
-const authToken = 'd425926cdd3a5cd7b50f3b237cd53ea3';   // Your Auth Token from www.twilio.com/console
-const twilioNumber = '+18504701512';
+
 
 
 var credentials = {
@@ -228,14 +226,14 @@ Promise.resolve(req.body.From)
     resp.writeHead(200, {'Content-Type': 'text/xml'});
     resp.end(twiml.toString());
 
-     })
+     }) 
   
     })
-    .then((res) => {
+ /*   .then((res) => {
         console.log ('Now save message');
         console.log(res); // 123 : Notice that this `then` is called with the resolved value
         return 123;
-    })
+    }) */
 
     
 
