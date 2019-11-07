@@ -491,7 +491,7 @@ export let postWebhook = (req: Request, res: Response) => {
     //    if (webhook_event && ( !(webhook_event.message === undefined || webhook_event.message.attachments === undefined)) ){
           if (webhook_event.message && ( !(webhook_event.message.attachments === undefined)) ){
           let messageAttachments = webhook_event.message.attachments;
-          console.log('message Has Attachment');
+          console.log('message Has Attachment.');
           
           if(messageAttachments[0].payload.coordinates)
           {
