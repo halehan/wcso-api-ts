@@ -1,10 +1,10 @@
 import { fetchHomeTimeline } from 'twitter-api-ts';
 import * as option from 'fp-ts/lib/Option';
 
-const CONSUMER_KEY = '49mP76jXOA54FTKvkytF1wTqe';
-const CONSUMER_SECRET = 'K0PcJaE6D47QrwcwUHb2GpzSdnxfQPXCZDcn4yepO0aPGYV21s';
-const TOKEN = '13948572-OupVqd0PrEreEJEq2qhz176pyZkQPxDeJpcaeE5hm';
-const TOKEN_SECRET = '1cLeVydAWzeKHR2gAIHKc2ksflCWYNF39WxckotGFwHE7';
+const CONSUMER_KEY = '';
+const CONSUMER_SECRET = '';
+const TOKEN = '';
+const TOKEN_SECRET = '';
 
 fetchHomeTimeline({
     oAuth: {
