@@ -201,7 +201,7 @@ Promise.resolve(req.body.From)
        message.carrierType = carrierInfo.carrier.type;
        message.mobileCountryCode = carrierInfo.carrier.mobile_country_code;
 
-       twiml.message('Your message has been logged and someone will respond shortly. ');
+       twiml.message('Your message has been logged and someone will respond ASAP. ');
         console.log('message callerName = ' + message.callerName );
         console.log('message carrierName = ' + message.carrierName );
         console.log('message carrierType  = ' +  message.carrierType);
