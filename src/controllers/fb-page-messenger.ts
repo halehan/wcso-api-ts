@@ -21,7 +21,7 @@ var credentials = {
   superSecret: "dog"
 }
 
-const messageTxt = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911.";
+const messageTxt = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911. ";
 
 var publicConfig = {
   key: Constants.GOOGLE_API_KEY,
