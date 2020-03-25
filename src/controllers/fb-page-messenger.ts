@@ -11,7 +11,7 @@ import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import * as moment from "moment";
 import * as GoogleMapsAPI from "googlemaps";
-import { Constants } from '../utils/constants';
+import { Constants } from "../utils/constants";
 import equalsIgnoreCase from "@composite/equals-ignore-case";
 var SALT_WORK_FACTOR = 10;
 

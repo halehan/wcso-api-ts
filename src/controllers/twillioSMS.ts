@@ -20,9 +20,9 @@ import { fromCompare } from "fp-ts/lib/Ord";
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
 var SALT_WORK_FACTOR = 10;
 
-const  accountSid = 'AC50ae9834031069c90cbbb4df1c31af67'; // Your Account SID from www.twilio.com/console
-const authToken = 'd425926cdd3a5cd7b50f3b237cd53ea3';   // Your Auth Token from www.twilio.com/console
-const twilioNumber = '+18504701512';
+const authToken = process.env.TWILIO_AUTHTOKEN;
+const  accountSid = process.env.TWILIO_ACCOUNTSID;
+const twilioNumber =  process.env.TWILIO_NUMBER;
 
 
 var credentials = {
