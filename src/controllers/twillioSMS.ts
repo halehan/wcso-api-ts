@@ -12,24 +12,25 @@ import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import * as moment from "moment";
 import * as GoogleMapsAPI from "googlemaps";
-import { Constants } from "../utils/constants";
+import { Constants } from '../utils/constants';
 import equalsIgnoreCase from "@composite/equals-ignore-case";
 // import * as twilio from "twilio";
 import { resolve } from "path";
 import { fromCompare } from "fp-ts/lib/Ord";
-import { setupMaster } from "cluster";
-const MessagingResponse = require("twilio").twiml.MessagingResponse;
+const MessagingResponse = require('twilio').twiml.MessagingResponse;
 var SALT_WORK_FACTOR = 10;
 
-const authToken = process.env.TWILIO_AUTHTOKEN;
-const  accountSid = process.env.TWILIO_ACCOUNTSID;
-const twilioNumber =  process.env.TWILIO_NUMBER;
+const  accountSid = 'AC50ae9834031069c90cbbb4df1c31af67'; // Your Account SID from www.twilio.com/console
+const authToken = 'd425926cdd3a5cd7b50f3b237cd53ea3';   // Your Auth Token from www.twilio.com/console
+const twilioNumber = '+18504701512';
+
 
 var credentials = {
-  email: "",
-  password: "",
+  email: '',
+  password: '',
   superSecret: "dog"
-};
+}
+
 
 const messageTxt = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911.";
 
@@ -43,14 +44,14 @@ var gmAPI = new GoogleMapsAPI(publicConfig);
 
 
     export let verifyToken = function(req: Request, res: Response) {
-    let token = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers["Authorization"];
+    let token = req.body.token || req.query.token || req.headers['x-access-token'] || req.headers['Authorization'];
 
     if( token ) {
 
         jwt.verify(token, credentials.superSecret, (err, decoded) => {
 
             if (err) {
-                return res.json({ success: false, message: "Failed to authenticate token." });    
+                return res.json({ success: false, message: 'Failed to authenticate token.' });    
             } else {
                 // all good, continue
               //  req.decoded = decoded; 
@@ -60,16 +61,16 @@ var gmAPI = new GoogleMapsAPI(publicConfig);
 
     }  else {
 
-        res.send({ success: false, message: "No token exists." });
+        res.send({ success: false, message: 'No token exists.' });
         
     }
-};
+}
 
 export let getSMSMessages = (req: Request, res: Response) => {
 
   var validToken = authCheck(req,res);
 
-  if( validToken == "success") { 
+  if( validToken == 'success') { 
 
     Message.find({threadStatus:"open", source:"SMS"}).sort("-createdTime").exec(function(err,messages){
       if (err){
@@ -79,220 +80,44 @@ export let getSMSMessages = (req: Request, res: Response) => {
     });
 
   } else {
-    res.json({ message: "Invalid Token" });	
+    res.json({ message: 'Invalid Token' });	
   }  
 
-};
+}
 
-export let testPromise = (req: Request, res: Response) => {
-
-  const client = require("twilio")(accountSid, authToken);
-
-  let  message: Message = new Message();
-
-  message.messageId = req.body.MessageSid;
-  message.message =  req.body.Body;
-  message.threadId  = req.body.MessageSid;
-  message.from = req.body.From;
-  message.to = req.body.To;
-  message.status = req.body.SmsStatus;
-  message.direction = "incoming-api";
-  message.toCity = req.body.ToCity;
-  message.fromCity = req.body.FromCity;
-  message.fromState = req.body.FromState;
-  message.fromZip = req.body.FromZip;
-  message.source = "SMS";
-  message.threadStatus = "open";
-  message.createdTime = moment().toDate();
-
-Promise.resolve(req.body.From)
-    .then((res) => {
-      client.lookups.phoneNumbers(req.body.From)
-      .fetch({type: "caller-name"})
-      .then(callerInfo => {
-       console.log("in the promise method "+ callerInfo.callerName.caller_name);
-       message.callerName = callerInfo.callerName.caller_name;
-       message.callertype = callerInfo.callerName.caller_type;
-     
-     });
-        return req.body.From;
-    })
-    .then((res) => {
-      client.lookups.phoneNumbers(req.body.From)
-      .fetch({type: "carrier"})
-      .then(carrierInfo => {
-       console.log("in the promise method "+ carrierInfo.carrier.name);
-       message.carrierName = carrierInfo.carrier.name;
-       message.carrierType = carrierInfo.carrier.type;
-       message.mobileCountryCode = carrierInfo.carrier.mobile_country_code;
-
-       message.save(function(err: any) {
-        if (err)
-          console.log(err);
-    });
-
-     });
-  
-    })
-    .then((res) => {
-        console.log ("Now save message");
-        console.log(res); // 123 : Notice that this `then` is called with the resolved value
-        return 123;
-    });
-
-};   
 
 export let listenSMSMessage = function(req: Request, resp: Response) {
   const twiml = new MessagingResponse();
-  const client = require("twilio")(accountSid, authToken);
+  let  message = new Message();
 
-  let message: any = new Message();
-
-  const nowDate: Date = moment().format("MMMM Do YYYY, h:mm:ss a");
-
-  message.messageId = req.body.MessageSid;
-  message.message =  req.body.Body;
-  message.threadId  = req.body.MessageSid;
-  message.from = req.body.From;
-  message.to = req.body.To;
-  message.status = req.body.SmsStatus;
-  message.direction = "incoming-api";
-  message.toCity = req.body.ToCity;
-  message.fromCity = req.body.FromCity;
-  message.fromState = req.body.FromState;
-  message.fromZip = req.body.FromZip;
-  message.source = "SMS";
-  message.threadStatus = "open";
-  message.createdTime = moment().toDate();
-
-    if(req.body.NumMedia !== "0") {
-      const url: string = req.body.MediaUrl0;
-
-      message.attachmentUrl = url;
-
-      if (message.message === undefined || message.message === null){
-        message.message = "Attachment";
-    }
-
-      console.log("url = " + url);
-
-    }
-
-Promise.resolve(req.body.From)
-    .then((res) => {
-      client.lookups.phoneNumbers(req.body.From)
-      .fetch({type: "caller-name"})
-      .then(callerInfo => {
-       console.log("in the promise method "+ callerInfo.callerName.caller_name);
-       message.callerName = callerInfo.callerName.caller_name;
-       message.callertype = callerInfo.callerName.caller_type;
-     });
-
-        return req.body.From;
-    })
-    .then((res) => {
-      client.lookups.phoneNumbers(req.body.From)
-      .fetch({type: "carrier"})
-      .then(carrierInfo => {
-       console.log("in the promise method "+ carrierInfo.carrier.name);
-       message.carrierName = carrierInfo.carrier.name;
-       message.carrierType = carrierInfo.carrier.type;
-       message.mobileCountryCode = carrierInfo.carrier.mobile_country_code;
-
-       twiml.message("Your message has been logged and someone will respond ASAP. ");
-        console.log("message callerName = " + message.callerName );
-        console.log("message carrierName = " + message.carrierName );
-        console.log("message carrierType  = " +  message.carrierType);
-        console.log("message  = " + message.message);
-        console.log("message  = " + message.message);
-        console.log("messageId  = " + message.messageId);
-        console.log("from = " + message.from);
-        console.log("from city = " + message.fromCity );
-        console.log("from state = " + message.fromState);
-        console.log("from zip = " + message.fromZip);
-        console.log("to = " +  message.to);
-
-        console.log("SMS Status = " + message.status);
-
-       message.save(function(err: any) {
-         console.log("In the message.save method");
-        if (err)
-          console.log(err);
-    });
-
-    console.log("Prior to sending back");
-    resp.writeHead(200, {"Content-Type": "text/xml"});
-    resp.end(twiml.toString());
-
-     }); 
-  
-    });
- /*   .then((res) => {
-        console.log ('Now save message');
-        console.log(res); // 123 : Notice that this `then` is called with the resolved value
-        return 123;
-    }) */
-
-    
-
-};
-
-/* 
-export let listenSMSMessage = function(req: Request, resp: Response) {
-   const twiml = new MessagingResponse();
-   let  message = new Message();
-
-   const client = require('twilio')(accountSid, authToken);
-
-   var promise = new Promise(function(resolve, reject) {
-
-    resolve(client.lookups.phoneNumbers(req.body.From)
-    .fetch({type: 'caller-name'})
-    .then(callerInfo => {
-     console.log('in the promise method '+ callerInfo.callerName);
-   })); 
-
-});
-
-    promise.then(function success(data) {
-      console.log('in the promise method '+ data);
-  }, function error(data) {
-      console.error(data);
-  });
-
-    client.lookups.phoneNumbers(req.body.From)
-       .fetch({type: 'carrier'})
-       .then(function (carrierInfo) {
-        
-        console.log(carrierInfo.carrier.name);
-        console.log(carrierInfo.carrier.type);
-
-        message.carrierName = carrierInfo.carrier.name;
-        message.carrierType = carrierInfo.carrier.type;
-        message.mobileCountryCode = carrierInfo.carrier.mobile_country_code;
-
-      }); /*
+  const client = require('twilio')(accountSid, authToken);
 
   client.lookups.phoneNumbers(req.body.From)
+       .fetch({type: 'carrier'})
+       .then(function (phone_number) {
+
+         message.carrierName = phone_number.carrier.name;
+         message.carrierType = phone_number.carrier.type;
+         message.mobileCountryCode = phone_number.carrier.mobile_country_code;
+
+      }); 
+
+      client.lookups.phoneNumbers(req.body.From)
        .fetch({type: 'caller-name'})
-       .then(callerInfo => {
-
-        return callerInfo;
-
-         message.callerName = callerInfo.callerName.caller_name;
-         message.callertype = callerInfo.callerName.caller_type;
+       .then(function (phone_number) {
+         
+         message.callerName = phone_number.callerName.caller_name;
+         message.callertype = phone_number.callerName.caller_type;
        
 
-      }); */
-
-
-/*  client.lookups.phoneNumbers(req.body.From)
-              .fetch({type: 'caller-name'})
-              .then(phone_number => {
-                console.log(phone_number.callerName.caller_name)
-              });   */
+      }); 
 
 /*
+  client.lookups.phoneNumbers(req.body.From)
+              .fetch({type: 'caller-name'})
+              .then(phone_number => console.log(phone_number.callerName.caller_name));  */
+
+
   twiml.message('Your message has been logged and someone will respond shortly. ');
   console.log('message  = ' + req.body.Body);
   console.log('messageId  = ' + req.body.MessageSid);
@@ -309,11 +134,11 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
   console.log('SMS Status = ' + req.body.SmsStatus);
 
 
-  console.log('------ Caller Meta  ---------------------------------');
+console.log('------ Caller Meta  ---------------------------------');
  
   console.log('Caller Name = ' + message.callerName);
   console.log('Caller Type = ' +  message.callertype);
-  console.log('Mobile Network Type = ' +  message.carrierType);
+  console.log('Mobile Network Type = ' +  message.mobileNetworkType);
   console.log('Mobile Country Code = ' + message.mobileCountryCode );
 
 
@@ -334,9 +159,6 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
           message.source = 'SMS';
           message.threadStatus = 'open';
           message.createdTime = moment().toDate();
-
-         
- 
             
             if(req.body.NumMedia !== '0') {
         //      const filename = `${req.body.MessageSid}.png`;
@@ -348,8 +170,11 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
                 message.message = 'Attachment';
             }
           
+        //      console.log('fileName = ' +filename);
               console.log('url = ' + url);
           
+         /*     request(url).pipe(fs.createWriteStream(filename))
+                .on('close', () => console.log('Image downloaded.')); */
             } 
         
             message.save(function(err: any) {
@@ -360,11 +185,11 @@ export let listenSMSMessage = function(req: Request, resp: Response) {
   resp.writeHead(200, {'Content-Type': 'text/xml'});
   resp.end(twiml.toString());
 
-} */
+}
 
 export let getSMSMessage = function(req: Request, resp: Response) {
 
-const client = require("twilio")(accountSid, authToken);
+const client = require('twilio')(accountSid, authToken);
 
 client.messages(req.params.messageId)
       .fetch()
@@ -374,16 +199,16 @@ client.messages(req.params.messageId)
 
       });  
 
-};
+}
 
 export let sendSMSMessage = function(req: Request, resp: Response) {
-    let twilio = require("twilio");
+    let twilio = require('twilio');
     let client = new twilio(accountSid, authToken);
-    let rtn: string = "";
+    let rtn: string = '';
 
     var validToken = authCheck(req,resp);
 
-    if( validToken == "success") { 
+    if( validToken == 'success') { 
 
 
     client.messages.create({
@@ -406,8 +231,8 @@ export let sendSMSMessage = function(req: Request, resp: Response) {
                
                 message.message = req.body.msg;
 
-                message.source = "SMS";
-                message.threadStatus = "open";
+                message.source = 'SMS';
+                message.threadStatus = 'open';
                 message.createdTime = moment().toDate();
             
                 message.save(function(err: any) {
@@ -420,29 +245,29 @@ export let sendSMSMessage = function(req: Request, resp: Response) {
   });
 
 } else {
-  resp.json({ message: "Invalid Token" });	
+  resp.json({ message: 'Invalid Token' });	
 }  
 
 
 
  
-};
+}
 
 export let authCheck = function(req: Request, resp: Response) {
 
- resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With,x-access-token");
+ resp.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With,x-access-token');
 
  console.log(req.headers);
   
-  var token = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers["authorization"];
+  var token = req.body.token || req.query.token || req.headers['x-access-token'] || req.headers['authorization'];
   var rtn;
   console.log(credentials.superSecret);
   jwt.verify(token, credentials.superSecret, (err, decoded) => {      
     if (err) {
-      rtn = "fail";    
+      rtn = 'fail';    
    //   resp.json({ message: 'Invalid Token' });
     } else {
-      rtn = "success";    
+      rtn = 'success';    
    //   resp.json({ message: 'Invalid Token' });
     }
 
@@ -450,11 +275,11 @@ export let authCheck = function(req: Request, resp: Response) {
 
   console.log(rtn);
   return rtn;
-};
+}
 
 export let get  = (req: Request, res: Response) => {
-  res.json({ message: "Hello and welcome" });
-};
+  res.json({ message: 'Hello and welcome' });
+}
 
 /*
 this will close the current session using the incoming phone number
@@ -463,7 +288,7 @@ export let closeTxt = (req: Request, res: Response) => {
 
 let validToken: string = authCheck(req, res);
 
-    if( validToken == "success") {
+    if( validToken == 'success') {
     
       Message.update({source: "SMS",  from: req.body.from, to: req.body.to}, {threadStatus: "closed"}, {multi: true},
         function(err, message) {
@@ -472,31 +297,31 @@ let validToken: string = authCheck(req, res);
         });
 
     } else {
-      res.json({ message: "Invalid Token" });	
+      res.json({ message: 'Invalid Token' });	
     }
 };
 
 export let getMessage = (req: Request, res: Response) => {
   
     var validToken = authCheck(req, res);
-    if( validToken == "success") {
+    if( validToken == 'success') {
 
-    Message.find({"messageId": req.params.message_id}, "messageId message threadId createdTime", function(err, message) {
+    Message.find({'messageId': req.params.message_id}, 'messageId message threadId createdTime', function(err, message) {
         if (err)
           res.send(err);
         res.json(message);
       });  
     } else {
-      res.json({ message: "Invalid Token" });	
+      res.json({ message: 'Invalid Token' });	
     }
   
-  };
+  }
 
 export let getMessages = (req: Request, res: Response) => {
 
   var validToken = authCheck(req,res);
 
-  if( validToken == "success") {
+  if( validToken == 'success') {
 
     Message.find({threadStatus:"open", source: "SMS"}).sort("-createdTime").exec(function(err,messages){
       if (err){
@@ -506,14 +331,14 @@ export let getMessages = (req: Request, res: Response) => {
     });
 
   } else {
-    res.json({ message: "Invalid Token" });	
+    res.json({ message: 'Invalid Token' });	
   }
 
-};
+}
 
 export let getUsers = (req: Request, res: Response) => {
 
-  if( authCheck(req, res) == "success") {
+  if( authCheck(req, res) == 'success') {
 
     User.find(function(err, users) {
       if (err){
@@ -523,16 +348,16 @@ export let getUsers = (req: Request, res: Response) => {
         res.send(users);
     });
       } else{
-        let testUser = { username: "test", password: "test", firstName: "Test", lastName: "User" };
+        let testUser = { username: 'test', password: 'test', firstName: 'Test', lastName: 'User' };
       //  res.json({ message: 'Invalid Token' });	
       res.json({ testUser });	
   }
 
-};
+}
 
 export let getContents = (req: Request, res: Response) => {
 
-  if( authCheck(req, res) == "success") {
+  if( authCheck(req, res) == 'success') {
 
    Content.find(function(err, contents) {
       if (err){
@@ -542,35 +367,35 @@ export let getContents = (req: Request, res: Response) => {
         res.send(contents);
     });
       } else{
-        let testUser = { username: "test", password: "test", firstName: "Test", lastName: "User" };
+        let testUser = { username: 'test', password: 'test', firstName: 'Test', lastName: 'User' };
       //  res.json({ message: 'Invalid Token' });	
       res.json({ testUser });	
   } 
 
-};
+}
 
 export let getContent = (req: Request, res: Response) => {
   
  var validToken = authCheck(req, res);
-  if( validToken == "success") {
+  if( validToken == 'success') {
 
-  Content.find({"contentKey": req.params.content_id}, "contentKey content", function(err, message) {
+  Content.find({'contentKey': req.params.content_id}, 'contentKey content', function(err, message) {
       if (err)
         res.send(err);
       res.json(message);
     });  
   } else {
-    res.json({ message: "Invalid Token" });	
+    res.json({ message: 'Invalid Token' });	
   } 
 
-};
+}
 
 export let sendMessage = (req: Request, res: Response) => {
   var validToken = authCheck(req, res);
-  if( validToken == "success") {
+  if( validToken == 'success') {
   
   var message = new Message();
-  var nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+  var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
     
   message.message = req.body.message;
   message.messageId = req.body.messageId;
@@ -578,7 +403,7 @@ export let sendMessage = (req: Request, res: Response) => {
   message.threadStatus = req.body.threadStatus;
  // message.userId = req.body.userId;
   message.createdTime = moment().toDate();
-  message.from = "WCSO";
+  message.from = 'WCSO';
 
   Message.find({"threadId": message.threadId}, "messageId message threadId threadStatus", function(err: any, messageCheck: any) {
    
@@ -592,13 +417,13 @@ export let sendMessage = (req: Request, res: Response) => {
            //     api.sendMessage(messageTxt + "\n\n Your message:  \n\n " + fbMessage.body, fbMessage.threadID);
                sendTextMessage(message.threadId, messageTxt + " \n\nYour Message:\n" + message.message);
           //   sendTextMessage(messagePayload);
-                res.json({ message: "Just sent Message to " + message.threadId});
+                res.json({ message: 'Just sent Message to ' + message.threadId});
 
             } else {
               sendTextMessage(message.threadId,  message.message);
               
          //   sendTextMessage(messagePayload);
-              res.json({ message: "Just sent Message to " + message.threadId});
+              res.json({ message: 'Just sent Message to ' + message.threadId});
             }
         }
       });
@@ -611,41 +436,41 @@ export let sendMessage = (req: Request, res: Response) => {
     });
 
 } else{
-  res.json({ message: "Invalid Token" });	
+  res.json({ message: 'Invalid Token' });	
 }
 
-};
+}
 
 export let getUser = (req: Request, res: Response) => {
 
   var validToken = authCheck(req, res);
   
-  if( validToken == "success") {
+  if( validToken == 'success') {
 
     User.findOne({
-    "loginId": req.params.loginId
+    'loginId': req.params.loginId
   }, function(err, user) {
 
     if (err) {
-      res.json({ success: false, message: "ERROR finding user " + err});
+      res.json({ success: false, message: 'ERROR finding user ' + err});
     } 
 
     if (!user) {
-      res.json({ success: false, message: "ERROR finding user " +  req.body.loginId });
+      res.json({ success: false, message: 'ERROR finding user ' +  req.body.loginId });
     } else if (user) {
         return  res.json(user.toJSON());
       }   
 
   });
  } else {
-  res.json({ message: "Invalid Token" });	
+  res.json({ message: 'Invalid Token' });	
  }
-};
+}
 
 export let authenticate = (req: Request, res: Response) => {
 
   
-  console.log("In the authenticate method");
+  console.log('In the authenticate method');
      // Set to true if you need the website to include cookies in the requests sent
      // to the API (e.g. in case you use sessions)
 
@@ -658,18 +483,18 @@ export let authenticate = (req: Request, res: Response) => {
     if (err) throw err;
 
     if (!user) {
-      putActivity(req.body.loginId, "FAIL", "Authentication failed. User not found.");
-      res.json({ success: false, message: "Authentication failed. User not found." });
+      putActivity(req.body.loginId, 'FAIL', 'Authentication failed. User not found.');
+      res.json({ success: false, message: 'Authentication failed. User not found.' });
     } else if (user) {
   //    console.log(req.body.password);
   //    console.log(bcrypt.compareSync(req.body.password, user.password)); // true
       // check if password matches
       if (!bcrypt.compareSync(req.body.password, user.password)) {
-        putActivity(req.body.loginId, "FAIL", "Authentication failed. Wrong password.");
-        res.json({ success: false, message: "Authentication failed. Wrong password." });
+        putActivity(req.body.loginId, 'FAIL', 'Authentication failed. Wrong password.');
+        res.json({ success: false, message: 'Authentication failed. Wrong password.' });
       } else {
 
-        putActivity(req.body.loginId, "SUCCESS", "Authentication successful." );
+        putActivity(req.body.loginId, 'SUCCESS', 'Authentication successful.' );
 
       // if user is found and password is right
       // create a token with only our given payload
@@ -684,7 +509,7 @@ export let authenticate = (req: Request, res: Response) => {
         // return the information including token as JSON
             res.json({
           success: true,
-          message: "Enjoy your token!",
+          message: 'Enjoy your token!',
           token: token
         });
       }   
@@ -693,7 +518,7 @@ export let authenticate = (req: Request, res: Response) => {
 
   });
 
-};
+}
 
 /**
  * GET /api
@@ -704,24 +529,24 @@ export let getApi = (req: Request, res: Response) => {
   var validToken = authCheck(req, res);
   console.log(validToken);
 
-  if( validToken == "success") {
-    res.json({ message: "hooray! welcome to our api being called from api.ts controller" });	
+  if( validToken == 'success') {
+    res.json({ message: 'hooray! welcome to our api being called from api.ts controller' });	
    } else {
-    res.json({ message: "Invalid Token" });	
+    res.json({ message: 'Invalid Token' });	
     }
   };
 
   export let postUser = (req: Request, res: Response) => {
 
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "POST, PUT, DELETE, GET");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, PUT, DELETE, GET');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
   
-    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader('Cache-Control', 'no-cache');
     
         
         var user = new User();		
-        var nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+        var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
         user.firstName = req.body.firstName;  
         user.lastName = req.body.lastName;
         user.loginId = req.body.loginId;
@@ -748,7 +573,7 @@ export let getApi = (req: Request, res: Response) => {
                   if (err)
                     res.send(err);
             
-                  res.json({ message: "User created from Controller! " + user.firstName +"  " + user.lastName });
+                  res.json({ message: 'User created from Controller! ' + user.firstName +'  ' + user.lastName });
                 });
              
             });
@@ -766,7 +591,7 @@ export let getApi = (req: Request, res: Response) => {
       if (err) throw err;
   
       if (!user) {
-        res.json({ success: false, message: "Authentication failed. User not found." });
+        res.json({ success: false, message: 'Authentication failed. User not found.' });
       } else if (user) {
     	
         user.firstName = req.body.firstName;  
@@ -790,7 +615,7 @@ export let getApi = (req: Request, res: Response) => {
         
         user.save((err, user) => {
           if (err) {
-              res.status(500).send(err);
+              res.status(500).send(err)
           }
           res.status(200).send(user);
       });  
@@ -803,28 +628,28 @@ export let getApi = (req: Request, res: Response) => {
           } 
         });  
   
-  };
+  }
 
   // Adds support for GET requests to our webhook
 export let getWebhook = (req: Request, res: Response) => { 
-    console.log("Calling getWebhook");
+    console.log('Calling getWebhook');
   
       // Parse the query params
-      let mode = req.query["hub.mode"];
-      console.log("hub.mode = " + mode);
-      let token = req.query["hub.verify_token"];
-      console.log("hub.verify_token = " + token);
-      let challenge = req.query["hub.challenge"];
-      console.log("hub.challenge = " + challenge);
+      let mode = req.query['hub.mode'];
+      console.log('hub.mode = ' + mode);
+      let token = req.query['hub.verify_token'];
+      console.log('hub.verify_token = ' + token);
+      let challenge = req.query['hub.challenge'];
+      console.log('hub.challenge = ' + challenge);
 
       // Checks if a token and mode is in the query string of the request
       if (mode && token) {
 
         // Checks the mode and token sent is correct
-        if (mode === "subscribe" && token === Constants.FACEBOOK_VERIFY_TOKEN) {
+        if (mode === 'subscribe' && token === Constants.FACEBOOK_VERIFY_TOKEN) {
           
           // Responds with the challenge token from the request
-          console.log("WEBHOOK_VERIFIED");
+          console.log('WEBHOOK_VERIFIED');
           res.status(200).send(challenge);
 
         } else {
@@ -832,18 +657,18 @@ export let getWebhook = (req: Request, res: Response) => {
           res.sendStatus(403);      
         }
     }
-};
+}
 
 /* ============================================================================= */
 
 export let postWebhook = (req: Request, res: Response) => {
-  console.log("Calling postWebhook...");
+  console.log('Calling postWebhook...');
   let body = req.body;
   
   
     // Checks this is an event from a page subscription
-    if (body.object === "page") {
-      console.log("body.object ===  page");
+    if (body.object === 'page') {
+      console.log('body.object ===  page');
       // Iterates over each entry - there may be multiple if batched
       body.entry.forEach(function(entry) {
   
@@ -859,7 +684,7 @@ export let postWebhook = (req: Request, res: Response) => {
     //    if (webhook_event && ( !(webhook_event.message === undefined || webhook_event.message.attachments === undefined)) ){
           if (webhook_event.message && ( !(webhook_event.message.attachments === undefined)) ){
           let messageAttachments = webhook_event.message.attachments;
-          console.log("message Has Attachment");
+          console.log('message Has Attachment');
           
           if(messageAttachments[0].payload.coordinates)
           {
@@ -867,13 +692,13 @@ export let postWebhook = (req: Request, res: Response) => {
               long = messageAttachments[0].payload.coordinates.long;
 
               const reverseGeocodeParams = {
-                "latlng":        lat + "," + long,
-                "language":      "en"
+                'latlng':        lat + ',' + long,
+                'language':      'en'
               };
                 gmAPI.reverseGeocode(reverseGeocodeParams, function(err, result){
                   console.log(result);
                   address = result.results[0].formatted_address;
-                  console.log("address " + address);
+                  console.log('address ' + address);
                   console.log(webhook_event.message);
                   console.log(webhook_event.message.mid);
 
@@ -907,7 +732,7 @@ export let postWebhook = (req: Request, res: Response) => {
           Message.find({
             threadId: sender// Search Filters
               },
-              ["messageId","message", "threadId","threadStatus"], // Columns to Return
+              ['messageId','message', 'threadId','threadStatus'], // Columns to Return
               {
                 skip:0, // Starting Row
                 limit:100, // Ending Row
@@ -920,12 +745,12 @@ export let postWebhook = (req: Request, res: Response) => {
                 console.log(err);
                   else {
                   console.log(msg);
-                  if (msg.length === 0  || ( msg.length > 0 && msg[0].threadStatus === "closed") || equalsIgnoreCase(webhook_event.message.text, "#LOCATION")) {
+                  if (msg.length === 0  || ( msg.length > 0 && msg[0].threadStatus === 'closed') || equalsIgnoreCase(webhook_event.message.text, '#LOCATION')) {
                     let txt = Constants.REPLY_MESSAGE + text;
                     sendLocationMessage(sender, txt);
                 }
               }
-        });
+        })
 
             console.log("=====================================================================");
             console.log("Sender = " +sender);
@@ -948,7 +773,7 @@ export let postWebhook = (req: Request, res: Response) => {
             message.createdTime = moment().toDate();
 
             if (saveMessage){
-              message.message = "Attachment";
+              message.message = 'Attachment';
               message.attachmentUrl = attachmentUrl;
             }
 
@@ -962,7 +787,7 @@ export let postWebhook = (req: Request, res: Response) => {
               message.address = address;
             }
 
-            message.from = "FaceBook";
+            message.from = 'FaceBook';
             
               message.save(function(err: any) {
                       if (err)
@@ -974,12 +799,12 @@ export let postWebhook = (req: Request, res: Response) => {
       });
   
       // Returns a '200 OK' response to all requests
-      res.status(200).send("EVENT_RECEIVED");
+      res.status(200).send('EVENT_RECEIVED');
     } else {
       // Returns a '404 Not Found' if event is not from a page subscription
       res.sendStatus(404);
     }
-}; 
+} 
 
 
 
@@ -1104,49 +929,49 @@ export let postWebhook = (req: Request, res: Response) => {
   let address = null;
   
   const reverseGeocodeParams = {
-    "latlng":        lat + "," + long,
-    "language":      "en"
+    'latlng':        lat + ',' + long,
+    'language':      'en'
   };
     gmAPI.reverseGeocode(reverseGeocodeParams, function(err, result){
       console.log(result);
       address = result.results[0].formatted_address;
-      console.log("address " + address);
+      console.log('address ' + address);
     });
   
-    const msg = "lat : " +lat + " long : " + long + "\n";
-    console.log("Location = " + msg);
+    const msg = 'lat : ' +lat + ' long : ' + long + '\n';
+    console.log('Location = ' + msg);
   
   return address;
-  };
+  }
 
   
  export let sendTextMessage = (sender, text) => {
-     let messageData = { text:text };
-     let VERIFY_TOKEN = "EAAHuAlckN1IBAIZBiZB9dfqXpEi9zk0PyzOd7sG7RwHALntFtxxEEFSt8o1CJcrMrW1bGMYkD4LQN0s1LZCDqknBziTvImDLBAsqIYiFEtaEOaALEoNfnFoI0DY986tpsjBPlDQsZAzhXJhTjtIY9IP9A6rwBujHz4jsH7vZBt4NN61BuUZCZBIKtdWV3nFihMZD";
+     let messageData = { text:text }
+     let VERIFY_TOKEN = 'EAAHuAlckN1IBAIZBiZB9dfqXpEi9zk0PyzOd7sG7RwHALntFtxxEEFSt8o1CJcrMrW1bGMYkD4LQN0s1LZCDqknBziTvImDLBAsqIYiFEtaEOaALEoNfnFoI0DY986tpsjBPlDQsZAzhXJhTjtIY9IP9A6rwBujHz4jsH7vZBt4NN61BuUZCZBIKtdWV3nFihMZD';
      request({
-       url: "https://graph.facebook.com/v2.11/me/messages",
+       url: 'https://graph.facebook.com/v2.11/me/messages',
        qs: {access_token: VERIFY_TOKEN},
-       method: "POST",
+       method: 'POST',
        json: { 
        recipient: {id:sender},
        message: messageData,
        }
      }, function(error, response, body) {
        if (error) {
-         console.log("Error sending message: ", error);
+         console.log('Error sending message: ', error)
        } else if (response.body.error) {
-         console.log("Error: ", response.body.error);
+         console.log('Error: ', response.body.error)
        }
-     });
-   };
+     })
+   }
 
    export let sendLocationMessage = (sender, text) => {
  //    let messageData = { text:text }
-     let VERIFY_TOKEN = "EAAHuAlckN1IBAIZBiZB9dfqXpEi9zk0PyzOd7sG7RwHALntFtxxEEFSt8o1CJcrMrW1bGMYkD4LQN0s1LZCDqknBziTvImDLBAsqIYiFEtaEOaALEoNfnFoI0DY986tpsjBPlDQsZAzhXJhTjtIY9IP9A6rwBujHz4jsH7vZBt4NN61BuUZCZBIKtdWV3nFihMZD";
+     let VERIFY_TOKEN = 'EAAHuAlckN1IBAIZBiZB9dfqXpEi9zk0PyzOd7sG7RwHALntFtxxEEFSt8o1CJcrMrW1bGMYkD4LQN0s1LZCDqknBziTvImDLBAsqIYiFEtaEOaALEoNfnFoI0DY986tpsjBPlDQsZAzhXJhTjtIY9IP9A6rwBujHz4jsH7vZBt4NN61BuUZCZBIKtdWV3nFihMZD';
      request({
-       url: "https://graph.facebook.com/v2.11/me/messages",
+       url: 'https://graph.facebook.com/v2.11/me/messages',
        qs: {access_token: VERIFY_TOKEN},
-       method: "POST",
+       method: 'POST',
        json: {
         "recipient":{
           "id": sender
@@ -1161,18 +986,18 @@ export let postWebhook = (req: Request, res: Response) => {
         }}
      }, function(error, response, body) {
        if (error) {
-         console.log("Error sending message: ", error);
+         console.log('Error sending message: ', error)
        } else if (response.body.error) {
-         console.log("Error: ", response.body.error);
+         console.log('Error: ', response.body.error)
        }
-     });
-   };
+     })
+   }
 
    export let getGoogleMapData = (sender) => {
            request({
-          url: "https://graph.facebook.com/v2.11/me/messages",
+          url: 'https://graph.facebook.com/v2.11/me/messages',
           qs: {key: Constants.GOOGLE_API_KEY},
-          method: "GET",
+          method: 'GET',
           json: {
            "recipient":{
              "id": sender
@@ -1180,18 +1005,18 @@ export let postWebhook = (req: Request, res: Response) => {
           }
         }, function(error, response, body) {
           if (error) {
-            console.log("Error getting message: ", error);
+            console.log('Error getting message: ', error)
           } else if (response.body.error) {
-            console.log("Error: ", response.body.error);
+            console.log('Error: ', response.body.error)
           }
-        });
-      };
+        })
+      }
 
       export let putActivity = (login, message, messageText) => {
-        console.log("IN THE putActivity method");
-        console.log("Login = " + login + " message = " + message);
+        console.log('IN THE putActivity method');
+        console.log('Login = ' + login + " message = " + message);
       var activity = new Activity();
-        var nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+        var nowDate = moment().format('MMMM Do YYYY, h:mm:ss a');
         activity.createdTime = moment().toDate();
         activity.loginId = login;
         activity.message = message;
@@ -1201,9 +1026,9 @@ export let postWebhook = (req: Request, res: Response) => {
           if (err)
            console.log(err);
           else 
-           console.log("Activity Created ");
+           console.log('Activity Created ');
         });  
     
-      };
+      }
     
       
