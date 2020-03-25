@@ -18,21 +18,21 @@ import equalsIgnoreCase from "@composite/equals-ignore-case";
 import { resolve } from "path";
 import { fromCompare } from "fp-ts/lib/Ord";
 const MessagingResponse = require("twilio").twiml.MessagingResponse;
-var SALT_WORK_FACTOR = 10;
+var SALT_WORK_FACTOR: number = 10;
 
-const authToken = process.env.TWILIO_AUTHTOKEN;
-const  accountSid = process.env.TWILIO_ACCOUNTSID;
-const twilioNumber =  process.env.TWILIO_NUMBER;
+const authToken: string = process.env.TWILIO_AUTHTOKEN;
+const  accountSid: string = process.env.TWILIO_ACCOUNTSID;
+const twilioNumber: string =  process.env.TWILIO_NUMBER;
 
 
 var credentials = {
-  email: "",
+  email:  "",
   password: "",
   superSecret: "dog"
 }
 
 
-const messageTxt = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911.";
+const messageTxt: string = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911.";
 
 var publicConfig = {
   key: Constants.GOOGLE_API_KEY,
@@ -40,8 +40,8 @@ var publicConfig = {
   encode_polylines:   false,
   secure:             true
 };
-var gmAPI = new GoogleMapsAPI(publicConfig);
 
+let gmAPI: GoogleMapsAPI = new GoogleMapsAPI(publicConfig);
 
     export let verifyToken: any =  (req: Request, resp: Response) => {
     let token: string = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers.Authorization;
