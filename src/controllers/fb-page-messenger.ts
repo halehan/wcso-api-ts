@@ -547,7 +547,9 @@ export let postWebhook = (req: Request, res: Response) => {
                 createdTime: -1 //Sort by Date Added DESC
             }
         },
-            function(err: any, msg: any){
+  //      (req: Request, res: Response, next: NextFunction) => {
+    //        function(err: any, msg: any){
+      (err: any, msg: any) => {
                 if (err)
                 console.log(err);
                   else {
@@ -557,7 +559,7 @@ export let postWebhook = (req: Request, res: Response) => {
                     sendLocationMessage(sender, txt);
                 }
               }
-        })
+        });
 
             console.log("=====================================================================");
             console.log("Sender = " +sender);

@@ -24,13 +24,11 @@ const authToken: string = process.env.TWILIO_AUTHTOKEN;
 const  accountSid: string = process.env.TWILIO_ACCOUNTSID;
 const twilioNumber: string =  process.env.TWILIO_NUMBER;
 
-
 var credentials = {
   email:  "",
   password: "",
   superSecret: "dog"
 }
-
 
 const messageTxt: string = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911.";
 
@@ -68,7 +66,7 @@ let gmAPI: GoogleMapsAPI = new GoogleMapsAPI(publicConfig);
 
 export let getSMSMessages: any = (req: Request, res: Response) => {
 
-  var validToken: string = authCheck(req,res);
+  const validToken: string = authCheck(req,res);
 
   if( validToken === "success") {
 
@@ -88,7 +86,7 @@ export let getSMSMessages: any = (req: Request, res: Response) => {
 
 export let listenSMSMessage: any = (req: Request, res: Response) => {
   const twiml = new MessagingResponse();
-  let  message = new Message();
+  let  message  = new Message();
 
   const client = require("twilio")(accountSid, authToken);
 
@@ -105,10 +103,9 @@ export let listenSMSMessage: any = (req: Request, res: Response) => {
       client.lookups.phoneNumbers(req.body.From)
        .fetch({type: "caller-name"})
        .then(function (phone_number) {
-         
+
          message.callerName = phone_number.callerName.caller_name;
          message.callertype = phone_number.callerName.caller_type;
-       
 
       }); 
 
