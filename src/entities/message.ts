@@ -1,8 +1,8 @@
 import * as mongoose from "mongoose";
 
-interface IMessage{  
+interface IMessage{
     createdTime:Date;
-    threadStatus:string;    
+    threadStatus:string;
     message:string;
     threadId:string;
     messageId:string;
@@ -13,29 +13,27 @@ interface IMessage{
     attachmentUrl:string;
     from:string;
     source:string;
-    date_sent: Date,
-    to: string,
-    status: string,
-    direction: string,
-    messaging_service_sid: string,
-    fromState: string,
-    fromCity: string,
-    fromZip: string,
-    toCity: string,
-    toState: string,
-    callerName: string,
-    callertype: string,
-    mobileCountryCode: string,
-    carrierName: string,
-    carrierType: string
-
-    
+    date_sent: Date;
+    to: string;
+    status: string;
+    direction: string;
+    messaging_service_sid: string;
+    fromState: string;
+    fromCity: string;
+    fromZip: string;
+    toCity: string;
+    toState: string;
+    callerName: string;
+    callertype: string;
+    mobileCountryCode: string;
+    carrierName: string;
+    carrierType: string;
 
 }
 
 interface IMessageModel extends IMessage, mongoose.Document{};
 
-var messageSchema = new mongoose.Schema({  
+let messageSchema = new mongoose.Schema({
     createdTime: Date,
     threadStatus: String,
     message: String,
@@ -59,5 +57,5 @@ var messageSchema = new mongoose.Schema({
 
 });
 
-var Message = mongoose.model<IMessageModel>("Message", messageSchema);  
-export = Message;  
+let Message = mongoose.model<IMessageModel>("Message", messageSchema);
+export = Message;
