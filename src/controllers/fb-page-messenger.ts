@@ -528,16 +528,16 @@ export let postWebhook = (req: Request, res: Response) => {
         }
 
         if ((webhook_event.message && webhook_event.message.text) || saveMessage) {
-          let text = webhook_event.message.text;
-          let sender = webhook_event.sender.id;
-          let recipient = webhook_event.recipient.id;
-          let timestamp = webhook_event.timestamp;
-          let mid = webhook_event.message.mid;
-          let seq = webhook_event.message.seq;
+          let text: string = webhook_event.message.text;
+          let sender: string = webhook_event.sender.id;
+          let recipient: string = webhook_event.recipient.id;
+          let timestamp: string = webhook_event.timestamp;
+          let mid: string = webhook_event.message.mid;
+          let seq: string = webhook_event.message.seq;
           console.log(webhook_event.message.text);
 
           Message.find({
-            threadId: sender// Search Filters
+            threadId: sender  //search Filters
               },
               ['messageId','message', 'threadId','threadStatus'], // Columns to Return
               {
@@ -550,12 +550,13 @@ export let postWebhook = (req: Request, res: Response) => {
   //      (req: Request, res: Response, next: NextFunction) => {
     //        function(err: any, msg: any){
       (err: any, msg: any) => {
-                if (err)
+                if (err) {
                 console.log(err);
-                  else {
+                } else {
                   console.log(msg);
-                  if (msg.length === 0  || ( msg.length > 0 && msg[0].threadStatus === 'closed') || equalsIgnoreCase(webhook_event.message.text, '#LOCATION')) {
-                    let txt = Constants.REPLY_MESSAGE + text;
+                  if (msg.length === 0  || ( msg.length > 0 && msg[0].threadStatus === "closed") ||
+                     equalsIgnoreCase(webhook_event.message.text, "#LOCATION")) {
+                    let txt: string = Constants.REPLY_MESSAGE + text;
                     sendLocationMessage(sender, txt);
                 }
               }
@@ -571,53 +572,51 @@ export let postWebhook = (req: Request, res: Response) => {
             console.log("=====================================================================");
 
             const  message = new Message();
-            const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
-            
+            const nowDate: string = moment().format("MMMM Do YYYY, h:mm:ss a");
+
             message.messageId = mid;
             message.threadId = sender;
-            message.source = 'FaceBook';
+            message.source = "FaceBook";
             if (text) {
               message.message = text;
             }
             message.threadStatus = "open";
             message.createdTime = moment().toDate();
 
-            if (saveMessage){
-              message.message = 'Attachment';
+            if (saveMessage) {
+              message.message = "Attachment";
               message.attachmentUrl = attachmentUrl;
             }
 
-            if(lat){
+            if(lat) {
               message.lat = lat;
             }
-            if (long){
+            if (long) {
               message.long = long;
             }
-            if (address){
+            if (address) {
               message.address = address;
             }
 
-            message.from = 'FaceBook';
-            
-              message.save(function(err: any) {
-                      if (err)
+            message.from = "FaceBook";
+        //    (err: any, msg: any) => {
+              message.save((err: any) => {
+                      if (err) {
                         console.log(err);
+                      }
                   });
-            
-        }
-        
+          }
       });
 
-      console.log('count = ' + count);
-  
-      // Returns a '200 OK' response to all requests
-      res.status(200).send('EVENT_RECEIVED');
+      console.log("count = " + count);
+
+      // returns a '200 OK' response to all requests
+      res.status(200).send("EVENT_RECEIVED");
     } else {
-      // Returns a '404 Not Found' if event is not from a page subscription
+      // returns a '404 Not Found' if event is not from a page subscription
       res.sendStatus(404);
     }
-} 
-
+};
 
 
 /* ============================================================================= */
