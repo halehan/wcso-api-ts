@@ -349,8 +349,8 @@ export let getApi = (req: Request, res: Response) => {
     res.setHeader("Cache-Control", "no-cache");
     
         
-        var user = new User();		
-        var nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+        let user = new User();
+        var nowDate: string = moment().format("MMMM Do YYYY, h:mm:ss a");
         user.firstName = req.body.firstName;  
         user.lastName = req.body.lastName;
         user.loginId = req.body.loginId;
