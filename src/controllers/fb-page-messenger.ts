@@ -13,7 +13,7 @@ import * as moment from "moment";
 import * as GoogleMapsAPI from "googlemaps";
 import { Constants } from "../utils/constants";
 import equalsIgnoreCase from "@composite/equals-ignore-case";
-var SALT_WORK_FACTOR = 10;
+var SALT_WORK_FACTOR: number = 10;
 
 var credentials = {
   email: "",
@@ -21,7 +21,7 @@ var credentials = {
   superSecret: "dog"
 }
 
-const messageTxt = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911. ";
+const messageTxt: string = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911. ";
 
 var publicConfig = {
   key: Constants.GOOGLE_API_KEY,
@@ -29,18 +29,18 @@ var publicConfig = {
   encode_polylines:   false,
   secure:             true
 };
-var gmAPI = new GoogleMapsAPI(publicConfig);
+let gmAPI: GoogleMapsAPI = new GoogleMapsAPI(publicConfig);
 
 
-    export let verifyToken = function(req: Request, res: Response) {
-    let token = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers["Authorization"];
+    export let verifyToken: any = (req: Request, res: Response) => {
+    let token: string = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers.Authorization;
 
     if( token ) {
 
         jwt.verify(token, credentials.superSecret, (err, decoded) => {
 
             if (err) {
-                return res.json({ success: false, message: "Failed to authenticate token." });    
+                return res.json({ success: false, message: "Failed to authenticate token." });
             } else {
                 // all good, continue
               //  req.decoded = decoded; 
@@ -51,25 +51,25 @@ var gmAPI = new GoogleMapsAPI(publicConfig);
     }  else {
 
         res.send({ success: false, message: "No token exists." });
-        
     }
-}
+};
 
-export let authCheck = function(req: Request, resp: Response) {
+export let authCheck: any = (req: Request, resp: Response) => {
 
- resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With,x-access-token");
+ resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, "
+ + "Authorization, X-Requested-With,x-access-token");
 
  console.log(req.headers);
-  
-  var token = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers["authorization"];
-  var rtn;
+
+  let token: string = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers.authorization;
+  let rtn;
   console.log(credentials.superSecret);
-  jwt.verify(token, credentials.superSecret, (err, decoded) => {      
+  jwt.verify(token, credentials.superSecret, (err, decoded) => {
     if (err) {
-      rtn = "fail";    
+      rtn = "fail";
    //   resp.json({ message: "Invalid Token" });
     } else {
-      rtn = "success";    
+      rtn = "success";
    //   resp.json({ message: "Invalid Token" });
     }
 
@@ -79,87 +79,88 @@ export let authCheck = function(req: Request, resp: Response) {
   return rtn;
 }
 
-export let get  = (req: Request, res: Response) => {
+export let get: any  = (req: Request, res: Response) => {
   res.json({ message: "Hello and welcome" });
-}
+};
 
 
-export let closeThread = (req: Request, res: Response) => {
+export let closeThread: any = (req: Request, res: Response) => {
 
-var validToken = authCheck(req, res);
+var validToken: string = authCheck(req, res);
 console.log(validToken);
 
-    if( validToken == "success") {
-    
+    if( validToken === "success") {
+
       Message.update({threadId:  req.body.threadId}, {threadStatus: "closed"}, {multi: true},
-        function(err, message) {
+        (err, message) =>  {
         console.log("updated MessageThread " + req.body.threadId);
-        res.json({ message: "closed thread " +  req.body.threadId});	
+        res.json({ message: "closed thread " +  req.body.threadId});
         });
     } else {
-      res.json({ message: "Invalid Token" });	
+      res.json({ message: "Invalid Token" });
     }
 };
 
-export let getMessage = (req: Request, res: Response) => {
-  
-    var validToken = authCheck(req, res);
-    if( validToken == "success") {
+export let getMessage: any = (req: Request, res: Response) => {
 
-    Message.find({"messageId": req.params.message_id, source: "FaceBook"}, "messageId message threadId createdTime", function(err, message) {
-        if (err)
+    var validToken: string = authCheck(req, res);
+    if( validToken === "success") {
+
+    Message.find({"messageId": req.params.message_id, source: "FaceBook"}, "messageId message threadId createdTime",
+         (err, message) => {
+        if (err) {
           res.send(err);
+        }
         res.json(message);
-      });  
+      });
     } else {
-      res.json({ message: "Invalid Token" });	
+      res.json({ message: "Invalid Token" });
     }
-  
-  }
+  };
 
-export let getMessages = (req: Request, res: Response) => {
+export let getMessages: any = (req: Request, res: Response) => {
 
-  var validToken = authCheck(req,res);
+  var validToken: string = authCheck(req,res);
 
-  if( validToken == "success") {
+  if( validToken === "success") {
 
-    Message.find({threadStatus:"open", source: "FaceBook"}).sort("-createdTime").exec(function(err,messages){
-      if (err){
+    Message.find({threadStatus:"open", source: "FaceBook"}).sort("-createdTime").exec((err,messages) => {
+      if (err) {
         res.send(err);
       }
         res.json(messages);
     });
 
   } else {
-    res.json({ message: "Invalid Token" });	
+    res.json({ message: "Invalid Token" });
   }
 
 }
 
-export let getUsers = (req: Request, res: Response) => {
+export let getUsers: any = (req: Request, res: Response) => {
 
-  if( authCheck(req, res) == "success") {
+  if( authCheck(req, res) === "success") {
 
-    User.find(function(err, users) {
+    User.find((err, users) =>  {
       if (err){
         res.send(err);
       }
    //     res.json(users);
         res.send(users);
     });
-      } else{
+      } else {
         let testUser = { username: "test", password: "test", firstName: "Test", lastName: "User" };
-      //  res.json({ message: "Invalid Token" });	
-      res.json({ testUser });	
+      //  res.json({ message: "Invalid Token" });
+      res.json({ testUser });
   }
 
 }
 
-export let getContents = (req: Request, res: Response) => {
+export let getContents: any = (req: Request, res: Response) => {
 
-  if( authCheck(req, res) == "success") {
+  if( authCheck(req, res) === "success") {
 
-   Content.find(function(err, contents) {
+   Content.find((err, contents) =>  {
       if (err){
         res.send(err);
       }
@@ -168,27 +169,28 @@ export let getContents = (req: Request, res: Response) => {
     });
       } else{
         let testUser = { username: "test", password: "test", firstName: "Test", lastName: "User" };
-      //  res.json({ message: "Invalid Token" });	
-      res.json({ testUser });	
+      //  res.json({ message: "Invalid Token" });
+      res.json({ testUser });
   } 
 
 }
 
-export let getContent = (req: Request, res: Response) => {
-  
- var validToken = authCheck(req, res);
-  if( validToken == "success") {
+export let getContent: any = (req: Request, res: Response) => {
 
-  Content.find({"contentKey": req.params.content_id}, "contentKey content", function(err, message) {
-      if (err)
+ var validToken: string = authCheck(req, res);
+  if( validToken === "success") {
+
+  Content.find({"contentKey": req.params.content_id}, "contentKey content", (err, message) => {
+      if (err) {
         res.send(err);
+      }
       res.json(message);
-    });  
+    });
   } else {
-    res.json({ message: "Invalid Token" });	
-  } 
+    res.json({ message: "Invalid Token" });
+  };
 
-}
+};
 
 export let sendMessage = (req: Request, res: Response) => {
   console.log("In the SendMessage.  Sending a FaceBook message");
@@ -196,7 +198,7 @@ export let sendMessage = (req: Request, res: Response) => {
   if( validToken == "success") {
   
   var message = new Message();
-  var nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+//  var nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
     
   message.message = req.body.message;
   message.messageId = req.body.messageId;
@@ -340,18 +342,17 @@ export let getApi = (req: Request, res: Response) => {
     }
   };
 
-  export let postUser = (req: Request, res: Response) => {
+  export let postUser: any  = (req: Request, res: Response) => {
 
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "POST, PUT, DELETE, GET");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-  
+
     res.setHeader("Cache-Control", "no-cache");
-    
-        
-        let user = new User();
-        var nowDate: string = moment().format("MMMM Do YYYY, h:mm:ss a");
-        user.firstName = req.body.firstName;  
+
+        let user: any = new User();
+     //   const nowDate: string = moment().format("MMMM Do YYYY, h:mm:ss a");
+        user.firstName = req.body.firstName;
         user.lastName = req.body.lastName;
         user.loginId = req.body.loginId;
         user.role = req.body.role;
@@ -364,41 +365,39 @@ export let getApi = (req: Request, res: Response) => {
         user.city = req.body.city;
         user.state = req.body.state;
         user.address = req.body.address;
-      
+
         bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt){
-          
             bcrypt.hash(req.body.password, salt, function(err, hash){
                 user.password = hash;
-                console.log(hash);    
-                console.log(bcrypt.compareSync("halehanp2$", hash)); // true
-                console.log(bcrypt.compareSync("catBoy", hash)); // false
-      
-                user.save(function(err) {
-                  if (err)
+                console.log(hash);
+           //     console.log(bcrypt.compareSync("halehanp2$", hash)); // true
+           //     console.log(bcrypt.compareSync("catBoy", hash)); // false
+
+                user.save((err) => {
+                  if (err) {
                     res.send(err);
-            
+                  }
                   res.json({ message: "User created from Controller! " + user.firstName +"  " + user.lastName });
                 });
-             
+
             });
         });
-      
       };
 
 
-  export let putUser = (req: Request, res: Response) => {
+  export let putUser: any = (req: Request, res: Response) => {
 
     User.findOne({
       loginId: req.params.loginId
     }, function(err, user) {
-  
-      if (err) throw err;
-  
+
+      if (err) { throw err; }
+
       if (!user) {
         res.json({ success: false, message: "Authentication failed. User not found." });
       } else if (user) {
-    	
-        user.firstName = req.body.firstName;  
+
+        user.firstName = req.body.firstName;
         user.lastName = req.body.lastName;
         user.role = req.body.role;
         user.phoneMobile = req.body.phoneMobile;
@@ -416,71 +415,71 @@ export let getApi = (req: Request, res: Response) => {
         promise.then(function () {
           res.status(200).send(user);
         }); */
-        
+
         user.save((err, user) => {
           if (err) {
               res.status(500).send(err)
           }
           res.status(200).send(user);
-      });  
-   
+      });
+
       /*      user.save(function (err, user) {
               if (err) { res.json(500, err) }
               res.json(201, user)
             })  */
 
-          } 
-        });  
-  
-  }
+          }
+        });
 
-  // Adds support for GET requests to our webhook
-export let getWebhook = (req: Request, res: Response) => { 
+  };
+
+  // adds support for GET requests to our webhook
+export let getWebhook: any = (req: Request, res: Response) => {
     console.log("Calling getWebhook 320");
-  
-      // Parse the query params
-      let mode = req.query["hub.mode"];
+
+      // parse the query params
+      let mode: string = req.query["hub.mode"];
       console.log("hub.mode = " + mode);
-      let token = req.query["hub.verify_token"];
+      let token: string = req.query["hub.verify_token"];
       console.log("hub.verify_token = " + token);
-      let challenge = req.query["hub.challenge"];
+      let challenge: string = req.query["hub.challenge"];
       console.log("hub.challenge = " + challenge);
 
-      // Checks if a token and mode is in the query string of the request
+      // checks if a token and mode is in the query string of the request
       if (mode && token) {
 
-        // Checks the mode and token sent is correct
+        // checks the mode and token sent is correct
         if (mode === "subscribe" && token === Constants.FACEBOOK_VERIFY_TOKEN) {
-          
-          // Responds with the challenge token from the request
+
+          // responds with the challenge token from the request
           console.log("WEBHOOK_VERIFIED");
           res.status(200).send(challenge);
 
         } else {
-          // Responds with "403 Forbidden" if verify tokens do not match
-          res.sendStatus(403);      
+          // responds with "403 Forbidden" if verify tokens do not match
+          res.sendStatus(403);
         }
     }
-}
+};
 
 /* ============================================================================= */
 
-export let postWebhook = (req: Request, res: Response) => {
+export let postWebhook : any = (req: Request, res: Response) => {
   console.log("Calling postWebhook...");
-  let body  = req.body;
+  let body: any  = req.body;
   let count: number = 0;
 
 
-    // Checks this is an event from a page subscription
+    // checks this is an event from a page subscription
     if (body.object === "page") {
       console.log("body.object ===  page");
-      // Iterates over each entry - there may be multiple if batched
+      // iterates over each entry - there may be multiple if batched
       body.entry.forEach(function(entry) {
         count = count + 1;
 
-        // Gets the message. entry.messaging is an array, but 
+        // gets the message. entry.messaging is an array, but 
         // will only ever contain one message, so we get index 0
-        let webhook_event = entry.messaging[0];
+        let webhook_event: any = entry.messaging[0];
         console.log("webhook_event " + webhook_event);
         let lat: number = null;
         let long: number = null;
@@ -572,7 +571,7 @@ export let postWebhook = (req: Request, res: Response) => {
             console.log("=====================================================================");
 
             const  message = new Message();
-            const nowDate: string = moment().format("MMMM Do YYYY, h:mm:ss a");
+    //        const nowDate: string = moment().format("MMMM Do YYYY, h:mm:ss a");
 
             message.messageId = mid;
             message.threadId = sender;
@@ -827,7 +826,7 @@ export let postWebhook = (req: Request, res: Response) => {
         console.log("IN THE putActivity method");
         console.log("Login = " + login + " message = " + message);
       var activity = new Activity();
-        var nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+     //   var nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
         activity.createdTime = moment().toDate();
         activity.loginId = login;
         activity.message = message;
