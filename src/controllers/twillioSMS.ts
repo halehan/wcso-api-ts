@@ -11,6 +11,7 @@ import * as jwt from "jsonwebtoken";
 import * as moment from "moment";
 import * as GoogleMapsAPI from "googlemaps";
 import { Constants } from "../utils/constants";
+import MessageReply = require("../entities/messageReply");
 
 const MessagingResponse: any = require("twilio").twiml.MessagingResponse;
 var SALT_WORK_FACTOR: number = 10;
@@ -70,8 +71,26 @@ export let getSMSMessages: any = (req: Request, res: Response) => {
 
 
 export let listenSMSMessage: any = (req: Request, res: Response) => {
+
   let twiml = new MessagingResponse();
   let message = new Message();
+
+  let messageReplyNumber: number = req.body.Body;
+  console.log(messageReplyNumber);
+
+  Message.find({ "messageId": req.params.message_id }, "messageId message threadId createdTime", (err, message) => {
+    if (err) {
+      res.send(err);
+    }
+    res.json(message);
+  });
+
+  MessageReply.find({ "messageNumber": messageReplyNumber }, "messageNumber messageTxt", (err, messageReply) => {
+    if (err) {
+      res.send(err);
+    }
+    twiml.message(messageReply);
+  });
 
   const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
 
@@ -100,7 +119,7 @@ export let listenSMSMessage: any = (req: Request, res: Response) => {
                 .then(phone_number => console.log(phone_number.callerName.caller_name));  */
 
 
-  twiml.message("Your message has been logged and someone will respond shortly. sir ");
+  
   console.log("message  = " + req.body.Body);
   console.log("messageId  = " + req.body.MessageSid);
   console.log("from = " + req.body.From);
