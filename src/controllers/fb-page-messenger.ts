@@ -271,7 +271,7 @@ export let getUser: any = (req: Request, res: Response) => {
  }
 }
 
-export let authenticate = (req: Request, res: Response) => {
+export let authenticate: any = (req: Request, res: Response) => {
 
   console.log("In the authenticate method");
      // set to true if you need the website to include cookies in the requests sent
@@ -327,7 +327,7 @@ export let authenticate = (req: Request, res: Response) => {
  * GET /api
  * List of API examples.
  */
-export let getApi = (req: Request, res: Response) => {
+export let getApi: any = (req: Request, res: Response) => {
   
   let validToken = authCheck(req, res);
   console.log(validToken);
@@ -363,8 +363,8 @@ export let getApi = (req: Request, res: Response) => {
         user.state = req.body.state;
         user.address = req.body.address;
 
-        bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt){
-            bcrypt.hash(req.body.password, salt, function(err, hash){
+        bcrypt.genSalt(SALT_WORK_FACTOR, (err, salt) => {
+            bcrypt.hash(req.body.password, salt, (err, hash) => {
                 user.password = hash;
                 console.log(hash);
            //     console.log(bcrypt.compareSync("halehanp2$", hash)); // true
@@ -380,7 +380,6 @@ export let getApi = (req: Request, res: Response) => {
             });
         });
       };
-
 
   export let putUser: any = (req: Request, res: Response) => {
 
@@ -415,7 +414,7 @@ export let getApi = (req: Request, res: Response) => {
 
         user.save((err, user) => {
           if (err) {
-              res.status(500).send(err)
+              res.status(500).send(err);
           }
           res.status(200).send(user);
       });
@@ -471,7 +470,7 @@ export let postWebhook : any = (req: Request, res: Response) => {
     if (body.object === "page") {
       console.log("body.object ===  page");
       // iterates over each entry - there may be multiple if batched
-      body.entry.forEach(function(entry) {
+      body.entry.forEach((entry) => {
         count = count + 1;
 
         // gets the message. entry.messaging is an array, but 
@@ -498,7 +497,7 @@ export let postWebhook : any = (req: Request, res: Response) => {
                 "latlng":        lat + "," + long,
                 "language":      "en"
               };
-                gmAPI.reverseGeocode(reverseGeocodeParams, function(err, result){
+                gmAPI.reverseGeocode(reverseGeocodeParams, (err, result) => {
                   console.log(result);
                   address = result.results[0].formatted_address;
                   console.log("address " + address);
@@ -739,7 +738,7 @@ export let postWebhook : any = (req: Request, res: Response) => {
     "latlng":        lat + "," + long,
     "language":      "en"
   };
-    gmAPI.reverseGeocode(reverseGeocodeParams, function(err, result){
+    gmAPI.reverseGeocode(reverseGeocodeParams, (err, result) => {
       console.log(result);
       address = result.results[0].formatted_address;
       console.log("address " + address);
@@ -791,7 +790,7 @@ export let postWebhook : any = (req: Request, res: Response) => {
             }
           ]
         }}
-     }, function(error, response, body) {
+     }, (error, response, body) => {
        if (error) {
          console.log("Error sending message: ", error)
        } else if (response.body.error) {
@@ -810,7 +809,7 @@ export let postWebhook : any = (req: Request, res: Response) => {
              "id": sender
            }
           }
-        }, function(error, response, body) {
+        }, (error, response, body) => {
           if (error) {
             console.log("Error getting message: ", error)
           } else if (response.body.error) {
@@ -834,8 +833,6 @@ export let postWebhook : any = (req: Request, res: Response) => {
            console.log(err);
           else 
            console.log("Activity Created ");
-        });  
-    
-      }
-    
-      
+        });
+
+      };
