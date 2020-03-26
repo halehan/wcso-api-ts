@@ -63,10 +63,8 @@ export let authCheck: any = (req: Request, resp: Response) => {
   jwt.verify(token, credentials.superSecret, (err, decoded) => {
     if (err) {
       rtn = "fail";
-   //   resp.json({ message: "Invalid Token" });
     } else {
       rtn = "success";
-   //   resp.json({ message: "Invalid Token" });
     }
 
   });
@@ -76,7 +74,7 @@ export let authCheck: any = (req: Request, resp: Response) => {
 }
 
 export let get: any  = (req: Request, res: Response) => {
-  res.json({ message: "Hello and welcome" });
+  res.json({ message: "Hello and welcome fool." });
 };
 
 
