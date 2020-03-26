@@ -70,7 +70,7 @@ export let getSMSMessages: any = (req: Request, res: Response) => {
 };
 
 
-export let listenSMSMessage: any = (req: Request, res: Response) => {
+export let listenSMSMessage: any = async (req: Request, res: Response) => {
 
   let twiml = new MessagingResponse();
   let message = new Message();
@@ -78,20 +78,20 @@ export let listenSMSMessage: any = (req: Request, res: Response) => {
   let messageReplyNumber: number = req.body.Body;
   console.log(messageReplyNumber);
 
-  MessageReply.find({ "messageNumber": messageReplyNumber }, "messageNumber messageTxt", (err, messageReply) => {
+ MessageReply.find({ "messageNumber": messageReplyNumber }, "messageNumber messageTxt", (err, messageReply) => {
     if (err) {
       console.error("Error " + err);
     }
     twiml.message(messageReply);
   });
 
-
+/*
   Message.find({ "messageId": req.params.message_id }, "messageId message threadId createdTime", (err, message) => {
     if (err) {
       res.send(err);
     }
     res.json(message);
-  });
+  }); */
 
   const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
 
