@@ -75,10 +75,9 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
   let twiml = new MessagingResponse();
   let message = new Message();
 
-  let messageReplyNumber: number = req.body.Body;
-  console.log(messageReplyNumber);
+  console.log(req.body.Body);
 
- MessageReply.find({ "messageNumber": messageReplyNumber }, "messageNumber messageTxt", (err, messageReply) => {
+ MessageReply.find({ "messageNumber": req.body.Body }, "messageTxt", (err, messageReply) => {
     if (err) {
       console.error("Error " + err);
     }
