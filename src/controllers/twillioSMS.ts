@@ -1,8 +1,6 @@
 "use strict";
 
-// import * as fs from "fs";
-// import * as async from "async";
-// import * as request from "request";
+
 import { Response, Request, NextFunction } from "express";
 import * as User from "../entities/user";
 import * as Message from "../entities/message";
@@ -13,10 +11,7 @@ import * as jwt from "jsonwebtoken";
 import * as moment from "moment";
 import * as GoogleMapsAPI from "googlemaps";
 import { Constants } from "../utils/constants";
-// import equalsIgnoreCase from "@composite/equals-ignore-case";
-// import * as twilio from "twilio";
-// import { resolve } from "path";
-// import { fromCompare } from "fp-ts/lib/Ord";
+
 const MessagingResponse: any = require("twilio").twiml.MessagingResponse;
 var SALT_WORK_FACTOR: number = 10;
 
@@ -44,10 +39,6 @@ export let verifyToken: any = (req: Request, resp: Response) => {
 
       if (err) {
         return resp.json({ success: false, message: "Failed to authenticate token." });
-      } else {
-        // all good, continue
-        //  req.decoded = decoded; 
-        // next();
       }
     });
 
@@ -132,8 +123,6 @@ export let listenSMSMessage: any = (req: Request, res: Response) => {
   console.log("Mobile Network Type = " + message.mobileNetworkType);
   console.log("Mobile Country Code = " + message.mobileCountryCode);
 
-  // const nowDate: string = moment().format("MMMM Do YYYY, h:mm:ss a");
-
   message.messageId = req.body.MessageSid;
   message.message = req.body.Body;
   message.threadId = req.body.MessageSid;
@@ -159,7 +148,6 @@ export let listenSMSMessage: any = (req: Request, res: Response) => {
       message.message = "Attachment";
     }
 
-    //      console.log("fileName = " +filename);
     console.log("url = " + url);
     /*     request(url).pipe(fs.createWriteStream(filename))
            .on("close", () => console.log("Image downloaded.")); */
@@ -175,19 +163,17 @@ export let listenSMSMessage: any = (req: Request, res: Response) => {
 
 };
 
-export let getSMSMessage = (req: Request, resp: Response) => {
+export let getSMSMessage: any = (req: Request, resp: Response) => {
 
   const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
 
   client.messages(req.params.messageId)
     .fetch()
-    .then(function (message) {
-
+    .then( (message) => {
       resp.json({ message: message });
-
     });
 
-}
+};
 
 export let sendSMSMessage = (req: Request, resp: Response) => {
   let twilio = require("twilio");
@@ -198,12 +184,11 @@ export let sendSMSMessage = (req: Request, resp: Response) => {
 
   if (validToken === "success") {
 
-
     client.messages.create({
       body: req.body.msg,
-      to: req.body.to,  // Text this number
-      from: Constants.TWILIO_NUMBER // From a valid Twilio number
-    }).then(function (results) {
+      to: req.body.to,  // text this number
+      from: Constants.TWILIO_NUMBER // from a valid Twilio number
+    }).then( (results) => {
 
       const message = new Message();
  //     const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
@@ -237,10 +222,7 @@ export let sendSMSMessage = (req: Request, resp: Response) => {
     resp.json({ message: "Invalid Token" });
   }
 
-
-
-
-}
+};
 
 export let authCheck: any =  (req: Request, resp: Response) => {
 
@@ -329,20 +311,16 @@ export let getUsers = (req: Request, res: Response) => {
 
   if (authCheck(req, res) === "success") {
 
-    User.find(function (err, users) {
+    User.find((err, users) => {
       if (err) {
         res.send(err);
       }
       //     res.json(users);
       res.send(users);
     });
-  } else {
-    let testUser = { username: "test", password: "test", firstName: "Test", lastName: "User" };
-    //  res.json({ message: "Invalid Token" });	
-    res.json({ testUser });
   }
 
-}
+};
 
 export let getContents = (req: Request, res: Response) => {
 
@@ -484,7 +462,7 @@ export let postUser = (req: Request, res: Response) => {
 
 
   var user = new User();
-  var nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+  // var nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
   user.firstName = req.body.firstName;
   user.lastName = req.body.lastName;
   user.loginId = req.body.loginId;
@@ -507,9 +485,10 @@ export let postUser = (req: Request, res: Response) => {
       console.log(bcrypt.compareSync("halehanp2$", hash)); // true
       console.log(bcrypt.compareSync("catBoy", hash)); // false
 
-      user.save(function (err) {
-        if (err)
+      user.save( (err) => {
+        if (err) {
           res.send(err);
+        }
 
         res.json({ message: "User created from Controller! " + user.firstName + "  " + user.lastName });
       });
@@ -566,9 +545,10 @@ export let putUser = (req: Request, res: Response) => {
     }
   });
 
-}
+};
 
 // Adds support for GET requests to our webhook
+/*
 export let getWebhook = (req: Request, res: Response) => {
   console.log("Calling getWebhook");
 
@@ -596,7 +576,7 @@ export let getWebhook = (req: Request, res: Response) => {
     }
   }
 }
-
+*/
 
 export let getAddress = (lat: number, long: number): string => {
   let address = null;
@@ -611,12 +591,11 @@ export let getAddress = (lat: number, long: number): string => {
     console.log("address " + address);
   });
 
-  const msg = "lat : " + lat + " long : " + long + "\n";
+  const msg: string = "lat : " + lat + " long : " + long + "\n";
   console.log("Location = " + msg);
 
   return address;
-}
-
+};
 
 export let putActivity = (login, message, messageText) => {
   console.log("IN THE putActivity method");
@@ -628,11 +607,12 @@ export let putActivity = (login, message, messageText) => {
   activity.message = message;
   activity.messageTxt = Constants.REPLY_MESSAGE;
 
-  activity.save(function (err) {
-    if (err)
+  activity.save((err) => {
+    if (err) {
       console.log(err);
-    else
+    } else {
       console.log("Activity Created ");
+    }
   });
 
 };
