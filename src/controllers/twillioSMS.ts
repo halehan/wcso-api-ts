@@ -1,8 +1,8 @@
 "use strict";
 
-import * as fs from "fs";
-import * as async from "async";
-import * as request from "request";
+// import * as fs from "fs";
+// import * as async from "async";
+// import * as request from "request";
 import { Response, Request, NextFunction } from "express";
 import * as User from "../entities/user";
 import * as Message from "../entities/message";
@@ -13,16 +13,12 @@ import * as jwt from "jsonwebtoken";
 import * as moment from "moment";
 import * as GoogleMapsAPI from "googlemaps";
 import { Constants } from "../utils/constants";
-import equalsIgnoreCase from "@composite/equals-ignore-case";
+// import equalsIgnoreCase from "@composite/equals-ignore-case";
 // import * as twilio from "twilio";
-import { resolve } from "path";
-import { fromCompare } from "fp-ts/lib/Ord";
+// import { resolve } from "path";
+// import { fromCompare } from "fp-ts/lib/Ord";
 const MessagingResponse: any = require("twilio").twiml.MessagingResponse;
 var SALT_WORK_FACTOR: number = 10;
-
-// const authToken: string = process.env.TWILIO_AUTHTOKEN;
-// const  accountSid: string = process.env.TWILIO_ACCOUNTSID;
-// const twilioNumber: string =  process.env.TWILIO_NUMBER;
 
 const credentials: any = {
   email: "",
