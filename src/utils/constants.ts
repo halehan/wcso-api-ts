@@ -16,5 +16,7 @@ export class Constants {
     static readonly REPLY_MESSAGE = 'We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.' + 
     '\n\n If you would like to share your location that may help us find you in the event that this is applicable.\n\n' +
     'Your Message: \n';
+
+    static readonly REPLY_SMS = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911.";
     
   }
