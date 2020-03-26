@@ -72,11 +72,22 @@ export let getSMSMessages: any = (req: Request, res: Response) => {
 
 export let test: any = async (req: Request, res: Response) => {
 
+  /*
   MessageReply.find({}, (err, users) => {
     if (err) { throw err; }
     res.json(users);
     console.log(users);
   });
+*/
+  let messageNumber: string = "6069";
+
+  MessageReply.find({ "messageNumber": messageNumber}, "messageTxt", (err, messageReply) => {
+    if (err) {
+      console.error("Error " + err);
+    }
+    console.log(messageReply);
+  });
+
 
  /* Comment.find({}, (err, users) => {
     if (err) { throw err; }
@@ -149,7 +160,6 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
                 .then(phone_number => console.log(phone_number.callerName.caller_name));  */
 
 
-  
   console.log("message  = " + req.body.Body);
   console.log("messageId  = " + req.body.MessageSid);
   console.log("from = " + req.body.From);
