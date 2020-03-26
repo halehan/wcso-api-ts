@@ -10,7 +10,8 @@
   "scripts": {
     "test": "gulp",
     "start": "tsc && node dist/index.js",
-    "build-ts": "tsc"
+    "build-ts": "tsc",
+    "tsc": "tsc"
   },
   "repository": {
     "type": "git",

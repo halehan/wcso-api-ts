@@ -34,7 +34,7 @@ interface IMessage{
 
 interface IMessageModel extends IMessage, mongoose.Document{};
 
-var messageSchema = new mongoose.Schema({  
+let messageSchema = new mongoose.Schema({  
     createdTime: Date,
     threadStatus: String,
     message: String,
@@ -58,5 +58,5 @@ var messageSchema = new mongoose.Schema({
 
 });
 
-var Message = mongoose.model<IMessageModel>("Message", messageSchema);  
+let Message = mongoose.model<IMessageModel>("Message", messageSchema);  
 export = Message;  

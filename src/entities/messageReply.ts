@@ -1,17 +1,16 @@
 import * as mongoose from "mongoose";
 
-interface IMessageReply{
+interface IMessageReply {
     messageNumber:string;
     messageTxt:string;
 }
 
-interface IMessageReplyModel extends IMessageReply, mongoose.Document {}
+interface IMessageReplyModel extends IMessageReply, mongoose.Document { }
 
-let messageReplySchema = new mongoose.Schema({
+let messageReplySchema: mongoose.Schema = new mongoose.Schema({
     messageNumber: String,
     messageTxt: String
-
 });
 
-let MessageReply = mongoose.model<IMessageReplyModel>("MessageReply", messageReplySchema);
+let MessageReply: any = mongoose.model<IMessageReplyModel>("reply", messageReplySchema);
 export = MessageReply;

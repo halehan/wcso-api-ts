@@ -45,6 +45,7 @@ app.use(morgan('dev')); // log requests to the console
 
 //Twillio SMS
 app.post("/sms/listen/", twilioSMS.listenSMSMessage);
+app.post("/sms/listen/test/", twilioSMS.test);
 app.post("/sms/send/", twilioSMS.sendSMSMessage);
 app.get("/sms/message/:messageId", twilioSMS.getSMSMessage);
 app.get("/sms/messages/", twilioSMS.getSMSMessages);

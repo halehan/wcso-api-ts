@@ -12,6 +12,7 @@ import * as moment from "moment";
 import * as GoogleMapsAPI from "googlemaps";
 import { Constants } from "../utils/constants";
 import MessageReply = require("../entities/messageReply");
+import Comment = require("../entities/comment");
 
 const MessagingResponse: any = require("twilio").twiml.MessagingResponse;
 var SALT_WORK_FACTOR: number = 10;
@@ -69,6 +70,34 @@ export let getSMSMessages: any = (req: Request, res: Response) => {
 
 };
 
+export let test: any = async (req: Request, res: Response) => {
+
+  MessageReply.find({}, (err, users) => {
+    if (err) { throw err; }
+    res.json(users);
+    console.log(users);
+  });
+
+ /* Comment.find({}, (err, users) => {
+    if (err) { throw err; }
+    res.json(users);
+    console.log(users);
+  });
+
+  let messageId: string = "SMfd382057d4ca8f39482bdfc3395a0f7d";
+
+  Message.find({ "messageId": messageId}, "messageId message threadId createdTime", (err, message) => {
+    if (err) {
+      res.send(err);
+    }
+    res.json(message);
+  });
+
+  let messageNumber: string = "6069";
+
+
+*/
+};
 
 export let listenSMSMessage: any = async (req: Request, res: Response) => {
 
