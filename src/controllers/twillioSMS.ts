@@ -383,7 +383,7 @@ export let getContent = (req: Request, res: Response) => {
   } 
 
 }
-
+/*
 export let sendMessage = (req: Request, res: Response) => {
   var validToken = authCheck(req, res);
   if( validToken == "success") {
@@ -422,7 +422,6 @@ export let sendMessage = (req: Request, res: Response) => {
         }
       });
 
- // sendTextMessage( message.threadId, messageTxt + " \n\nYour Message:\n" +  message.message);
 
   message.save(function(err) {
     if (err)
@@ -433,7 +432,7 @@ export let sendMessage = (req: Request, res: Response) => {
   res.json({ message: "Invalid Token" });	
 }
 
-}
+}  */
 
 export let getUser = (req: Request, res: Response) => {
 
@@ -654,7 +653,7 @@ export let getWebhook = (req: Request, res: Response) => {
 }
 
 /* ============================================================================= */
-
+/*
 export let postWebhook = (req: Request, res: Response) => {
   console.log("Calling postWebhook...");
   let body = req.body;
@@ -799,7 +798,7 @@ export let postWebhook = (req: Request, res: Response) => {
       res.sendStatus(404);
     }
 } 
-
+*/
 
 
 /* ============================================================================= */
@@ -938,9 +937,9 @@ export let postWebhook = (req: Request, res: Response) => {
   return address;
   }
 
-  
+  /*
  export let sendTextMessage = (sender, text) => {
-     let messageData = { text:text }
+     let messageData  = { text:text }
      let VERIFY_TOKEN = "EAAHuAlckN1IBAIZBiZB9dfqXpEi9zk0PyzOd7sG7RwHALntFtxxEEFSt8o1CJcrMrW1bGMYkD4LQN0s1LZCDqknBziTvImDLBAsqIYiFEtaEOaALEoNfnFoI0DY986tpsjBPlDQsZAzhXJhTjtIY9IP9A6rwBujHz4jsH7vZBt4NN61BuUZCZBIKtdWV3nFihMZD";
      request({
        url: "https://graph.facebook.com/v2.11/me/messages",
@@ -1005,7 +1004,7 @@ export let postWebhook = (req: Request, res: Response) => {
           }
         });
       };
-
+*/
       export let putActivity = (login, message, messageText) => {
         console.log("IN THE putActivity method");
         console.log("Login = " + login + " message = " + message);
