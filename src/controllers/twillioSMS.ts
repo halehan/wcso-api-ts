@@ -116,28 +116,30 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
 
   let twiml = new MessagingResponse();
   let message = new Message();
+  let msg: MessageReplyVo;
 
   console.log(req.body.Body);
-
+/*
   MessageReply.find({ "messageNumber": req.body.messageNumber}, "messageTxt messageNumber", (err, results: MessageReplyVo[]) => {
     if (err) {
       console.error("Error " + err);
     }
-    let msg: MessageReplyVo = results[0];
+    msg = results[0];
     console.log(msg);
     console.log(msg.messageTxt);
-    twiml.message(msg.messageTxt);
   });
+*/
 
-/*
   Message.find({ "messageId": req.params.message_id }, "messageId message threadId createdTime", (err, message) => {
     if (err) {
       res.send(err);
     }
     res.json(message);
-  }); */
+  }); 
 
   const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
+ // twiml.message(msg.messageTxt);
+  twiml.message("Your message has been logged and someone will respond shortly. ");
 
   client.lookups.phoneNumbers(req.body.From)
     .fetch({ type: "carrier" })
