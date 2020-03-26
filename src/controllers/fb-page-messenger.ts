@@ -188,18 +188,17 @@ export let getContent: any = (req: Request, res: Response) => {
     });
   } else {
     res.json({ message: "Invalid Token" });
-  };
+  }
 
 };
 
-export let sendMessage = (req: Request, res: Response) => {
+export let sendMessage: any = (req: Request, res: Response) => {
   console.log("In the SendMessage.  Sending a FaceBook message");
-  var validToken = authCheck(req, res);
-  if( validToken == "success") {
-  
-  var message = new Message();
-//  var nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
-    
+  let validToken: string = authCheck(req, res);
+  if( validToken === "success") {
+
+  let message = new Message();
+
   message.message = req.body.message;
   message.messageId = req.body.messageId;
   message.threadId = req.body.threadId;
@@ -211,13 +210,12 @@ export let sendMessage = (req: Request, res: Response) => {
 
   console.log("Message = " +  message.message);
 
-  Message.find({"threadId": message.threadId}, "messageId message threadId threadStatus", function(err: any, messageCheck: any) {
-   
-        if (err)
+  Message.find({"threadId": message.threadId}, "messageId message threadId threadStatus", (err: any, messageCheck: any) => {
+
+    if (err) {
            console.log(err);
-        else {
+    } else {
             if (messageCheck.length === 0 || messageCheck[messageCheck.length - 1].threadStatus === "closed") {
-              
 
                 console.log(messageCheck);
            //     api.sendMessage(messageTxt + "\n\n Your message:  \n\n " + fbMessage.body, fbMessage.threadID);
@@ -227,7 +225,7 @@ export let sendMessage = (req: Request, res: Response) => {
 
             } else {
               sendTextMessage(message.threadId,  message.message);
-              
+
          //   sendTextMessage(messagePayload);
               res.json({ message: "Just sent Message to " + message.threadId});
             }
@@ -236,26 +234,27 @@ export let sendMessage = (req: Request, res: Response) => {
 
  // sendTextMessage( message.threadId, messageTxt + " \n\nYour Message:\n" +  message.message);
 
-  message.save(function(err) {
-    if (err)
+  message.save((err) => {
+    if (err) {
     console.log(err);
+    }
     });
 
-} else{
-  res.json({ message: "Invalid Token" });	
+} else {
+  res.json({ message: "Invalid Token" });
 }
 
 }
 
-export let getUser = (req: Request, res: Response) => {
+export let getUser: any = (req: Request, res: Response) => {
 
-  var validToken = authCheck(req, res);
-  
-  if( validToken == "success") {
+  let validToken: any = authCheck(req, res);
+
+  if( validToken === "success") {
 
     User.findOne({
     "loginId": req.params.loginId
-  }, function(err, user) {
+  }, (err, user) => {
 
     if (err) {
       res.json({ success: false, message: "ERROR finding user " + err});
@@ -265,26 +264,24 @@ export let getUser = (req: Request, res: Response) => {
       res.json({ success: false, message: "ERROR finding user " +  req.body.loginId });
     } else if (user) {
         return  res.json(user.toJSON());
-      }   
-
+      }
   });
  } else {
-  res.json({ message: "Invalid Token" });	
+  res.json({ message: "Invalid Token" });
  }
 }
 
 export let authenticate = (req: Request, res: Response) => {
 
-  
   console.log("In the authenticate method");
-     // Set to true if you need the website to include cookies in the requests sent
+     // set to true if you need the website to include cookies in the requests sent
      // to the API (e.g. in case you use sessions)
 
   // var validToken = authCheck(req, res);
 
   User.findOne({
     loginId: req.body.loginId
-  }, function(err, user) {
+  }, (err, user) => {
 
     if (err) throw err;
 
@@ -318,7 +315,7 @@ export let authenticate = (req: Request, res: Response) => {
           message: "Enjoy your token!",
           token: token
         });
-      }   
+      }
 
     }
 
@@ -332,7 +329,7 @@ export let authenticate = (req: Request, res: Response) => {
  */
 export let getApi = (req: Request, res: Response) => {
   
-  var validToken = authCheck(req, res);
+  let validToken = authCheck(req, res);
   console.log(validToken);
 
   if( validToken == "success") {
@@ -389,7 +386,7 @@ export let getApi = (req: Request, res: Response) => {
 
     User.findOne({
       loginId: req.params.loginId
-    }, function(err, user) {
+    }, (err, user) => {
 
       if (err) { throw err; }
 
