@@ -118,9 +118,9 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
   let message = new Message();
   let msg: MessageReplyVo;
 
-  console.log(req.body.messageNumber);
+  console.log(req.body.Body);
 
-  MessageReply.find({ "messageNumber": req.body.messageNumber}, "messageTxt messageNumber", (err, results: MessageReplyVo[]) => {
+  MessageReply.find({ "messageNumber": req.body.Body}, "messageTxt messageNumber", (err, results: MessageReplyVo[]) => {
     if (err) {
       console.error("Error " + err);
     }
