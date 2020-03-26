@@ -13,9 +13,9 @@ import * as moment from "moment";
 import * as GoogleMapsAPI from "googlemaps";
 import { Constants } from "../utils/constants";
 import equalsIgnoreCase from "@composite/equals-ignore-case";
-var SALT_WORK_FACTOR: number = 10;
+ const SALT_WORK_FACTOR: number = 10;
 
-var credentials = {
+const credentials = {
   email: "",
   password: "",
   superSecret: "dog"
@@ -23,7 +23,7 @@ var credentials = {
 
 const messageTxt: string = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911. ";
 
-var publicConfig = {
+const publicConfig = {
   key: Constants.GOOGLE_API_KEY,
   stagger_time:       1000, // for elevationPath
   encode_polylines:   false,
@@ -41,10 +41,6 @@ let gmAPI: GoogleMapsAPI = new GoogleMapsAPI(publicConfig);
 
             if (err) {
                 return res.json({ success: false, message: "Failed to authenticate token." });
-            } else {
-                // all good, continue
-              //  req.decoded = decoded; 
-               // next();
             }
         });
 
@@ -62,7 +58,7 @@ export let authCheck: any = (req: Request, resp: Response) => {
  console.log(req.headers);
 
   let token: string = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers.authorization;
-  let rtn;
+  let rtn: string;
   console.log(credentials.superSecret);
   jwt.verify(token, credentials.superSecret, (err, decoded) => {
     if (err) {
@@ -504,8 +500,8 @@ export let postWebhook : any = (req: Request, res: Response) => {
                   console.log(webhook_event.message);
                   console.log(webhook_event.message.mid);
 
-                  Message.update({threadId: webhook_event.sender.id, threadStatus: "open"}, {lat: lat, long: long, address: address}, {multi: true},
-                  function(err, message) {
+                  Message.update({threadId: webhook_event.sender.id, threadStatus: "open"},
+                   {lat: lat, long: long, address: address}, {multi: true}, (err, message) => {
                   console.log("updated MessageThread " + webhook_event.sender.id);
                   });
 
@@ -517,9 +513,7 @@ export let postWebhook : any = (req: Request, res: Response) => {
                   attachmentUrl = messageAttachments[0].payload.url;
                   saveMessage = true;
                   console.log(attachmentUrl);
-    
                 }
-
         }
 
         if ((webhook_event.message && webhook_event.message.text) || saveMessage) {
@@ -532,14 +526,14 @@ export let postWebhook : any = (req: Request, res: Response) => {
           console.log(webhook_event.message.text);
 
           Message.find({
-            threadId: sender  //search Filters
+            threadId: sender  // search Filters
               },
-              ["messageId","message", "threadId","threadStatus"], // Columns to Return
+              ["messageId","message", "threadId","threadStatus"], // columns to Return
               {
-                skip:0, // Starting Row
-                limit:100, // Ending Row
+                skip:0, // starting Row
+                limit:150, // ending Row
                sort:{
-                createdTime: -1 //Sort by Date Added DESC
+                createdTime: -1 // sort by Date Added DESC
             }
         },
   //      (req: Request, res: Response, next: NextFunction) => {
@@ -621,13 +615,13 @@ export let postWebhook : any = (req: Request, res: Response) => {
     console.log("Calling postWebhook");
     let body = req.body;
     let saveMessage: boolean = false;
-    
+
       // Checks this is an event from a page subscription
       if (body.object === "page") {
         console.log("body.object ===  page");
         // Iterates over each entry - there may be multiple if batched
         body.entry.forEach(function(entry) {
-    
+
           // Gets the message. entry.messaging is an array, but 
           // will only ever contain one message, so we get index 0
           let webhook_event = entry.messaging[0];
@@ -639,7 +633,7 @@ export let postWebhook : any = (req: Request, res: Response) => {
           if (webhook_event && ( !(webhook_event.message === undefined || webhook_event.message.attachments === undefined)) ){
             let messageAttachments = webhook_event.message.attachments;
             console.log("message Has Attachment");
-            
+
             if(messageAttachments[0].payload.url){
               attachment = messageAttachments[0].payload.url;
               saveMessage = true;
@@ -731,9 +725,10 @@ export let postWebhook : any = (req: Request, res: Response) => {
       }
  } */
 
- export let getAddress = (lat: number, long: number): string => {
-  let address = null;
-  
+ export let getAddress: any = (lat: number, long: number): string => {
+
+  let address: string = null;
+
   const reverseGeocodeParams = {
     "latlng":        lat + "," + long,
     "language":      "en"
@@ -743,37 +738,37 @@ export let postWebhook : any = (req: Request, res: Response) => {
       address = result.results[0].formatted_address;
       console.log("address " + address);
     });
-  
-    const msg = "lat : " +lat + " long : " + long + "\n";
+
+    const msg: string = "lat : " +lat + " long : " + long + "\n";
     console.log("Location = " + msg);
-  
+
   return address;
   }
 
-  
- export let sendTextMessage = (sender, text) => {
-     let messageData = { text:text }
-     let VERIFY_TOKEN = Constants.FACEBOOK_PAGE_VERIFY_TOKEN;
+
+ export let sendTextMessage: any = (sender, text) => {
+     let messageData: any = { text:text }
+     let VERIFY_TOKEN: string = Constants.FACEBOOK_PAGE_VERIFY_TOKEN;
      request({
        url: "https://graph.facebook.com/v2.11/me/messages",
        qs: {access_token: VERIFY_TOKEN},
        method: "POST",
-       json: { 
+       json: {
        recipient: {id:sender},
        message: messageData,
        }
-     }, function(error, response, body) {
+     }, (error, response, body) =>  {
        if (error) {
-         console.log("Error sending message: ", error)
+         console.log("Error sending message: ", error);
        } else if (response.body.error) {
-         console.log("Error: ", response.body.error)
+         console.log("Error: ", response.body.error);
        }
-     })
-   }
+     });
+   };
 
-   export let sendLocationMessage = (sender, text) => {
+   export let sendLocationMessage: any = (sender, text) => {
  //    let messageData = { text:text }
-     let VERIFY_TOKEN = Constants.FACEBOOK_PAGE_VERIFY_TOKEN;
+     let VERIFY_TOKEN: string = Constants.FACEBOOK_PAGE_VERIFY_TOKEN;
      request({
        url: "https://graph.facebook.com/v2.11/me/messages",
        qs: {access_token: VERIFY_TOKEN},
@@ -815,24 +810,23 @@ export let postWebhook : any = (req: Request, res: Response) => {
           } else if (response.body.error) {
             console.log("Error: ", response.body.error)
           }
-        })
-      }
+        });
+      };
 
-      export let putActivity = (login, message, messageText) => {
+      export let putActivity: any = (login, message, messageText) => {
         console.log("IN THE putActivity method");
         console.log("Login = " + login + " message = " + message);
-      var activity = new Activity();
-     //   var nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+        let activity: any = new Activity();
         activity.createdTime = moment().toDate();
         activity.loginId = login;
         activity.message = message;
         activity.messageTxt = messageText;
-    
-        activity.save(function(err) {
-          if (err)
-           console.log(err);
-          else 
-           console.log("Activity Created ");
-        });
 
+        activity.save((err) => {
+          if (err) {
+           console.log(err);
+          } else {
+           console.log("Activity Created ");
+          }
+        });
       };
