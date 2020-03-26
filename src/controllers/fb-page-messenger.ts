@@ -139,12 +139,10 @@ export let getUsers: any = (req: Request, res: Response) => {
       if (err){
         res.send(err);
       }
-   //     res.json(users);
         res.send(users);
     });
       } else {
         let testUser = { username: "test", password: "test", firstName: "Test", lastName: "User" };
-      //  res.json({ message: "Invalid Token" });
       res.json({ testUser });
   }
 

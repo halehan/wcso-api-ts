@@ -17,22 +17,22 @@ import equalsIgnoreCase from "@composite/equals-ignore-case";
 // import * as twilio from "twilio";
 import { resolve } from "path";
 import { fromCompare } from "fp-ts/lib/Ord";
-const MessagingResponse = require("twilio").twiml.MessagingResponse;
+const MessagingResponse: any = require("twilio").twiml.MessagingResponse;
 var SALT_WORK_FACTOR: number = 10;
 
-const authToken: string = process.env.TWILIO_AUTHTOKEN;
-const  accountSid: string = process.env.TWILIO_ACCOUNTSID;
-const twilioNumber: string =  process.env.TWILIO_NUMBER;
+// const authToken: string = process.env.TWILIO_AUTHTOKEN;
+// const  accountSid: string = process.env.TWILIO_ACCOUNTSID;
+// const twilioNumber: string =  process.env.TWILIO_NUMBER;
 
-var credentials = {
+const credentials: any = {
   email:  "",
   password: "",
   superSecret: "dog"
-}
+};
 
 const messageTxt: string = "We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.  If this is an emergency situation please call 911.";
 
-var publicConfig = {
+const publicConfig: any = {
   key: Constants.GOOGLE_API_KEY,
   stagger_time:       1000, // for elevationPath
   encode_polylines:   false,
@@ -46,7 +46,7 @@ let gmAPI: GoogleMapsAPI = new GoogleMapsAPI(publicConfig);
 
     if( token ) {
 
-        jwt.verify(token, credentials.superSecret, (err, decoded) => {
+        jwt.verify(token, Constants.SUPERSECRET, (err, decoded) => {
 
             if (err) {
                 return resp.json({ success: false, message: "Failed to authenticate token." });
@@ -85,14 +85,14 @@ export let getSMSMessages: any = (req: Request, res: Response) => {
 
 
 export let listenSMSMessage: any = (req: Request, res: Response) => {
-  const twiml = new MessagingResponse();
+  let twiml = new MessagingResponse();
   let  message  = new Message();
 
-  const client = require("twilio")(accountSid, authToken);
+  const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
 
   client.lookups.phoneNumbers(req.body.From)
        .fetch({type: "carrier"})
-       .then(function(phone_number) {
+       .then((phone_number) => {
 
          message.carrierName = phone_number.carrier.name;
          message.carrierType = phone_number.carrier.type;
@@ -102,12 +102,12 @@ export let listenSMSMessage: any = (req: Request, res: Response) => {
 
       client.lookups.phoneNumbers(req.body.From)
        .fetch({type: "caller-name"})
-       .then(function (phone_number) {
+       .then((phone_number) => {
 
          message.callerName = phone_number.callerName.caller_name;
          message.callertype = phone_number.callerName.caller_type;
 
-      }); 
+      });
 
 /*
   client.lookups.phoneNumbers(req.body.From)
@@ -138,9 +138,7 @@ console.log("------ Caller Meta  ---------------------------------");
   console.log("Mobile Network Type = " +  message.mobileNetworkType);
   console.log("Mobile Country Code = " + message.mobileCountryCode );
 
-
- 
-  const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+  // const nowDate: string = moment().format("MMMM Do YYYY, h:mm:ss a");
 
           message.messageId = req.body.MessageSid;
           message.message =  req.body.Body;
@@ -156,27 +154,26 @@ console.log("------ Caller Meta  ---------------------------------");
           message.source = "SMS";
           message.threadStatus = "open";
           message.createdTime = moment().toDate();
-            
+
             if(req.body.NumMedia !== "0") {
         //      const filename = `${req.body.MessageSid}.png`;
-              const url = req.body.MediaUrl0;
+              const url: string = req.body.MediaUrl0;
 
               message.attachmentUrl = url;
 
               if (message.message === undefined || message.message === null){
                 message.message = "Attachment";
             }
-          
+
         //      console.log("fileName = " +filename);
               console.log("url = " + url);
-          
          /*     request(url).pipe(fs.createWriteStream(filename))
                 .on("close", () => console.log("Image downloaded.")); */
-            } 
-        
-            message.save(function(err: any) {
-                    if (err)
+            }
+            message.save((err: any) => {
+                    if (err) {
                       console.log(err);
+                    }
                 });
 
   res.writeHead(200, {"Content-Type": "text/xml"});
@@ -186,7 +183,7 @@ console.log("------ Caller Meta  ---------------------------------");
 
 export let getSMSMessage = function(req: Request, resp: Response) {
 
-const client = require("twilio")(accountSid, authToken);
+const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
 
 client.messages(req.params.messageId)
       .fetch()
@@ -200,18 +197,18 @@ client.messages(req.params.messageId)
 
 export let sendSMSMessage = function(req: Request, resp: Response) {
     let twilio = require("twilio");
-    let client = new twilio(accountSid, authToken);
+    let client = new twilio(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
     let rtn: string = "";
 
     var validToken = authCheck(req,resp);
 
-    if( validToken == "success") { 
+    if( validToken === "success") {
 
 
     client.messages.create({
         body: req.body.msg,
         to: req.body.to,  // Text this number
-        from: twilioNumber // From a valid Twilio number
+        from: Constants.TWILIO_NUMBER // From a valid Twilio number
     }).then(function(results) { 
 
       const  message = new Message();
@@ -259,7 +256,7 @@ export let authCheck = function(req: Request, resp: Response) {
   var token = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers["authorization"];
   var rtn;
   console.log(credentials.superSecret);
-  jwt.verify(token, credentials.superSecret, (err, decoded) => {      
+  jwt.verify(token, Constants.SUPERSECRET, (err, decoded) => {
     if (err) {
       rtn = "fail";    
    //   resp.json({ message: "Invalid Token" });
@@ -285,7 +282,7 @@ export let closeTxt = (req: Request, res: Response) => {
 
 let validToken: string = authCheck(req, res);
 
-    if( validToken == "success") {
+    if( validToken === "success") {
     
       Message.update({source: "SMS",  from: req.body.from, to: req.body.to}, {threadStatus: "closed"}, {multi: true},
         function(err, message) {
@@ -300,8 +297,8 @@ let validToken: string = authCheck(req, res);
 
 export let getMessage = (req: Request, res: Response) => {
   
-    var validToken = authCheck(req, res);
-    if( validToken == "success") {
+    const validToken = authCheck(req, res);
+    if( validToken === "success") {
 
     Message.find({"messageId": req.params.message_id}, "messageId message threadId createdTime", function(err, message) {
         if (err)
@@ -318,7 +315,7 @@ export let getMessages = (req: Request, res: Response) => {
 
   var validToken = authCheck(req,res);
 
-  if( validToken == "success") {
+  if( validToken === "success") {
 
     Message.find({threadStatus:"open", source: "SMS"}).sort("-createdTime").exec(function(err,messages){
       if (err){
@@ -335,7 +332,7 @@ export let getMessages = (req: Request, res: Response) => {
 
 export let getUsers = (req: Request, res: Response) => {
 
-  if( authCheck(req, res) == "success") {
+  if( authCheck(req, res) === "success") {
 
     User.find(function(err, users) {
       if (err){
@@ -981,7 +978,7 @@ export let postWebhook = (req: Request, res: Response) => {
             }
           ]
         }}
-     }, function(error, response, body) {
+     }, (error, response, body) => {
        if (error) {
          console.log("Error sending message: ", error)
        } else if (response.body.error) {
@@ -1000,32 +997,30 @@ export let postWebhook = (req: Request, res: Response) => {
              "id": sender
            }
           }
-        }, function(error, response, body) {
+        }, (error, response, body) => {
           if (error) {
             console.log("Error getting message: ", error)
           } else if (response.body.error) {
             console.log("Error: ", response.body.error)
           }
-        })
-      }
+        });
+      };
 
       export let putActivity = (login, message, messageText) => {
         console.log("IN THE putActivity method");
         console.log("Login = " + login + " message = " + message);
       var activity = new Activity();
-        var nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+   //     var nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
         activity.createdTime = moment().toDate();
         activity.loginId = login;
         activity.message = message;
         activity.messageTxt = messageText;
-    
+
         activity.save(function(err) {
           if (err)
            console.log(err);
           else 
            console.log("Activity Created ");
-        });  
-    
-      }
-    
-    
+        });
+
+      };
