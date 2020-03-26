@@ -100,7 +100,7 @@ export let listenSMSMessage: any = (req: Request, res: Response) => {
                 .then(phone_number => console.log(phone_number.callerName.caller_name));  */
 
 
-  twiml.message("Your message has been logged and someone will respond shortly. ");
+  twiml.message("Your message has been logged and someone will respond shortly. sir ");
   console.log("message  = " + req.body.Body);
   console.log("messageId  = " + req.body.MessageSid);
   console.log("from = " + req.body.From);
@@ -324,9 +324,9 @@ export let getUsers = (req: Request, res: Response) => {
 
 export let getContents = (req: Request, res: Response) => {
 
-  if (authCheck(req, res) == "success") {
+  if (authCheck(req, res) === "success") {
 
-    Content.find(function (err, contents) {
+    Content.find( (err, contents) =>{
       if (err) {
         res.send(err);
       }
@@ -434,7 +434,7 @@ export let authenticate = (req: Request, res: Response) => {
 
   });
 
-}
+};
 
 /**
  * GET /api
@@ -452,7 +452,7 @@ export let getApi = (req: Request, res: Response) => {
   }
 };
 
-export let postUser = (req: Request, res: Response) => {
+export let postUser: any = (req: Request, res: Response) => {
 
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, PUT, DELETE, GET");
@@ -499,13 +499,13 @@ export let postUser = (req: Request, res: Response) => {
 };
 
 
-export let putUser = (req: Request, res: Response) => {
+export let putUser: any = (req: Request, res: Response) => {
 
   User.findOne({
     loginId: req.params.loginId
-  }, function (err, user) {
+  }, (err, user) => {
 
-    if (err) throw err;
+    if (err) { throw err; }
 
     if (!user) {
       res.json({ success: false, message: "Authentication failed. User not found." });
@@ -537,46 +537,10 @@ export let putUser = (req: Request, res: Response) => {
         res.status(200).send(user);
       });
 
-      /*      user.save(function (err, user) {
-              if (err) { res.json(500, err) }
-              res.json(201, user)
-            })  */
-
     }
   });
 
 };
-
-// Adds support for GET requests to our webhook
-/*
-export let getWebhook = (req: Request, res: Response) => {
-  console.log("Calling getWebhook");
-
-  // Parse the query params
-  let mode = req.query["hub.mode"];
-  console.log("hub.mode = " + mode);
-  let token = req.query["hub.verify_token"];
-  console.log("hub.verify_token = " + token);
-  let challenge = req.query["hub.challenge"];
-  console.log("hub.challenge = " + challenge);
-
-  // Checks if a token and mode is in the query string of the request
-  if (mode && token) {
-
-    // Checks the mode and token sent is correct
-    if (mode === "subscribe" && token === Constants.FACEBOOK_VERIFY_TOKEN) {
-
-      // Responds with the challenge token from the request
-      console.log("WEBHOOK_VERIFIED");
-      res.status(200).send(challenge);
-
-    } else {
-      // Responds with "403 Forbidden" if verify tokens do not match
-      res.sendStatus(403);
-    }
-  }
-}
-*/
 
 export let getAddress = (lat: number, long: number): string => {
   let address = null;
