@@ -83,7 +83,7 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
       console.error("Error " + err);
     }
     twiml.message(messageReply);
-    console.log(messageReplyNumber);
+    console.log(messageReply);
   });
 
 /*
