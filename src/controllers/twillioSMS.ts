@@ -116,6 +116,7 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
 
   let twiml = new MessagingResponse();
   let message = new Message();
+  
   let msg: MessageReplyVo;
 
   console.log(req.body.Body);
@@ -127,7 +128,7 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
     msg = results[0];
     console.log(msg);
     console.log(msg.messageTxt);
-    res.json(msg.messageTxt);
+ //   res.json(msg.messageTxt);
   });
 
  /* Message.find({ "messageId": req.params.message_id }, "messageId message threadId createdTime", (err, message) => {
