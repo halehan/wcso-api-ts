@@ -1,14 +1,14 @@
 import * as mongoose from "mongoose";
 
 interface IMessageReply {
-    messageNumber:string;
+    messageNumber:number;
     messageTxt:string;
 }
 
 interface IMessageReplyModel extends IMessageReply, mongoose.Document { }
 
 let messageReplySchema: mongoose.Schema = new mongoose.Schema({
-    messageNumber: String,
+    messageNumber: Number,
     messageTxt: String
 });
 

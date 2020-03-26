@@ -11,6 +11,7 @@ import * as jwt from "jsonwebtoken";
 import * as moment from "moment";
 import * as GoogleMapsAPI from "googlemaps";
 import { Constants } from "../utils/constants";
+import { MessageReplyVo } from '../entities/messageReplyVo';
 import MessageReply = require("../entities/messageReply");
 import Comment = require("../entities/comment");
 
@@ -79,13 +80,14 @@ export let test: any = async (req: Request, res: Response) => {
     console.log(users);
   });
 */
-  let messageNumber: string = "6069";
-
-  MessageReply.find({ "messageNumber": messageNumber}, "messageTxt", (err, messageReply) => {
+  MessageReply.find({ "messageNumber": req.body.messageNumber}, "messageTxt messageNumber", (err, results: MessageReplyVo[]) => {
     if (err) {
       console.error("Error " + err);
     }
-    console.log(messageReply);
+    let msg: MessageReplyVo = results[0];
+    console.log(msg);
+    console.log(msg.messageTxt);
+    res.json(msg.messageTxt);
   });
 
 
@@ -117,12 +119,14 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
 
   console.log(req.body.Body);
 
- MessageReply.find({ "messageNumber": req.body.Body }, "messageTxt", (err, messageReply) => {
+  MessageReply.find({ "messageNumber": req.body.messageNumber}, "messageTxt messageNumber", (err, results: MessageReplyVo[]) => {
     if (err) {
       console.error("Error " + err);
     }
-    twiml.message(messageReply);
-    console.log(messageReply);
+    let msg: MessageReplyVo = results[0];
+    console.log(msg);
+    console.log(msg.messageTxt);
+    twiml.message(msg.messageTxt);
   });
 
 /*
