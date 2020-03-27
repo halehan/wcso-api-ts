@@ -128,7 +128,6 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
     msg = results[0];
     console.log(msg);
     console.log(msg.messageTxt);
- //   res.json(msg.messageTxt);
   });
 
  /* Message.find({ "messageId": req.params.message_id }, "messageId message threadId createdTime", (err, message) => {
@@ -139,7 +138,13 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
   }); */
 
   const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
-  twiml.message(msg.messageTxt);
+
+  if (msg === null) {
+    twiml.message(Constants.REPLY_SMS);
+  } else {
+    twiml.message(msg.messageTxt);
+  }
+
  // twiml.message("Your message has been logged and someone will respond shortly. ");
 
   client.lookups.phoneNumbers(req.body.From)
