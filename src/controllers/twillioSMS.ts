@@ -107,8 +107,7 @@ export let test: any = async (req: Request, res: Response) => {
    });
  
    let messageNumber: string = "6069";
- 
- 
+
  */
 };
 export let isEmpty  = (val: Object[]) => {
@@ -118,6 +117,13 @@ export let isEmpty  = (val: Object[]) => {
     return false;
   }
 
+};
+
+function isNumber(value: string | number): boolean
+{
+   return ((value != null) &&
+           (value !== "") &&
+           !isNaN(Number(value.toString())));
 }
 
 export let listenSMSMessage: any = async (req: Request, res: Response) => {
@@ -128,7 +134,7 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
   let msg: MessageReplyVo = null;
 
   console.log(req.body.Body);
-
+if (isNumber(req.body.Body)) {
   await MessageReply.find({ "messageNumber": req.body.Body }, "messageTxt messageNumber", (err, results: MessageReplyVo[]) => {
     if (err) {
       console.error("Error " + err);
@@ -141,6 +147,7 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
       }
     } catch (error) { console.error(error); }
   });
+}
 
   /* Message.find({ "messageId": req.params.message_id }, "messageId message threadId createdTime", (err, message) => {
      if (err) {
