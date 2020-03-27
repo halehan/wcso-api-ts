@@ -90,40 +90,22 @@ export let test: any = async (req: Request, res: Response) => {
     res.json(msg.messageTxt);
   });
 
-
-  /* Comment.find({}, (err, users) => {
-     if (err) { throw err; }
-     res.json(users);
-     console.log(users);
-   });
- 
-   let messageId: string = "SMfd382057d4ca8f39482bdfc3395a0f7d";
- 
-   Message.find({ "messageId": messageId}, "messageId message threadId createdTime", (err, message) => {
-     if (err) {
-       res.send(err);
-     }
-     res.json(message);
-   });
- 
-   let messageNumber: string = "6069";
-
- */
 };
-export let isEmpty = (val: Object[]) => {
+
+let isEmpty: any = (val: Object[]) => {
   if ((val === undefined || val === null || val.length === 0)) {
     return true;
   } else {
     return false;
   }
-
 };
 
-function isNumber(value: string | number): boolean {
+// function isNumber(value: string | number): boolean {
+let isNumber: any = (value: string | number): boolean => {
   return ((value != null) &&
     (value !== "") &&
     !isNaN(Number(value.toString())));
-}
+};
 
 export let listenSMSMessage: any = async (req: Request, res: Response) => {
 
