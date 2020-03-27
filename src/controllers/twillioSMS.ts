@@ -110,7 +110,7 @@ export let test: any = async (req: Request, res: Response) => {
 
  */
 };
-export let isEmpty  = (val: Object[]) => {
+export let isEmpty = (val: Object[]) => {
   if ((val === undefined || val === null || val.length === 0)) {
     return true;
   } else {
@@ -119,11 +119,10 @@ export let isEmpty  = (val: Object[]) => {
 
 };
 
-function isNumber(value: string | number): boolean
-{
-   return ((value != null) &&
-           (value !== "") &&
-           !isNaN(Number(value.toString())));
+function isNumber(value: string | number): boolean {
+  return ((value != null) &&
+    (value !== "") &&
+    !isNaN(Number(value.toString())));
 }
 
 export let listenSMSMessage: any = async (req: Request, res: Response) => {
@@ -134,20 +133,20 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
   let msg: MessageReplyVo = null;
 
   console.log(req.body.Body);
-if (isNumber(req.body.Body)) {
-  await MessageReply.find({ "messageNumber": req.body.Body }, "messageTxt messageNumber", (err, results: MessageReplyVo[]) => {
-    if (err) {
-      console.error("Error " + err);
-    }
-    try {
-      if (! isEmpty(results)) {
-        msg = results[0];
-        console.log(msg);
-        console.log(msg.messageTxt);
+  if (isNumber(req.body.Body)) {
+    await MessageReply.find({ "messageNumber": req.body.Body }, "messageTxt messageNumber", (err, results: MessageReplyVo[]) => {
+      if (err) {
+        console.error("Error " + err);
       }
-    } catch (error) { console.error(error); }
-  });
-}
+      try {
+        if (!isEmpty(results)) {
+          msg = results[0];
+          console.log(msg);
+          console.log(msg.messageTxt);
+        }
+      } catch (error) { console.error(error); }
+    });
+  }
 
   /* Message.find({ "messageId": req.params.message_id }, "messageId message threadId createdTime", (err, message) => {
      if (err) {
