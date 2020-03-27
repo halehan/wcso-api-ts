@@ -80,7 +80,7 @@ export let test: any = async (req: Request, res: Response) => {
     console.log(users);
   });
 */
-  MessageReply.find({ "messageNumber": req.body.messageNumber}, "messageTxt messageNumber", (err, results: MessageReplyVo[]) => {
+  MessageReply.find({ "messageNumber": req.body.messageNumber }, "messageTxt messageNumber", (err, results: MessageReplyVo[]) => {
     if (err) {
       console.error("Error " + err);
     }
@@ -91,26 +91,34 @@ export let test: any = async (req: Request, res: Response) => {
   });
 
 
- /* Comment.find({}, (err, users) => {
-    if (err) { throw err; }
-    res.json(users);
-    console.log(users);
-  });
-
-  let messageId: string = "SMfd382057d4ca8f39482bdfc3395a0f7d";
-
-  Message.find({ "messageId": messageId}, "messageId message threadId createdTime", (err, message) => {
-    if (err) {
-      res.send(err);
-    }
-    res.json(message);
-  });
-
-  let messageNumber: string = "6069";
-
-
-*/
+  /* Comment.find({}, (err, users) => {
+     if (err) { throw err; }
+     res.json(users);
+     console.log(users);
+   });
+ 
+   let messageId: string = "SMfd382057d4ca8f39482bdfc3395a0f7d";
+ 
+   Message.find({ "messageId": messageId}, "messageId message threadId createdTime", (err, message) => {
+     if (err) {
+       res.send(err);
+     }
+     res.json(message);
+   });
+ 
+   let messageNumber: string = "6069";
+ 
+ 
+ */
 };
+export let isEmpty  = (val: Object[]) => {
+  if ((val === undefined || val === null || val.length === 0)) {
+    return true;
+  } else {
+    return false;
+  }
+
+}
 
 export let listenSMSMessage: any = async (req: Request, res: Response) => {
 
@@ -121,25 +129,25 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
 
   console.log(req.body.Body);
 
-  await MessageReply.find({ "messageNumber": req.body.Body}, "messageTxt messageNumber", (err, results: MessageReplyVo[]) => {
+  await MessageReply.find({ "messageNumber": req.body.Body }, "messageTxt messageNumber", (err, results: MessageReplyVo[]) => {
     if (err) {
       console.error("Error " + err);
     }
     try {
-      if (results !== null) {
+      if (! isEmpty(results)) {
         msg = results[0];
         console.log(msg);
         console.log(msg.messageTxt);
       }
-    } catch (error) { console.error(error);}
+    } catch (error) { console.error(error); }
   });
 
- /* Message.find({ "messageId": req.params.message_id }, "messageId message threadId createdTime", (err, message) => {
-    if (err) {
-      res.send(err);
-    }
-    res.json(message);
-  }); */
+  /* Message.find({ "messageId": req.params.message_id }, "messageId message threadId createdTime", (err, message) => {
+     if (err) {
+       res.send(err);
+     }
+     res.json(message);
+   }); */
 
   const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
 
@@ -149,7 +157,7 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
     twiml.message(msg.messageTxt);
   }
 
- // twiml.message("Your message has been logged and someone will respond shortly. ");
+  // twiml.message("Your message has been logged and someone will respond shortly. ");
 
   client.lookups.phoneNumbers(req.body.From)
     .fetch({ type: "carrier" })
@@ -244,7 +252,7 @@ export let getSMSMessage: any = (req: Request, resp: Response) => {
 
   client.messages(req.params.messageId)
     .fetch()
-    .then( (message) => {
+    .then((message) => {
       resp.json({ message: message });
     });
 
@@ -263,10 +271,10 @@ export let sendSMSMessage = (req: Request, resp: Response) => {
       body: req.body.msg,
       to: req.body.to,  // text this number
       from: Constants.TWILIO_NUMBER // from a valid Twilio number
-    }).then( (results) => {
+    }).then((results) => {
 
       const message = new Message();
- //     const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
+      //     const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
 
       message.messageId = results.sid;
       message.threadId = results.sid;
@@ -283,7 +291,7 @@ export let sendSMSMessage = (req: Request, resp: Response) => {
       message.threadStatus = "open";
       message.createdTime = moment().toDate();
 
-      message.save( (err: any) => {
+      message.save((err: any) => {
         if (err) {
           console.log(err);
         }
@@ -299,7 +307,7 @@ export let sendSMSMessage = (req: Request, resp: Response) => {
 
 };
 
-export let authCheck: any =  (req: Request, resp: Response) => {
+export let authCheck: any = (req: Request, resp: Response) => {
 
   resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With,x-access-token");
 
@@ -401,7 +409,7 @@ export let getContents = (req: Request, res: Response) => {
 
   if (authCheck(req, res) === "success") {
 
-    Content.find( (err, contents) =>{
+    Content.find((err, contents) => {
       if (err) {
         res.send(err);
       }
@@ -560,7 +568,7 @@ export let postUser: any = (req: Request, res: Response) => {
       console.log(bcrypt.compareSync("halehanp2$", hash)); // true
       console.log(bcrypt.compareSync("catBoy", hash)); // false
 
-      user.save( (err) => {
+      user.save((err) => {
         if (err) {
           res.send(err);
         }
