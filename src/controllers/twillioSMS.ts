@@ -92,7 +92,7 @@ export let test: any = async (req: Request, res: Response) => {
 
 };
 
-let isEmpty: any = (val: Object[]) => {
+let isEmpty: any = (val: Object[]): boolean => {
   if ((val === undefined || val === null || val.length === 0)) {
     return true;
   } else {
