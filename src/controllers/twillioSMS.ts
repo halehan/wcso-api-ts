@@ -126,9 +126,11 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
       console.error("Error " + err);
     }
     try {
-      msg = results[0];
-      console.log(msg);
-      console.log(msg.messageTxt);
+      if (results !== null) {
+        msg = results[0];
+        console.log(msg);
+        console.log(msg.messageTxt);
+      }
     } catch (error) { console.error(error);}
   });
 
