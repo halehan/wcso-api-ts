@@ -111,10 +111,36 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
 
   let twiml = new MessagingResponse();
   let message = new Message();
+  let incoming = req.body.Body;
+
+  const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
+
+  await client.lookups.phoneNumbers(req.body.From)
+    .fetch({ type: "carrier" })
+    .then((phone_number) => {
+
+      message.carrierName = phone_number.carrier.name;
+      message.carrierType = phone_number.carrier.type;
+      message.mobileCountryCode = phone_number.carrier.mobile_country_code;
+
+    });
+
+    await client.lookups.phoneNumbers(req.body.From)
+    .fetch({ type: "caller-name" })
+    .then((phone_number) => {
+
+      message.callerName = phone_number.callerName.caller_name;
+      message.callertype = phone_number.callerName.caller_type;
+
+    });
 
   let msg: MessageReplyVo = null;
 
-  console.log(req.body.Body);
+  console.log(incoming);
+  let searchQuery: string = incoming.split(" near ")[0]; // extract the search query
+  let locationString: any = incoming.split(" near ")[1]; // extract the location
+  console.log(locationString);
+  console.log(searchQuery);
   if (isNumber(req.body.Body)) {
     await MessageReply.find({ "messageNumber": req.body.Body }, "messageTxt messageNumber", (err, results: MessageReplyVo[]) => {
       if (err) {
@@ -137,8 +163,6 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
      res.json(message);
    }); */
 
-  const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
-
   if (msg === null) {
     twiml.message(Constants.REPLY_SMS);
   } else {
@@ -147,24 +171,7 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
 
   // twiml.message("Your message has been logged and someone will respond shortly. ");
 
-  client.lookups.phoneNumbers(req.body.From)
-    .fetch({ type: "carrier" })
-    .then((phone_number) => {
-
-      message.carrierName = phone_number.carrier.name;
-      message.carrierType = phone_number.carrier.type;
-      message.mobileCountryCode = phone_number.carrier.mobile_country_code;
-
-    });
-
-  client.lookups.phoneNumbers(req.body.From)
-    .fetch({ type: "caller-name" })
-    .then((phone_number) => {
-
-      message.callerName = phone_number.callerName.caller_name;
-      message.callertype = phone_number.callerName.caller_type;
-
-    });
+  
 
   /*
     client.lookups.phoneNumbers(req.body.From)
@@ -215,14 +222,13 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
 
     message.attachmentUrl = url;
 
-    if (message.message === undefined || message.message === null) {
+    if (isEmpty( message.message)) {
       message.message = "Attachment";
     }
-
     console.log("url = " + url);
-    /*     request(url).pipe(fs.createWriteStream(filename))
-           .on("close", () => console.log("Image downloaded.")); */
+
   }
+
   message.save((err: any) => {
     if (err) {
       console.log(err);
