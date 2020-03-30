@@ -11,18 +11,20 @@ import * as jwt from "jsonwebtoken";
 import * as moment from "moment";
 import * as GoogleMapsAPI from "googlemaps";
 import { Constants } from "../utils/constants";
-import { MessageReplyVo } from '../entities/messageReplyVo';
+import { MessageReplyVo } from "../entities/messageReplyVo";
 import MessageReply = require("../entities/messageReply");
 import Comment = require("../entities/comment");
 
 const MessagingResponse: any = require("twilio").twiml.MessagingResponse;
 var SALT_WORK_FACTOR: number = 10;
 
+/*
 const credentials: any = {
   email: "",
   password: "",
   superSecret: "dog"
 };
+*/
 
 const publicConfig: any = {
   key: Constants.GOOGLE_API_KEY,
@@ -100,7 +102,6 @@ let isEmpty: any = (val: Object[]): boolean => {
   }
 };
 
-// function isNumber(value: string | number): boolean {
 let isNumber: any = (value: string | number): boolean => {
   return ((value != null) &&
     (value !== "") &&
@@ -125,7 +126,7 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
 
     });
 
-    await client.lookups.phoneNumbers(req.body.From)
+  await client.lookups.phoneNumbers(req.body.From)
     .fetch({ type: "caller-name" })
     .then((phone_number) => {
 
@@ -137,10 +138,7 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
   let msg: MessageReplyVo = null;
 
   console.log(incoming);
-  let searchQuery: string = incoming.split(" near ")[0]; // extract the search query
-  let locationString: any = incoming.split(" near ")[1]; // extract the location
-  console.log(locationString);
-  console.log(searchQuery);
+
   if (isNumber(req.body.Body)) {
     await MessageReply.find({ "messageNumber": req.body.Body }, "messageTxt messageNumber", (err, results: MessageReplyVo[]) => {
       if (err) {
@@ -169,15 +167,10 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
     twiml.message(msg.messageTxt);
   }
 
-  // twiml.message("Your message has been logged and someone will respond shortly. ");
-
-  
-
   /*
     client.lookups.phoneNumbers(req.body.From)
                 .fetch({type: "caller-name"})
                 .then(phone_number => console.log(phone_number.callerName.caller_name));  */
-
 
   console.log("message  = " + req.body.Body);
   console.log("messageId  = " + req.body.MessageSid);
@@ -192,7 +185,6 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
   console.log("to country = " + req.body.ToCountry);
   console.log("to zip = " + req.body.ToZip);
   console.log("SMS Status = " + req.body.SmsStatus);
-
 
   console.log("------ Caller Meta  ---------------------------------");
 
@@ -217,16 +209,14 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
   message.createdTime = moment().toDate();
 
   if (req.body.NumMedia !== "0") {
-    //      const filename = `${req.body.MessageSid}.png`;
     const url: string = req.body.MediaUrl0;
 
     message.attachmentUrl = url;
 
-    if (isEmpty( message.message)) {
+    if (isEmpty(message.message)) {
       message.message = "Attachment";
     }
     console.log("url = " + url);
-
   }
 
   message.save((err: any) => {
@@ -309,7 +299,7 @@ export let authCheck: any = (req: Request, resp: Response) => {
 
   var token = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers.authorization;
   var rtn;
-  console.log(credentials.superSecret);
+
   jwt.verify(token, Constants.SUPERSECRET, (err, decoded) => {
     if (err) {
       rtn = "fail";
@@ -327,7 +317,7 @@ export let authCheck: any = (req: Request, resp: Response) => {
 
 export let get = (req: Request, res: Response) => {
   res.json({ message: "Hello and welcome" });
-}
+};
 
 /*
 this will close the current session using the incoming phone number
@@ -601,32 +591,25 @@ export let putUser: any = (req: Request, res: Response) => {
       user.state = req.body.state;
       user.address = req.body.address;
 
-      /*    let promise = user.save();
-  
-          promise.then(function () {
-            res.status(200).send(user);
-          }); */
-
       user.save((err, user) => {
         if (err) {
           res.status(500).send(err)
         }
         res.status(200).send(user);
       });
-
     }
   });
 
 };
 
-export let getAddress = (lat: number, long: number): string => {
-  let address = null;
+export let getAddress: any = (lat: number, long: number): string => {
+  let address: string;
 
-  const reverseGeocodeParams = {
+  const reverseGeocodeParams: any = {
     "latlng": lat + "," + long,
     "language": "en"
   };
-  gmAPI.reverseGeocode(reverseGeocodeParams, function (err, result) {
+  gmAPI.reverseGeocode(reverseGeocodeParams,  (err: Error, result: any) => {
     console.log(result);
     address = result.results[0].formatted_address;
     console.log("address " + address);
@@ -638,10 +621,10 @@ export let getAddress = (lat: number, long: number): string => {
   return address;
 };
 
-export let putActivity = (login, message, messageText) => {
+export let putActivity: any = (login: string, message, messageText) => {
   console.log("IN THE putActivity method");
   console.log("Login = " + login + " message = " + message);
-  var activity = new Activity();
+  let activity: any = new Activity();
   //     var nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
   activity.createdTime = moment().toDate();
   activity.loginId = login;
@@ -656,4 +639,70 @@ export let putActivity = (login, message, messageText) => {
     }
   });
 
+};
+
+export let deleteReply: any = (req: Request, res: Response) => {
+
+  let id: string = req.params.id;
+
+  MessageReply.findByIdAndRemove(id, (err: Error) => {
+
+    if (err) { return res.status(500).send(err); }
+    const response: any = {
+      message: "Reply " + id + " successfully deleted",
+      id: id
+    };
+    return res.status(200).send(response);
+  });
+};
+
+export let getReplies: any = (req: Request, res: Response) => {
+
+  let validToken: string = authCheck(req, res);
+  if (validToken === "success") {
+
+    MessageReply.find({}, (err: Error, replies: MessageReplyVo[]) => {
+      if (err) { throw err; }
+      res.json(replies);
+      console.log(replies);
+    });
+  } else {
+    res.json({ message: "Invalid Token" });
+  }
+};
+
+export let newReply: any = (req: Request, res: Response) => {
+  const messageReply: any = new MessageReply(req.body);
+
+  messageReply.save((err: Error, msg: any) => {
+    if (err) { return res.status(500).send(err); }
+      const response: any = {
+        message: "Reply successfully inserted ",
+        id: msg.id
+      };
+      return res.status(200).send(response);
+  });
+
+};
+
+export let updateReply: any = (req: Request, res: Response) => {
+
+  const id: string = req.body._id;
+  const messageReply: any = new MessageReply(req.body);
+
+  MessageReply.findByIdAndUpdate(
+    id,
+    messageReply,
+    (err: Error, result: any) => {
+      if (err) {
+        console.log(err);
+        res.send(err);
+      } else {
+       const message: any = result
+        ? "Updated successfully"
+        : "MessageReply " + id + " not found :(";
+      res.send(message);
+      }
+    }
+  );
 };

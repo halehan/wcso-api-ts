@@ -281,7 +281,7 @@ export let authenticate = (req: Request, res: Response) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
  // res.setHeader("Access-Control-Allow-Headers", 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json');
   
-  console.log('In the authenticate methodxxxx');
+  console.log('In the authenticate method');
      // Set to true if you need the website to include cookies in the requests sent
      // to the API (e.g. in case you use sessions)
 
