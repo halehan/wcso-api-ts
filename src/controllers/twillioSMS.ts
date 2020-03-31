@@ -673,9 +673,14 @@ export let getReplies: any = (req: Request, res: Response) => {
 
 export let newReply: any = (req: Request, res: Response) => {
   const messageReply: any = new MessageReply(req.body);
+  console.log("messageReply = " + messageReply);
 
   messageReply.save((err: Error, msg: any) => {
-    if (err) { return res.status(500).send(err); }
+    if (err) {
+      console.log(err);
+      return res.status(500).send(err);
+    }
+    console.log("from save = " + msg);
       const response: any = {
         message: "Reply successfully inserted ",
         id: msg.id
