@@ -15,6 +15,7 @@ import { MessageReplyVo } from "../entities/messageReplyVo";
 import MessageReply = require("../entities/messageReply");
 import Comment = require("../entities/comment");
 
+
 const MessagingResponse: any = require("twilio").twiml.MessagingResponse;
 var SALT_WORK_FACTOR: number = 10;
 
@@ -56,22 +57,21 @@ export let verifyToken: any = (req: Request, resp: Response) => {
 
 export let getSMSMessages: any = (req: Request, res: Response) => {
 
-  const validToken: string = authCheck(req, res);
+  const validToken: string = authCheck(req,res);
 
-  if (validToken === "success") {
+  if( validToken === "success") {
 
-    Message.find({ threadStatus: "open", source: "SMS" }).sort("-createdTime").exec(function (err, messages) {
+    Message.find({threadStatus:"open", source:"SMS"}).sort("-createdTime").exec((err: Error,messages: Object[]) => {
       if (err) {
         res.send(err);
       }
-      res.json(messages);
+        res.json(messages);
     });
 
   } else {
     res.json({ message: "Invalid Token" });
   }
-
-};
+}
 
 export let test: any = async (req: Request, res: Response) => {
 
@@ -237,17 +237,17 @@ export let getSMSMessage: any = (req: Request, resp: Response) => {
   client.messages(req.params.messageId)
     .fetch()
     .then((message) => {
-      resp.json({ message: message });
+      resp.json(message);
     });
 
 };
 
-export let sendSMSMessage = (req: Request, resp: Response) => {
+export let sendSMSMessage: any = (req: Request, resp: Response) => {
   let twilio = require("twilio");
   let client = new twilio(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
   let rtn: string = "";
 
-  const validToken: any = authCheck(req, resp);
+  const validToken: string  = authCheck(req, resp);
 
   if (validToken === "success") {
 
@@ -257,7 +257,7 @@ export let sendSMSMessage = (req: Request, resp: Response) => {
       from: Constants.TWILIO_NUMBER // from a valid Twilio number
     }).then((results) => {
 
-      const message = new Message();
+      const message: any = new Message();
       //     const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
 
       message.messageId = results.sid;
@@ -297,8 +297,8 @@ export let authCheck: any = (req: Request, resp: Response) => {
 
   console.log(req.headers);
 
-  var token = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers.authorization;
-  var rtn;
+  const token: string = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers.authorization;
+  let rtn: string;
 
   jwt.verify(token, Constants.SUPERSECRET, (err, decoded) => {
     if (err) {
@@ -315,21 +315,21 @@ export let authCheck: any = (req: Request, resp: Response) => {
   return rtn;
 }
 
-export let get = (req: Request, res: Response) => {
+export let get: any = (req: Request, res: Response) => {
   res.json({ message: "Hello and welcome" });
 };
 
 /*
 this will close the current session using the incoming phone number
 */
-export let closeTxt = (req: Request, res: Response) => {
+export let closeTxt: any = (req: Request, res: Response) => {
 
   let validToken: string = authCheck(req, res);
 
   if (validToken === "success") {
 
     Message.update({ source: "SMS", from: req.body.from, to: req.body.to }, { threadStatus: "closed" }, { multi: true },
-      function (err, message) {
+       (err: Error, message: Object) => {
         console.log("updated MessageThread " + req.body.from);
         res.json({ message: "closed thread " + req.body.threadId });
       });
@@ -339,14 +339,15 @@ export let closeTxt = (req: Request, res: Response) => {
   }
 };
 
-export let getMessage = (req: Request, res: Response) => {
+export let getMessage: any = (req: Request, res: Response) => {
 
-  const validToken = authCheck(req, res);
+  const validToken: string = authCheck(req, res);
   if (validToken === "success") {
 
-    Message.find({ "messageId": req.params.message_id }, "messageId message threadId createdTime", function (err, message) {
-      if (err)
+    Message.find({ "messageId": req.params.message_id }, "messageId message threadId createdTime",  (err: Error, message: Object) => {
+      if (err) {
         res.send(err);
+      }
       res.json(message);
     });
   } else {
@@ -357,57 +358,61 @@ export let getMessage = (req: Request, res: Response) => {
 
 export let getMessages = (req: Request, res: Response) => {
 
-  var validToken = authCheck(req, res);
+  var validToken = authCheck(req,res);
 
-  if (validToken === "success") {
+  if( validToken == 'success') {
 
-    Message.find({ threadStatus: "open", source: "SMS" }).sort("-createdTime").exec(function (err, messages) {
-      if (err) {
+    Message.find({threadStatus:"open", source: "SMS"}).sort("-createdTime").exec(function(err,messages){
+      if (err){
         res.send(err);
       }
-      res.json(messages);
+        res.json(messages);
     });
 
   } else {
-    res.json({ message: "Invalid Token" });
+    res.json({ message: 'Invalid Token' }); 
   }
 
 }
 
 export let getUsers = (req: Request, res: Response) => {
 
-  if (authCheck(req, res) === "success") {
+  if( authCheck(req, res) == 'success') {
 
-    User.find((err, users) => {
-      if (err) {
+    User.find(function(err, users) {
+      if (err){
         res.send(err);
       }
-      //     res.json(users);
-      res.send(users);
+   //     res.json(users);
+        res.send(users);
     });
-  }
-
-};
-
-export let getContents = (req: Request, res: Response) => {
-
-  if (authCheck(req, res) === "success") {
-
-    Content.find((err, contents) => {
-      if (err) {
-        res.send(err);
-      }
-      //     res.json(users);
-      res.send(contents);
-    });
-  } else {
-    let testUser = { username: "test", password: "test", firstName: "Test", lastName: "User" };
-    //  res.json({ message: "Invalid Token" });	
-    res.json({ testUser });
+      } else{
+        let testUser = { username: 'test', password: 'test', firstName: 'Test', lastName: 'User' };
+      //  res.json({ message: 'Invalid Token' });   
+      res.json({ testUser });   
   }
 
 }
 
+
+export let getContents = (req: Request, res: Response) => {
+
+  if( authCheck(req, res) == 'success') {
+
+   Content.find(function(err, contents) {
+      if (err){
+        res.send(err);
+      }
+   //     res.json(users);
+        res.send(contents);
+    });
+      } else{
+        let testUser = { username: 'test', password: 'test', firstName: 'Test', lastName: 'User' };
+      //  res.json({ message: 'Invalid Token' });   
+      res.json({ testUser });   
+  } 
+
+}
 export let getContent = (req: Request, res: Response) => {
 
   var validToken = authCheck(req, res);
@@ -609,7 +614,7 @@ export let getAddress: any = (lat: number, long: number): string => {
     "latlng": lat + "," + long,
     "language": "en"
   };
-  gmAPI.reverseGeocode(reverseGeocodeParams,  (err: Error, result: any) => {
+  gmAPI.reverseGeocode(reverseGeocodeParams, (err: Error, result: any) => {
     console.log(result);
     address = result.results[0].formatted_address;
     console.log("address " + address);
@@ -681,11 +686,11 @@ export let newReply: any = (req: Request, res: Response) => {
       return res.status(500).send(err);
     }
     console.log("from save = " + msg);
-      const response: any = {
-        message: "Reply successfully inserted ",
-        id: msg.id
-      };
-      return res.status(200).send(response);
+    const response: any = {
+      message: "Reply successfully inserted ",
+      id: msg.id
+    };
+    return res.status(200).send(response);
   });
 
 };
@@ -703,10 +708,10 @@ export let updateReply: any = (req: Request, res: Response) => {
         console.log(err);
         res.send(err);
       } else {
-       const message: any = result
-        ? "Updated successfully"
-        : "MessageReply " + id + " not found :(";
-      res.send(message);
+        const message: any = result
+          ? "Updated successfully"
+          : "MessageReply " + id + " not found :(";
+        res.send(message);
       }
     }
   );

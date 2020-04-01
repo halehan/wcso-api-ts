@@ -28,6 +28,7 @@ let SALT_WORK_FACTOR: number = 10;
 // ===============
 let appPort = (process.env.PORT || 3000);
 let connectionString: string = process.env.MONGODB_URI;
+let adderess: string = process.env.MONGODB_URI;
 console.log(appPort + '  ' + connectionString);
 // let connectionString: string = 'mongodb://wcso:wcso@ds161164.mlab.com:61164/wcso';
 
