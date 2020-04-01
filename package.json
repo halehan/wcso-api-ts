@@ -55,7 +55,7 @@
     "jsonwebtoken": "^8.1.0",
     "moment": "^2.19.1",
     "mongodb": "^2.2.9",
-    "mongoose": "^4.13.12",
+    "mongoose": "^5.7.5",
     "mongoose-gridfs": "^0.3.2",
     "morgan": "^1.9.0",
     "node-restful": "^0.2.5",
