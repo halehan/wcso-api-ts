@@ -23,6 +23,7 @@ abstract class App {
         server.use(bodyParser.urlencoded({ extended: true }));
         server.use(morgan("dev")); // log requests to the console
 
+        server.post("/sms/listen/", twilioSMS.listenSMSMessage);
         server.post("/sms/listen/test/", twilioSMS.test);
         server.post("/sms/send/", twilioSMS.sendSMSMessage);
         server.get("/sms/message/:messageId", twilioSMS.getSMSMessage);

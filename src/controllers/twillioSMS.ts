@@ -67,7 +67,7 @@ export let getSMSMessages: any = async (req: Request, res: Response) => {
     });
 
   } else {
-    res.json({ message: "Invalid Token" });
+    res.json({ message: "Invalid Token." });
   }
 
 };
@@ -107,7 +107,7 @@ let isNumber: any = (value: string | number): boolean => {
     !isNaN(Number(value.toString())));
 };
 
-/*
+
 export let listenSMSMessage: any = async (req: Request, res: Response) => {
 
   let twiml = new MessagingResponse();
@@ -216,7 +216,7 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
   res.writeHead(200, { "Content-Type": "text/xml" });
   res.end(twiml.toString());
 
-};  */
+};
 
 export let getSMSMessage: any = async (req: Request, res: Response) => {
 
