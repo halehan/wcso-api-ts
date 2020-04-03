@@ -14,7 +14,7 @@ import { Constants } from "../utils/constants";
 import { MessageReplyVo } from "../entities/messageReplyVo";
 import MessageReply = require("../entities/messageReply");
 import Comment = require("../entities/comment");
-
+import { ApplicationService } from "../services/Application.service";
 
 const MessagingResponse: any = require("twilio").twiml.MessagingResponse;
 var SALT_WORK_FACTOR: number = 10;
@@ -55,23 +55,22 @@ export let verifyToken: any = (req: Request, resp: Response) => {
   }
 };
 
-export let getSMSMessages: any = (req: Request, res: Response) => {
+export let getSMSMessages: any = async (req: Request, res: Response) => {
 
-  const validToken: string = authCheck(req,res);
+  const validToken: string = authCheck(req, res);
 
-  if( validToken === "success") {
-
-    Message.find({threadStatus:"open", source:"SMS"}).sort("-createdTime").exec((err: Error,messages: Object[]) => {
-      if (err) {
-        res.send(err);
-      }
-        res.json(messages);
+  if (validToken === "success") {
+    ApplicationService.getSMSMessages("open", "SMS", "-createdTime").then((value) => {
+      console.log(value.length);
+      res.json(value);
+  //    res.send(value);
     });
 
   } else {
     res.json({ message: "Invalid Token" });
   }
-}
+
+};
 
 export let test: any = async (req: Request, res: Response) => {
 
@@ -108,6 +107,7 @@ let isNumber: any = (value: string | number): boolean => {
     !isNaN(Number(value.toString())));
 };
 
+/*
 export let listenSMSMessage: any = async (req: Request, res: Response) => {
 
   let twiml = new MessagingResponse();
@@ -154,23 +154,11 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
     });
   }
 
-  /* Message.find({ "messageId": req.params.message_id }, "messageId message threadId createdTime", (err, message) => {
-     if (err) {
-       res.send(err);
-     }
-     res.json(message);
-   }); */
-
   if (msg === null) {
     twiml.message(Constants.REPLY_SMS);
   } else {
     twiml.message(msg.messageTxt);
   }
-
-  /*
-    client.lookups.phoneNumbers(req.body.From)
-                .fetch({type: "caller-name"})
-                .then(phone_number => console.log(phone_number.callerName.caller_name));  */
 
   console.log("message  = " + req.body.Body);
   console.log("messageId  = " + req.body.MessageSid);
@@ -228,61 +216,25 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
   res.writeHead(200, { "Content-Type": "text/xml" });
   res.end(twiml.toString());
 
-};
+};  */
 
-export let getSMSMessage: any = (req: Request, resp: Response) => {
+export let getSMSMessage: any = async (req: Request, res: Response) => {
 
-  const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
+  const rtnVal: Promise<any> = await ApplicationService.getSMSMessage(req.params.messageId);
 
-  client.messages(req.params.messageId)
-    .fetch()
-    .then((message) => {
-      resp.json(message);
-    });
+  res.send(rtnVal);
 
 };
 
 export let sendSMSMessage: any = (req: Request, resp: Response) => {
-  let twilio = require("twilio");
-  let client = new twilio(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
-  let rtn: string = "";
 
-  const validToken: string  = authCheck(req, resp);
+  const validToken: string = authCheck(req, resp);
 
   if (validToken === "success") {
 
-    client.messages.create({
-      body: req.body.msg,
-      to: req.body.to,  // text this number
-      from: Constants.TWILIO_NUMBER // from a valid Twilio number
-    }).then((results) => {
-
-      const message: any = new Message();
-      //     const nowDate = moment().format("MMMM Do YYYY, h:mm:ss a");
-
-      message.messageId = results.sid;
-      message.threadId = results.sid;
-      message.date_sent = results.date_sent;
-      message.from = results.from;
-      message.to = results.to;
-      message.status = results.status;
-      message.direction = results.direction;
-      message.messaging_service_sid = results.messaging_service_sid;
-
-      message.message = req.body.msg;
-
-      message.source = "SMS";
-      message.threadStatus = "open";
-      message.createdTime = moment().toDate();
-
-      message.save((err: any) => {
-        if (err) {
-          console.log(err);
-        }
-      });
-
-
-      resp.json({ sid: results.sid });
+    ApplicationService.sendSMSMessage(req.body.msg, req.body.to, Constants.TWILIO_NUMBER ).then((value) => {
+      console.log(value.length);
+      resp.json(value);
     });
 
   } else {
@@ -322,6 +274,7 @@ export let get: any = (req: Request, res: Response) => {
 /*
 this will close the current session using the incoming phone number
 */
+/*
 export let closeTxt: any = (req: Request, res: Response) => {
 
   let validToken: string = authCheck(req, res);
@@ -329,7 +282,7 @@ export let closeTxt: any = (req: Request, res: Response) => {
   if (validToken === "success") {
 
     Message.update({ source: "SMS", from: req.body.from, to: req.body.to }, { threadStatus: "closed" }, { multi: true },
-       (err: Error, message: Object) => {
+      (err: Error, message: Object) => {
         console.log("updated MessageThread " + req.body.from);
         res.json({ message: "closed thread " + req.body.threadId });
       });
@@ -338,13 +291,14 @@ export let closeTxt: any = (req: Request, res: Response) => {
     res.json({ message: "Invalid Token" });
   }
 };
+*/
 
 export let getMessage: any = (req: Request, res: Response) => {
 
   const validToken: string = authCheck(req, res);
   if (validToken === "success") {
 
-    Message.find({ "messageId": req.params.message_id }, "messageId message threadId createdTime",  (err: Error, message: Object) => {
+    Message.find({ "messageId": req.params.message_id }, "messageId message threadId createdTime", (err: Error, message: Object) => {
       if (err) {
         res.send(err);
       }
@@ -354,42 +308,42 @@ export let getMessage: any = (req: Request, res: Response) => {
     res.json({ message: "Invalid Token" });
   }
 
-}
+};
 
-export let getMessages = (req: Request, res: Response) => {
 
-  var validToken = authCheck(req,res);
+export let getMessages: any = (req: Request, res: Response) => {
 
-  if( validToken == 'success') {
+  const validToken: string = authCheck(req, res);
 
-    Message.find({threadStatus:"open", source: "SMS"}).sort("-createdTime").exec(function(err,messages){
-      if (err){
+  if (validToken === "success") {
+
+    Message.find({ threadStatus: "open", source: "SMS" }).sort("-createdTime").exec(function (err, messages) {
+      if (err) {
         res.send(err);
       }
-        res.json(messages);
+      res.json(messages);
     });
 
   } else {
-    res.json({ message: 'Invalid Token' }); 
+    res.json({ message: "Invalid Token" });
   }
 
 }
-
 export let getUsers = (req: Request, res: Response) => {
 
-  if( authCheck(req, res) == 'success') {
+  if (authCheck(req, res) == 'success') {
 
-    User.find(function(err, users) {
-      if (err){
+    User.find(function (err, users) {
+      if (err) {
         res.send(err);
       }
-   //     res.json(users);
-        res.send(users);
+      //     res.json(users);
+      res.send(users);
     });
-      } else{
-        let testUser = { username: 'test', password: 'test', firstName: 'Test', lastName: 'User' };
-      //  res.json({ message: 'Invalid Token' });   
-      res.json({ testUser });   
+  } else {
+    let testUser = { username: 'test', password: 'test', firstName: 'Test', lastName: 'User' };
+    //  res.json({ message: 'Invalid Token' });   
+    res.json({ testUser });
   }
 
 }
@@ -397,20 +351,20 @@ export let getUsers = (req: Request, res: Response) => {
 
 export let getContents = (req: Request, res: Response) => {
 
-  if( authCheck(req, res) == 'success') {
+  if (authCheck(req, res) == 'success') {
 
-   Content.find(function(err, contents) {
-      if (err){
+    Content.find(function (err, contents) {
+      if (err) {
         res.send(err);
       }
-   //     res.json(users);
-        res.send(contents);
+      //     res.json(users);
+      res.send(contents);
     });
-      } else{
-        let testUser = { username: 'test', password: 'test', firstName: 'Test', lastName: 'User' };
-      //  res.json({ message: 'Invalid Token' });   
-      res.json({ testUser });   
-  } 
+  } else {
+    let testUser = { username: 'test', password: 'test', firstName: 'Test', lastName: 'User' };
+    //  res.json({ message: 'Invalid Token' });   
+    res.json({ testUser });
+  }
 
 }
 export let getContent = (req: Request, res: Response) => {
@@ -666,10 +620,8 @@ export let getReplies: any = (req: Request, res: Response) => {
   let validToken: string = authCheck(req, res);
   if (validToken === "success") {
 
-    MessageReply.find({}, (err: Error, replies: MessageReplyVo[]) => {
-      if (err) { throw err; }
-      res.json(replies);
-      console.log(replies);
+    ApplicationService.getSMSReplies().then((value) => {
+      res.json(value);
     });
   } else {
     res.json({ message: "Invalid Token" });

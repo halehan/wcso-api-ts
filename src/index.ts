@@ -45,12 +45,12 @@ app.set("port", appPort);
 app.use(morgan('dev')); // log requests to the console
 
 // Twillio SMS
-app.post("/sms/listen/", twilioSMS.listenSMSMessage);
+// app.post("/sms/listen/", twilioSMS.listenSMSMessage);
 app.post("/sms/listen/test/", twilioSMS.test);
 app.post("/sms/send/", twilioSMS.sendSMSMessage);
 app.get("/sms/message/:messageId", twilioSMS.getSMSMessage);
 app.get("/sms/messages/", twilioSMS.getSMSMessages);
-app.post("/sms/closeThread/", twilioSMS.closeTxt);
+// app.post("/sms/closeThread/", twilioSMS.closeTxt);
 app.post("/sms/messageReply/", twilioSMS.newReply);
 app.get("/sms/messageReply/", twilioSMS.getReplies);
 app.delete("/sms/messageReply/:id", twilioSMS.deleteReply);

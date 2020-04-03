@@ -122,7 +122,7 @@ export let authCheck = function(req: Request, resp: Response) {
  // resp.setHeader('Cache-Control', 'no-cache');
  console.log(req.headers);
   
-  var token = req.body.token || req.query.token || req.headers['x-access-token'] || req.headers['authorization'];
+  var token = req.body.token || req.query.token || req.headers['x-access-token'] || req.headers["authorization"];
   var rtn;
   console.log(credentials.superSecret);
   jwt.verify(token, credentials.superSecret, (err, decoded) => {      
