@@ -1,1 +1,1 @@
-web: nodemon
+web: nodemon dist/app.js
