@@ -57,12 +57,12 @@ abstract class App {
         server.get("/api/content/", apiController.getContents);
         server.get("/api/content/:content_id", apiController.getContent);
 
-        const dbOpt: any = { useMongoClient: true };
+        const dbOpt: any = { useNewUrlParser: true, useUnifiedTopology: true };
 
         mongoose.connect(App.connectionString, dbOpt);
 
 
-        server.listen(App.port, () => { console.log("=====APP ===== Listening on port " + App.port); });
+        server.listen(App.port, () => { console.log("====APP ===== Listening on port " + App.port); });
     }
 
 }
