@@ -4,7 +4,8 @@ import * as TwillioSms from "../src/controllers/twillioSMS";
 import * as express from "express";
 import equalsIgnoreCase from "@composite/equals-ignore-case";
 
-var app: any = require("../dist/index.js");
+
+var app: any = require("../dist/app.js");
 var request: any = require("supertest")("http://localhost:3000");
 
 describe("GET /api/user/",  () => {

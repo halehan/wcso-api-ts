@@ -3,16 +3,10 @@ import {Request} from "supertest";
 import * as TwillioSms from "../src/controllers/twillioSMS";
 import * as express from "express";
 
+const app: any = require("../dist/app.js");
+const suck: any = require("supertest")("http://localhost:3000");
 
-var app = require("../dist/index.js");
-var suck = require('supertest')("http://localhost:3000");
 
-
-//==================== user API test ====================
-
-/**
- * Testing get all user endpoint
- */
 describe("GET /api/user/", function () {
     it("respond with json containing a list of all users", function (done) {
         suck
