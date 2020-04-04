@@ -64,7 +64,8 @@
     "typings": "^2.1.1",
     "https-proxy-agent": ">=2.2.0",
     "http-proxy-agent": ">=2.1.0",
-    "cryptiles": ">=4.1.2"
+    "cryptiles": ">=4.1.2",
+    "hoek": ">=4.2.1"
   },
   "bugs": {
     "url": "https://github.com/halehan/wcso-api-ts/issues"
