@@ -61,7 +61,8 @@
     "oauth": "^0.9.15",
     "passport": "^0.4.1",
     "twilio": "^3.42.0",
-    "typings": "^2.1.1"
+    "typings": "^2.1.1",
+    "https-proxy-agent": ">=2.2.0"
   },
   "bugs": {
     "url": "https://github.com/halehan/wcso-api-ts/issues"
