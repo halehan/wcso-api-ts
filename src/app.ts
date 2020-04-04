@@ -23,6 +23,9 @@ abstract class App {
         server.use(bodyParser.urlencoded({ extended: true }));
         server.use(morgan("dev")); // log requests to the console
 
+        server.post("/whatsapp/incoming/", twilioSMS.incoming);
+        server.post("/whatsapp/callback/", twilioSMS.whatsAppCallback);
+
         server.post("/sms/listen/", twilioSMS.listenSMSMessage);
         server.post("/sms/listen/test/", twilioSMS.test);
         server.post("/sms/send/", twilioSMS.sendSMSMessage);

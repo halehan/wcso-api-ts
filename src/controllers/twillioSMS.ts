@@ -107,6 +107,48 @@ let isNumber: any = (value: string | number): boolean => {
     !isNaN(Number(value.toString())));
 };
 
+export let incoming: any  = async (req: Request, res: Response) => {
+
+const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
+
+console.log(req.body);
+console.log("=============END OF BODY===========");
+
+await client.lookups.phoneNumbers(req.body.From)
+    .fetch({ type: "carrier" })
+    .then((phone_number) => {
+
+      let message: any = new Message();
+
+      message.carrierName = phone_number.carrier.name;
+      message.carrierType = phone_number.carrier.type;
+      message.mobileCountryCode = phone_number.carrier.mobile_country_code;
+
+     console.log(phone_number);
+
+    });
+
+client.messages
+      .create({
+         from: "whatsapp:+14155238886",
+         body: "Being sent from the incoming 💚",
+        // body: "from the callback.  💖Because 💖 I knew you, I have been **changed** _for good_.💚",
+         to: "whatsapp:+18502915592"
+       })
+      .then((message) => {
+        console.log("==================================");
+        console.log(message);
+        console.log("==================================");
+});
+
+};
+
+export let whatsAppCallback: any  = async (req: Request, res: Response) => {
+
+  console.log("from callback");
+
+  };
+
 
 export let listenSMSMessage: any = async (req: Request, res: Response) => {
 
@@ -331,7 +373,7 @@ export let getMessages: any = (req: Request, res: Response) => {
 }
 export let getUsers = (req: Request, res: Response) => {
 
-  if (authCheck(req, res) == 'success') {
+  if (authCheck(req, res) == "success") {
 
     User.find(function (err, users) {
       if (err) {
@@ -341,7 +383,7 @@ export let getUsers = (req: Request, res: Response) => {
       res.send(users);
     });
   } else {
-    let testUser = { username: 'test', password: 'test', firstName: 'Test', lastName: 'User' };
+    let testUser = { username: "test", password: "test", firstName: "Test", lastName: "User" };
     //  res.json({ message: 'Invalid Token' });   
     res.json({ testUser });
   }
@@ -351,7 +393,7 @@ export let getUsers = (req: Request, res: Response) => {
 
 export let getContents = (req: Request, res: Response) => {
 
-  if (authCheck(req, res) == 'success') {
+  if (authCheck(req, res) == "success") {
 
     Content.find(function (err, contents) {
       if (err) {
@@ -361,7 +403,7 @@ export let getContents = (req: Request, res: Response) => {
       res.send(contents);
     });
   } else {
-    let testUser = { username: 'test', password: 'test', firstName: 'Test', lastName: 'User' };
+    let testUser = { username: "test", password: "test", firstName: "Test", lastName: "User" };
     //  res.json({ message: 'Invalid Token' });   
     res.json({ testUser });
   }
