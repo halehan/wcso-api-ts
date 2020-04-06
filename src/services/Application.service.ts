@@ -82,6 +82,44 @@ export class ApplicationService {
         });
     }
 
+    public static async sendWhatsAppMessage(_message: string, _to: string, _from: string): Promise<any> {
+
+        const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
+
+        return new Promise((resolve, reject) => {
+
+            client.messages
+            .create({
+              from: _from,
+              body: _message,
+              to: _to
+            })
+            .then((results) => {
+                const message: any = new Message();
+                message.messageId = results.sid;
+                message.threadId = results.sid;
+                message.date_sent = results.date_sent;
+                message.from = results.from;
+                message.to = results.to;
+                message.status = results.status;
+                message.direction = results.direction;
+                message.messaging_service_sid = results.messaging_service_sid;
+                message.message = _message;
+                message.source = "whatsApp";
+                message.threadStatus = "open";
+                message.createdTime = moment().toDate();
+
+                message.save((err: any) => {
+                  if (err) {
+                    console.log(err);
+                  }
+                });
+                resolve(results);
+              });
+            });
+
+    }
+
 
     public static async getUsers(): Promise<any> {
 

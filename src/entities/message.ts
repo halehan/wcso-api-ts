@@ -1,18 +1,23 @@
 import * as mongoose from "mongoose";
 
 interface IMessage {
-    createdTime:Date;
-    threadStatus:string;
-    message:string;
-    threadId:string;
-    messageId:string;
-    userId:string;
-    lat:number;
-    long:number;
-    address:string;
-    attachmentUrl:string;
-    from:string;
-    source:string;
+    numMedia: number;
+    mediaUrl0: string;
+    smsSid: string;
+    smsStatus: string;
+    createdTime: Date;
+    threadStatus: string;
+    incomingMessage: string;
+    message: string;
+    threadId: string;
+    messageId: string;
+    userId: string;
+    lat: number;
+    long: number;
+    address: string;
+    attachmentUrl: string;
+    from: string;
+    source: string;
     date_sent: Date;
     to: string;
     status: string;
@@ -23,20 +28,31 @@ interface IMessage {
     fromZip: string;
     toCity: string;
     toState: string;
-    callerName: string;
     callertype: string;
-    mobileCountryCode: string;
-    mobileNetworkType: string;
-    carrierName: string;
-    carrierType: string;
-
+    phoneNumber:
+    {
+        countryCode: string;
+        phoneNumber: string;
+        nationalFormat: string,
+        callerName: {
+            caller_name: string,
+            caller_type: string,
+            error_code: string,
+        }
+    }
 }
 
-interface IMessageModel extends IMessage, mongoose.Document {}
+interface IMessageModel extends IMessage, mongoose.Document { }
 
 let messageSchema: any = new mongoose.Schema({
+    numMedia: Number,
+    mediaUrl0: String,
+    smsSid: String,
+    smsStatus: String,
+    mediaContentType0: String,
     createdTime: Date,
     threadStatus: String,
+    incomingMessage: String,
     message: String,
     threadId: String,
     messageId: String,
@@ -52,9 +68,23 @@ let messageSchema: any = new mongoose.Schema({
     status: String,
     direction: String,
     messaging_service_sid: String,
+    fromState: String,
     fromCity: String,
     fromZip: String,
-    toCity: String
+    toCity: String,
+    toState: String,
+    callertype: String,
+    phoneNumber:
+    {
+        countryCode: String,
+        phoneNumber: String,
+        nationalFormat: String,
+        callerName: {
+            caller_name: String,
+            caller_type: String,
+            error_code: String,
+        }
+    }
 });
 
 let Message: any = mongoose.model<IMessageModel>("Message", messageSchema);

@@ -63,7 +63,7 @@ export let getSMSMessages: any = async (req: Request, res: Response) => {
     ApplicationService.getSMSMessages("open", "SMS", "-createdTime").then((value) => {
       console.log(value.length);
       res.json(value);
-  //    res.send(value);
+      //    res.send(value);
     });
 
   } else {
@@ -107,47 +107,72 @@ let isNumber: any = (value: string | number): boolean => {
     !isNaN(Number(value.toString())));
 };
 
-export let incoming: any  = async (req: Request, res: Response) => {
+export let getAvailableNumbers: any = (req: Request, res: Response) => {
 
-const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
+  const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
 
-console.log(req.body);
-console.log("=============END OF BODY===========");
+  client.availablePhoneNumbers('US')
+      .local
+      .list({areaCode: 850, limit: 20})
+      .then(local => local.forEach(l => console.log(l.friendlyName)));
 
-await client.lookups.phoneNumbers(req.body.From)
-    .fetch({ type: "carrier" })
+}
+
+export let incoming: any = async (req: Request, res: Response) => {
+
+  const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
+
+  console.log(req.body);
+  console.log("=============END OF BODY===========");
+
+  let message: any = new Message();
+
+  if (message.numMedia > 0) {
+    message.mediaContentType0 = req.body.MediaContentType0;
+    message.mediaUrl0 = req.body.MediaUrl0;
+  }
+
+  await client.lookups.phoneNumbers(req.body.From)
+    .fetch({ type: "caller-name" })
     .then((phone_number) => {
-
-      let message: any = new Message();
-
-      message.carrierName = phone_number.carrier.name;
-      message.carrierType = phone_number.carrier.type;
-      message.mobileCountryCode = phone_number.carrier.mobile_country_code;
-
-     console.log(phone_number);
-
+      message.phoneNumber = phone_number;
     });
 
-client.messages
-      .create({
-         from: "whatsapp:+14155238886",
-         body: "Being sent from the incoming 💚",
-        // body: "from the callback.  💖Because 💖 I knew you, I have been **changed** _for good_.💚",
-         to: "whatsapp:+18502915592"
-       })
-      .then((message) => {
-        console.log("==================================");
-        console.log(message);
-        console.log("==================================");
-});
+  await client.messages
+    .create({
+      from: "whatsapp:+14155238886",
+      body: "Hello.  We have received your message and someone will be in touch.  ",
+      to: "whatsapp:" + message.phoneNumber.phoneNumber
+    })
+    .then((_message) => {
+      console.log("==================================");
+      console.log(_message);
+      console.log("==================================");
+      message.message = _message.body;
+    });
+
+    message.incomingMessage = req.body.Body;
+    message.smsSid = req.body.SmsSid;
+    message.numMedia = req.body.NumMedia;
+    message.smsStatus = req.body.SmsStatus;
+    message.source = "whatsApp";
+    message.status = "open";
+    message.createdTime = moment().toDate();
+
+  await message.save((err: any) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+
 
 };
 
-export let whatsAppCallback: any  = async (req: Request, res: Response) => {
+export let whatsAppCallback: any = async (req: Request, res: Response) => {
 
   console.log("from callback");
 
-  };
+};
 
 
 export let listenSMSMessage: any = async (req: Request, res: Response) => {
@@ -158,22 +183,22 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
 
   const client: any = require("twilio")(Constants.TWILIO_ACCOUNTSID, Constants.TWILIO_AUTHTOKEN);
 
-  await client.lookups.phoneNumbers(req.body.From)
+ /* await client.lookups.phoneNumbers(req.body.From)
     .fetch({ type: "carrier" })
     .then((phone_number) => {
 
       message.carrierName = phone_number.carrier.name;
       message.carrierType = phone_number.carrier.type;
       message.mobileCountryCode = phone_number.carrier.mobile_country_code;
+   
 
-    });
+    }); */
 
   await client.lookups.phoneNumbers(req.body.From)
     .fetch({ type: "caller-name" })
     .then((phone_number) => {
 
-      message.callerName = phone_number.callerName.caller_name;
-      message.callertype = phone_number.callerName.caller_type;
+      message.phoneNumber = phone_number;
 
     });
 
@@ -223,6 +248,8 @@ export let listenSMSMessage: any = async (req: Request, res: Response) => {
   console.log("Mobile Network Type = " + message.mobileNetworkType);
   console.log("Mobile Country Code = " + message.mobileCountryCode);
 
+  message.numMedia = req.body.NumMedia;
+  message.mediaUrl0 = req.body.MediaUrl0;
   message.messageId = req.body.MessageSid;
   message.message = req.body.Body;
   message.threadId = req.body.MessageSid;
@@ -274,7 +301,27 @@ export let sendSMSMessage: any = (req: Request, resp: Response) => {
 
   if (validToken === "success") {
 
-    ApplicationService.sendSMSMessage(req.body.msg, req.body.to, Constants.TWILIO_NUMBER ).then((value) => {
+    ApplicationService.sendSMSMessage(req.body.msg, req.body.to, Constants.TWILIO_NUMBER).then((value) => {
+      console.log(value.length);
+      resp.json(value);
+    });
+
+  } else {
+    resp.json({ message: "Invalid Token" });
+  }
+
+};
+
+export let sendWhatsAppMessage: any = (req: Request, resp: Response) => {
+
+  const validToken: string = authCheck(req, resp);
+
+  if (validToken === "success") {
+    let toPhoneNumber: string = "whatsapp:"+ req.body.phoneNumber;
+    let message: string = req.body.incomingMessage;
+
+
+    ApplicationService.sendWhatsAppMessage(message, toPhoneNumber, Constants.WHATSAPP_NUMBER).then((value) => {
       console.log(value.length);
       resp.json(value);
     });
@@ -351,6 +398,25 @@ export let getMessage: any = (req: Request, res: Response) => {
   }
 
 };
+
+export let getWhatsappMessages: any = (req: Request, res: Response) => {
+
+  const validToken: string = authCheck(req, res);
+
+  if (validToken === "success") {
+
+    Message.find({ status: "open", source: "whatsApp" }).sort("-createdTime").exec( (err: Error, messages: Object[]) => {
+      if (err) {
+        res.send(err);
+      }
+      res.json(messages);
+    });
+
+  } else {
+    res.json({ message: "Invalid Token" });
+  }
+
+}
 
 
 export let getMessages: any = (req: Request, res: Response) => {

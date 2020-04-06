@@ -25,6 +25,9 @@ abstract class App {
 
         server.post("/whatsapp/incoming/", twilioSMS.incoming);
         server.post("/whatsapp/callback/", twilioSMS.whatsAppCallback);
+        server.post("/whatsapp/reply/", twilioSMS.sendWhatsAppMessage);
+        server.get("/whatsapp/messages", twilioSMS.getWhatsappMessages);
+        server.get("/numbers", twilioSMS.getAvailableNumbers);
 
         server.post("/sms/listen/", twilioSMS.listenSMSMessage);
         server.post("/sms/listen/test/", twilioSMS.test);

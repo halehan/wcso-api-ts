@@ -11,6 +11,7 @@ export class Constants {
     static readonly TWILIO_ACCOUNTSID = process.env.TWILIO_ACCOUNTSID;
     static readonly TWILIO_AUTHTOKEN = process.env.TWILIO_AUTHTOKEN;
     static readonly TWILIO_NUMBER = process.env.TWILIO_NUMBER;
+    static readonly WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER;
     static readonly SUPERSECRET = "dog";
 
     static readonly REPLY_MESSAGE = 'We have recived your message and have added the request to our queue.  Please standby for a law enforcement representative to respond.' + 
